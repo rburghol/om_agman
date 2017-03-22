@@ -1,0 +1,13 @@
+name = AgMan Tools for Object-oriented Meta-model Module
+description = Adds support for agricultural modeling in object-oriented components.
+core = 7.x
+php = 5.3.0
+
+; 
+dependencies[] = om
+dependencies[] = dh_adminreg
+
+;files[] = om_agman.admin.inc
+;files[] = views/om_agman.views_default.inc
+
+version = "7.x-1.0"

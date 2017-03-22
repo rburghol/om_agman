@@ -1,0 +1,75 @@
+<?php
+
+// om agplant
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function om_agman_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/' . $plugin_type;
+  }
+  if ($owner == 'om' && $plugin_type == 'om_components') {
+    return 'plugins/' . $plugin_type;
+  }
+  if ($owner == 'dh' && $plugin_type == 'dh_variables') {
+    return 'plugins/' . $plugin_type;
+  }
+}
+
+
+function om_agman_entity_ts_event_types_alter(&$event_types) {
+  // insert ts events for AR fields/properties ()such as startdate, enddate, dh_link_submittal_feature) 
+  // insert ts events for those linked via adminreg 
+  //   system erefs like dh_link_submittal_feature
+  $event_types['dh_adminreg_feature'] += array(
+    'agman_event_dh_link_submittal_feature' => array(
+      'bundle' => 'agchem_app', // FALSE means it happens for all
+      'entity_type' => 'dh_feature',
+      'multiplicity' => 'singular',
+      'featureid' => array('value_src_type'=> 'eref_targetid', 'value' => 'dh_link_feature_submittal'),
+      'map' => array(
+        // object permits sending an integer OR varkey to varid and controller figures it out
+        'varid' => array('value_src_type'=> 'constant', 'value' => 'event_dh_link_submittal_feature'),
+        'tstime' => array('value_src_type'=> 'property', 'value' => 'startdate'),
+        'tsendtime' => array('value_src_type'=> 'property', 'value' => 'enddate'),
+        'tsvalue' => array('value_src_type' => 'constant', 'value' => NULL),
+        'tscode' => array('value_src_type' => 'constant', 'value' => NULL),
+      ),
+    ),
+  );
+}
+
+
+function om_agman_form_process_npk(&$element) {
+  //$element['#type'] = 'container';
+  $element['#tree'] = TRUE;
+  $element['#attributes'] = array(
+    'class' => array('container-inline-date'),
+  );
+  //$element['#parents'] = !isset($element['#parents']) ? array() : $element['#parents'];
+  if (empty($element['#value'])) {
+    $element['#value'] = array(
+      'n' => 0,
+      'p' => 0,
+      'k' => 0,
+    );
+  }
+  foreach ($element['#value'] as $key => $val) {
+    $element[$key] = array(
+      '#input' => TRUE,
+      '#prefix' => strtoupper($key),
+      '#type' => 'textfield',
+      '#default_value' => $val,
+      //'#value' => $val,
+      '#size' => 3,
+      '#width' => 3,
+      '#maxlength' => 6,
+      '#required' => FALSE,
+      '#parents' => array(),
+    );
+    $element[$key]['#parents'][] = $key;
+  }
+  return $element;
+}
+?>
