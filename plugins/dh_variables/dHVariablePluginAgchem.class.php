@@ -22,7 +22,7 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
     if (!$varinfo) {
       return FALSE;
     }
-    $codename = $this->row_map['code']['name'];
+    $codename = $this->row_map['code'];
     list($n, $p, $k) = explode('-',$row->$codename);
     $vals = array(
       'n'=>$n,
@@ -59,7 +59,7 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
   
   public function formRowSave(&$rowvalues, &$row) {
     parent::formRowSave($rowvalues, $row);
-    $codename = $this->row_map['code']['name'];
+    $codename = $this->row_map['code'];
     $row->$codename = implode('-', array($rowvalues['n'], $rowvalues['p'], $rowvalues['k']));
     // special save handlers
   }

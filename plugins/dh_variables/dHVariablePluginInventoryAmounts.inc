@@ -1,9 +1,9 @@
 <?php
 
 $plugin = array(
-  'label' => t('Agchem Application Canopy Size Rate Scaler'),
+  'label' => t('Agchem Inventory Widget'),
   'handler' =>  array(
-    'class' => 'dHVariablePluginCanopyScaler',
+    'class' => 'dHVariablePluginInventoryAmounts',
     'file' => 'dHVariablePluginAppRates.class.php',
   ),
 );

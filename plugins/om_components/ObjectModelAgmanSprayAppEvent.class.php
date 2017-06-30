@@ -15,6 +15,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
   var $event_prop_conf = FALSE;
   var $chemgrid = FALSE;
   var $eventprops = FALSE;
+  var $eventconstants = FALSE;
   var $agchem_event_area;
   var $agchem_total_spray_rate_galac;
   var $agchem_event_canopy_frac;
@@ -44,12 +45,13 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $this->LoadEventProperties($conf);
     $this->LoadBlockProperties($conf);
     $this->LoadFarmProperties($conf);
-    // sets event area to block area if not yet defined in LoadEventProperties
-    $this->setEventDefault($conf, 'agchem_event_area', round($this->dh_block_feature->dh_areasqkm['und'][0]['value'] * 247.1,2));
-    // cabopy frac default is 1.0 - later, if we use a growth model we can adjust based on date or other
+    // always update event area to total block area in case it's changed
+    $this->setEventDefault($conf, 'agchem_event_area', round($this->GetTotalArea(),2), TRUE);
+    // canopy frac default is 1.0 - later, if we use a growth model we can adjust based on date or other
     $this->setEventDefault($conf, 'agchem_event_canopy_frac', 1.0);
     if ($this->dh_farm_feature) {
       $this->setEventDefault($conf, 'agchem_batch_gal', $this->dh_farm_feature->dh_properties['agchem_sprayer_vol']->propvalue);
+      // this one we over-write since it is calculated, and should be done at load AND save
       $this->setEventDefault($conf, 'agchem_total_spray_rate_galac', $this->dh_farm_feature->dh_properties['agman_sprayrate_default_galac']->propvalue);
     } else {
       watchdog('om_agman', "did not find dh_farm_feature->dh_properties['agchem_sprayer_vol'] or ['agman_sprayrate_default_galac']");
@@ -59,23 +61,30 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     // default spray volume is area * default rate/area
     $this->setEventDefault($conf, 'agchem_spray_vol_gal', 
       $this->dh_adminreg_feature->dh_properties['agchem_total_spray_rate_galac']->propvalue 
-      *  $this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue
+      *  $this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue * $this->dh_adminreg_feature->dh_properties['agchem_event_canopy_frac']->propvalue, TRUE
     );
-    dpm($this->dh_adminreg_feature,'admin feature');
-    dpm($conf,'conf');
+    //dpm($this->dh_adminreg_feature,'admin feature');
+    //dpm($conf,'conf');
     return $conf;
   }
   
-  public function LoadEventProperties(&$conf) {
+  public function GetTotalArea() {
+    $area = 0;
+    foreach ($this->dh_block_feature as $block) {
+      $area += $block->dh_areasqkm['und'][0]['value'];
+    }
+    return $area * 247.1;
+  }
+  
+  public function LoadEventProperties(&$conf, $reload = FALSE) {
     $conf['add'] = 1; // make this insert blank slots where needed
     // default for agchem_batch_gal = vineyard->agchem_sprayer_vol
     // the conf['varid'] list will also be later used to order the variables
     $conf['varid'] = array(
-      'agchem_event_area', 
       'agchem_total_spray_rate_galac', 
+      'agchem_batch_gal',
       'agchem_event_canopy_frac', 
       'agchem_spray_vol_gal', 
-      'agchem_batch_gal'
     );
     $criteria = array();    // load necessary properties for this event
     $vars = dh_vardef_varselect_options(array("varkey in ('" . implode("', '", array_values($conf['varid'])) . "')"));
@@ -92,7 +101,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $this->dh_adminreg_feature->loadComponents($criteria);
   }
   
-  public function setEventDefault(&$conf, $varkey, $value) {
+  public function setEventDefault(&$conf, $varkey, $value, $overwrite = FALSE) {
     // adds setting in the prop group grid
     // also adds a blank property with the same settings on the Event object
     // if it does not exist
@@ -106,8 +115,8 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       );
       $this->dh_adminreg_feature->dh_properties[$varkey] = entity_create('dh_properties', $prop_values);
     }
-    // if value exists, make sure it is validate
-    if (!empty($this->dh_adminreg_feature->dh_properties[$varkey]->propvalue)) {
+    // if value exists, make sure it is validated
+    if (!empty($this->dh_adminreg_feature->dh_properties[$varkey]->propvalue) and !$overwrite) {
       // if we already have a valid value, we retrieve it from the event object 
       // instead of the supplied $value
       $value = isset($this->dh_adminreg_feature->dh_properties[$varkey]) ? $this->dh_adminreg_feature->dh_properties[$varkey]->propvalue : $value;
@@ -131,69 +140,88 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     );
   }
   
-  public function LoadBlockProperties(&$conf) {
+  public function LoadBlockProperties(&$conf, $reload = FALSE) {
     // load necessary properties for this event
     if (!$this->dh_adminreg_feature) {
       return FALSE;
     }
     //dpm($this->dh_adminreg_feature,'admin feature');
-    $blockid = isset($this->dh_adminreg_feature->dh_link_feature_submittal['und']) ? $this->dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'] : FALSE;
-    if (!$blockid) {
+    $blockids = array();
+    if (isset($this->dh_adminreg_feature->dh_link_feature_submittal['und'])) {
+      foreach ($this->dh_adminreg_feature->dh_link_feature_submittal['und'] as $link) {
+        $blockids[] = $link['target_id'];
+      }
+    }
+    if (empty($blockids)) {
       drupal_set_message("Could not find block id.  Cannot load block info.");
       return FALSE;
     }
-    $this->dh_block_feature = entity_load_single('dh_feature', $blockid);
+    $this->dh_block_feature = entity_load('dh_feature', array($blockids));
     if (!$this->dh_block_feature) {
       drupal_set_message("Block load $blockid failed.");
       return FALSE;
     }
     //dpm($this->dh_block_feature,'block');
-  }
-  
-  public function LoadFarmProperties(&$conf) {
-    // load necessary farm properties for this event
-    if (!$this->dh_block_feature) {
-      return FALSE;
-    }
-    $farmid = isset($this->dh_block_feature->dh_link_facility_mps['und']) ? $this->dh_block_feature->dh_link_facility_mps['und'][0]['target_id'] : FALSE;
-    if (!$farmid) {
-      return FALSE;
-    }
-    $this->dh_farm_feature = entity_load_single('dh_feature', $farmid);
-    if (!$this->dh_farm_feature) {
-      return FALSE;
-    }
-    $farmvars = array(
-      'agchem_batch_gal' => 'agchem_sprayer_vol', 
-      'agchem_total_spray_rate_galac' => 'agman_sprayrate_default_galac'
-    );
-    $criteria = array();
-    $vars = dh_vardef_varselect_options(array("varkey in ('" . implode("', '", array_values($farmvars)) . "')"));
+    // get the block area and set in a property
+    $criteria = array();    // load necessary properties for this event
+    $vars = dh_vardef_varselect_options(array("varkey in ('agchem_event_area')"));
     $criteria[] = array(
       'name' => 'varid',
       'op' => 'IN',
       'value' => array_keys($vars),
     );
-    $loaded = $this->dh_farm_feature->loadComponents($criteria);
-    if (!isset($this->dh_farm_feature->dh_properties['agchem_sprayer_vol'])) {
-      $prop_values = array(
-        'varkey' => 'agchem_sprayer_vol', 
-        'propvalue' => 100, 
-        'entity_type' => 'dh_feature',
-        'bundle' => 'dh_properties',
-        'featureid' => $farmid,
-      );
-      $this->dh_farm_feature->dh_properties['agchem_sprayer_vol'] = entity_create('dh_properties', $prop_values);
+    $this->dh_adminreg_feature->loadComponents($criteria);
+    //dpm($this->dh_adminreg_feature, '$this->dh_adminreg_feature');
+  }
+  
+  public function LoadFarmProperties(&$conf, $reload = FALSE) {
+    // load necessary farm properties for this event
+    if (!$this->dh_block_feature) {
+      return FALSE;
     }
-    if (!isset($this->dh_farm_feature->dh_properties['agman_sprayrate_default_galac'])) {
-      $prop_values = array(
-        'varkey' => 'agman_sprayrate_default_galac', 
-        'propvalue' => 100, 
-        'entity_type' => 'dh_feature',
-        'bundle' => 'dh_properties',
-        'featureid' => $farmid,
+    $oneblock = current($this->dh_block_feature);
+    if (is_object($oneblock)) {
+      $farmid = isset($oneblock->dh_link_facility_mps['und']) ? $oneblock->dh_link_facility_mps['und'][0]['target_id'] : FALSE;
+      //dpm($farmid,"farm id");
+      if (!$farmid) {
+        return FALSE;
+      }
+      $this->dh_farm_feature = entity_load_single('dh_feature', $farmid);
+      if (!$this->dh_farm_feature) {
+        return FALSE;
+      }
+      $farmvars = array(
+        'agchem_batch_gal' => 'agchem_sprayer_vol', 
+        'agchem_total_spray_rate_galac' => 'agman_sprayrate_default_galac'
       );
-      $this->dh_farm_feature->dh_properties['agman_sprayrate_default_galac'] = entity_create('dh_properties', $prop_values);
+      $criteria = array();
+      $vars = dh_vardef_varselect_options(array("varkey in ('" . implode("', '", array_values($farmvars)) . "')"));
+      $criteria[] = array(
+        'name' => 'varid',
+        'op' => 'IN',
+        'value' => array_keys($vars),
+      );
+      $loaded = $this->dh_farm_feature->loadComponents($criteria);
+      if (!isset($this->dh_farm_feature->dh_properties['agchem_sprayer_vol'])) {
+        $prop_values = array(
+          'varkey' => 'agchem_sprayer_vol', 
+          'propvalue' => 100, 
+          'entity_type' => 'dh_feature',
+          'bundle' => 'dh_properties',
+          'featureid' => $farmid,
+        );
+        $this->dh_farm_feature->dh_properties['agchem_sprayer_vol'] = entity_create('dh_properties', $prop_values);
+      }
+      if (!isset($this->dh_farm_feature->dh_properties['agman_sprayrate_default_galac'])) {
+        $prop_values = array(
+          'varkey' => 'agman_sprayrate_default_galac', 
+          'propvalue' => 100, 
+          'entity_type' => 'dh_feature',
+          'bundle' => 'dh_properties',
+          'featureid' => $farmid,
+        );
+        $this->dh_farm_feature->dh_properties['agman_sprayrate_default_galac'] = entity_create('dh_properties', $prop_values);
+      }
     }
   }
   
@@ -220,12 +248,12 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     //        default area to apply to
     // @todo: retrieve vineyard (facility) from block, and get 
     //        volume of sprayer for default sprayer vol
-    parent::buildForm($form, $form_state);
-    $form['enabled']['#type'] = 'hidden';
-    $hidden = array('dh_link_admin_submittal_pr', 'dh_link_feature_submittal', 'dh_link_admin_timeseries', 'field_link_to_registered_agchem');
-    foreach ($hidden as $hidethis) {
-      $form[$hidethis]['#type'] = 'hidden';
+    module_load_include('inc', 'dh', 'plugins/dh.display');
+    $event_conf = $this->eventPropDefaultConf();
+    if (!$event_conf) {
+      return FALSE;
     }
+    parent::buildForm($form, $form_state);
     $form['name'] = array(
       '#title' => t('Title'),
       '#type' => 'textfield',
@@ -233,6 +261,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#description' => t('Event Description'),
       '#required' => TRUE,
       '#size' => 30,
+      '#weight' => 1,
     );
     $date_format = 'Y-m-d h:i';
     // should have code in here to guess based on the phase/or passed in from the URL
@@ -244,8 +273,27 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#date_format' => $date_format,
       '#type' => 'date_select',
       '#date_year_range' => '-5:+5',
+      '#weight' => 2,
     );
-
+    //dpm($this->dh_adminreg_feature,"event object");
+    $form['show_agchem_event_area'] = array(
+      '#prefix' => t('Total Area to Spray: '),
+      '#suffix' => $this->dh_adminreg_feature->dh_properties['agchem_event_area']->varunits,
+      '#markup' => empty($this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue) ? 0 : $this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue,
+      //'#description' => t('Event Description'),
+      '#weight' => 4,
+    );
+    //dpm($this->dh_adminreg_feature,"event object");
+    $form['agchem_event_area'] = array(
+      '#title' => t('Total Area to Spray'),
+      '#type' => 'hidden',
+      '#suffix' => $this->dh_adminreg_feature->dh_properties['agchem_event_area']->varunits,
+      '#default_value' => empty($this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue) ? 0 : $this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue,
+      //'#description' => t('Event Description'),
+      '#disabled' => FALSE,
+      '#dh_properties.pid' => $this->dh_adminreg_feature->dh_properties['agchem_event_area']->pid,
+      '#attributes' => array('maxlength' => 128, 'size' => 16, 'readonly' => TRUE),
+    );
     $form['ftype'] = array(
       '#title' => t('FType'),
       '#type' => 'hidden',
@@ -258,10 +306,17 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#default_value' => $this->dh_adminreg_feature->bundle,
       '#maxlength' => 32,
     );
-
+    // @todo: figure out why we need to hide BEFORE we attach, otherwise, the dh_link_admin_submittal_pr gets hosed
+    $hidden = array('field_prop_config', 'enabled', 'dh_link_admin_submittal_pr', 'dh_link_admin_timeseries', 'field_link_to_registered_agchem');
+    foreach ($hidden as $hidethis) {
+      $form[$hidethis]['#type'] = 'hidden';
+    }
     field_attach_form('dh_adminreg_feature', $this->dh_adminreg_feature, $form, $form_state);
-    //$hiddens = array();
-    $hiddens = array('field_prop_config');
+    // 'dh_link_feature_submittal', 
+    //$form[$fname]['und']['#options'] = $opts;
+    om_agman_form_block_select($form['dh_link_feature_submittal'], $this->dh_farm_feature->hydroid);
+    $form['dh_link_feature_submittal']['#weight'] = 3;
+    $form['dh_link_feature_submittal']['#prefix'] = t('Blocks to Spray');
     foreach ($hiddens as $hidethis) {
       if (isset($form[$hidethis])) {
         $form[$hidethis]['#type'] = 'hidden';
@@ -276,11 +331,6 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       $config = array();
     }
     */
-    module_load_include('inc', 'dh', 'plugins/dh.display');
-    $event_conf = $this->eventPropDefaultConf();
-    if (!$event_conf) {
-      return FALSE;
-    }
     $var_order= $event_conf['varid'];
     $eventprops = new dhPropertiesGroup($event_conf);
     $eventprops->prepareQuery();
@@ -297,44 +347,16 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     // quick and dirty set the event area default 
     // @todo: allow us to pass this in to the dhPropertiesGroup
     $cfrac = 1.0;
-    /*
-    foreach ($form['event_settings'] as $setkey => $setrow) {
-      if (isset($setrow['propname'])) {
-        if ($setrow['propname']['#default_value'] == 'agchem_event_area') {
-          if ($setrow['propvalue']['#default_value'] == '') {
-            $form['event_settings'][$setkey]['propvalue']['#default_value'] = $event_conf['agchem_event_area'];
-          }
-        }
-        if ($setrow['propname']['#default_value'] == 'agchem_batch_gal') {
-          if ($setrow['propvalue']['#default_value'] == '') {
-            $form['event_settings'][$setkey]['propvalue']['#default_value'] = $event_conf['agchem_batch_gal'];
-          }
-        }
-        if ($setrow['propname']['#default_value'] == 'agchem_total_spray_rate_galac') {
-          if ($setrow['propvalue']['#default_value'] == '') {
-            $form['event_settings'][$setkey]['propvalue']['#default_value'] = $event_conf['agchem_total_spray_rate_galac'];
-          }
-        }
-        if ($setrow['propname']['#default_value'] == 'agchem_spray_vol_gal') {
-          if ($setrow['propvalue']['#default_value'] == '') {
-            $form['event_settings'][$setkey]['propvalue']['#default_value'] = $event_conf['agchem_spray_vol_gal'];
-          }
-        }
-        if ($setrow['propname']['#default_value'] == 'agchem_event_canopy_frac') {
-          if ($setrow['propvalue']['#default_value'] == '') {
-            $form['event_settings'][$setkey]['propvalue']['#default_value'] = 1.0;
-          }
-        }
-      }
-    }
-    */
     $chem_conf = $this->MaterialEventPropConfDefault();
-    $chemgrid = new ObjectModelAgmanSprayProps($chem_conf);
+    $chemgrid = new ObjectModelAgmanSprayMaterialProps($chem_conf);
     $chemgrid->prepareQuery();
     $chemgrid->getData();
     //dpm($chemgrid,'chemgrid');
     $chemgrid->buildForm($form, $form_state);
     //$form['chemgrid'] = array('#markup' => "Query: " . $chemgrid->query);
+    $form['event_settings']['#weight'] = 5;
+    $form['chem_rates']['#weight'] = 6;
+    $form['description']['#weight'] = 7;
     $form['data']['#tree'] = TRUE;
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
@@ -347,6 +369,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     //dpm($form,'form');
   }
   public function submitForm(array &$form, $form_state) {
+    //dpm($form_state,'form_state');
     // @todo: for validation fails silently for hidden fields - make sure we have good default
     // calling $this->eventPropDefaultConf() 
     //   returns the "group_name" prop which tells this object class
@@ -357,7 +380,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $eventprops->submitForm($form, $form_state);
     // save materials and quantities
     $conf = $this->MaterialEventPropConfDefault();
-    $chemgrid = new ObjectModelAgmanSprayProps($conf);
+    $chemgrid = new ObjectModelAgmanSprayMaterialProps($conf);
     $chemgrid->validateForm($form, $form_state);
     $chemgrid->submitForm($form, $form_state);
     // save/update timeseries event attached to feature and erefed to spray plan
@@ -371,7 +394,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       watchdog('om_agman_spray_event', "SaveDataObjectsAsForm() called without eventprops object");
     }
     if (is_object($this->chemgrid)) {
-      dpm($this->chemgrid,"chemgrid to check data array");
+      //dpm($this->chemgrid,"chemgrid to check data array");
       $this->chemgrid->SaveDataObjectsAsForm();
     } else {
       watchdog('om_agman_spray_event', "SaveDataObjectsAsForm() called without chemgrid object");
@@ -395,7 +418,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
   }
 }
 
-class ObjectModelAgmanSprayProps extends dhPropertiesGroup {
+class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
   // @todo:
   // 1. query app event adminreg table joins entityreference to ag_chem adminreg feature 
     // to get dh_properties:agchem_rate_group to get rate & amount variables needed
@@ -639,6 +662,26 @@ class ObjectModelAgmanSprayProps extends dhPropertiesGroup {
     if ($row->rate_hi > 0) {
       $rate_limits[] = $row->rate_hi;
     }
+    // evaluate the recs
+    sort($rate_limits);
+    $rate_units = empty($row->rate_units) ? 'floz/acre' : $row->rate_units;
+    $scale = $this->scaleFactor($this->canopy_frac, $rate_units);
+    //$rate_adjusted = array_map(function($el) { return $el * $this->canopy_frac; }, $rate_limits);
+    $rate_adjusted = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
+    $rate_suggestions = empty($rate_limits) ? '---' : implode(' to ', $rate_adjusted) . " $rate_units ";
+    $rate_range = empty($rate_limits) ? '---' : implode(' to ', $rate_limits) . " $rate_units";
+    $rowform['rate_range'] = array(
+      '#coltitle' => 'Label Range',
+      '#markup' => $rate_range,
+    );
+    $rowform['rate_scaled'] = array(
+      '#coltitle' => 'Scaled by % Canopy',
+      '#markup' => ($scale * 100) . '%',
+    );
+    $rowform['rate_recs'] = array(
+      '#coltitle' => 'Suggested Range',
+      '#markup' => $rate_suggestions,
+    );
     $row->rate_propvalue = empty($row->rate_propvalue) ? round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Rate',
@@ -648,20 +691,6 @@ class ObjectModelAgmanSprayProps extends dhPropertiesGroup {
       '#size' => 4,
       //'#attributes' => array('disabled' => 'disabled'),
       '#default_value' => $row->rate_propvalue,
-    );
-    // evaluate the recs
-    sort($rate_limits);
-    $rate_units = empty($row->rate_units) ? '' : $row->rate_units;
-    if ( ($this->canopy_frac < 1.0) and ($this->canopy_frac > 0.0) ) {
-      $unitconv = 1.0 * $this->event_area;
-      $rate_adjusted = array_map(function($el) { return $el * $this->canopy_frac; }, $rate_limits);
-      $rate_suggestions = empty($rate_limits) ? '---' : implode(' to ', $rate_adjusted) . " $rate_units " . "($this->canopy_frac*" . implode('/', $rate_limits) . ")";
-    } else {
-      $rate_suggestions = empty($rate_limits) ? '---' : implode(' to ', $rate_limits) . " $rate_units";
-    }
-    $rowform['rate_recs'] = array(
-      '#coltitle' => 'Label Range',
-      '#markup' => $rate_suggestions,
     );
     // textual description of rate units
     // linked from chem admin record, ozac, flozac, ozgal, flozgal, lbsac, lbsgal
@@ -689,18 +718,15 @@ class ObjectModelAgmanSprayProps extends dhPropertiesGroup {
     );
     // batch total
     // this can be refreshed in the form via javascript?
+    // check if batch size is > total volume to spray, make match = total
+    $this->batch_amount = ($this->batch_amount > $this->total_amount) ? $this->total_amount : $this->batch_amount;
     // @todo: make this based on units, right now it just assumes rate is in oz/ac
     if ($this->event_area > 0) {
       $unitconv = 1.0 * $this->event_area;
     } else {
       $unitconv = 1.0;
     }
-    $ra_conv = array(
-      'oz/acre' => 'oz',
-      'floz/acre' => 'floz',
-      'lbs/acre' => 'lbs',
-      'gals/acre' => 'gals',
-    );
+    $unitconv = $this->rateFactor($this->event_area, $this->batch_amount, $rate_units);
     switch ($row->rate_units) {
       default:
         // quantity per acre
@@ -710,7 +736,14 @@ class ObjectModelAgmanSprayProps extends dhPropertiesGroup {
         $total_val = ($total_val > 10) ? round($total_val,1) : round($total_val,2);
       break;
     }
-    
+    // now do final units
+    $ra_conv = array(
+      'oz/acre' => 'oz',
+      'oz/gal' => 'oz',
+      'floz/acre' => 'floz',
+      'lbs/acre' => 'lbs',
+      'gals/acre' => 'gals',
+    );
     $amount_units = empty($row->rate_units) ? '' : $ra_conv[$row->rate_units];
     $rowform['batch_total'] = array(
       '#coltitle' => 'Amount per Tank',
@@ -726,6 +759,38 @@ class ObjectModelAgmanSprayProps extends dhPropertiesGroup {
     
     // need to spoof a form_state for the row to properly load attached fields
     
+  }
+  
+  public function scaleFactor($canopy_frac, $rate_units) {
+    // rate_scale - f(canopy_frac, rate_units)
+    //   if vol/vol or mass/vol rate then adjustment is 1.0 (none), if vol/area or mass/area then 
+    //   scale = % canopy_frac
+    $volume = array('gal', 'gals', 'liter', 'liters', 'l', 'ml');
+    list($num, $denom) = explode('/',$rate_units);
+    if (in_array($denom, $volume)) {
+      $rate_scale = 1.0;
+    } else {
+      $rate_scale = $canopy_frac;
+    }
+    return $rate_scale;
+  }
+  
+  public function rateFactor($area, $total, $rate_units) {
+    // batch total
+    // this can be refreshed in the form via javascript?
+    // @todo: make this based on units, right now it just assumes rate is in oz/ac
+    $volume = array('gal', 'gals', 'liter', 'liters', 'l', 'ml');
+    list($num, $denom) = explode('/',$rate_units);
+    if (in_array($denom, $volume)) {
+      $factor = $total;
+    } else {
+      if ($area > 0) {
+        $factor = 1.0 * $area;
+      } else {
+        $factor = 1.0;
+      }
+    }
+    return $factor;
   }
   
   public function FormEntityMap(&$form_entity_map = array(), $row = array()) {
@@ -782,6 +847,7 @@ class ObjectModelAgmanSprayProps extends dhPropertiesGroup {
     } else {
       $unitconv = 1.0;
     }
+    $unitconv = $this->rateFactor($this->event_area, $this->total_amount, $row['rate_units']);
     $ra_conv = array(
       'oz/acre' => 'oz',
       'floz/acre' => 'floz',
@@ -878,6 +944,63 @@ class ObjectModelAgmanSprayProps extends dhPropertiesGroup {
     // or the form_entity_map level which includes criteria for uniqueness
     // 
     parent::submitForm($form, $form_state);
+  }
+  
+  function SubmitFormEntityMap(array &$form, $form_state) {
+    // @todo: migrate this to base class dHPropertiesGroup after further testing
+    // uses entity_map to handle all inserts and updates
+    foreach ($form_state['values'][$this->groupname] as $record_group) {
+      $form_entity_map = array();
+      // set up defaults
+     
+      $this->FormEntityMap($form_entity_map, $record_group);
+      foreach ($form_entity_map as $config) {
+        $values = array();
+        if (!isset($config['bundle'])) {
+          $config['bundle'] = null;
+        }
+        $entity_type = $config['entity_type'];
+        $bundle = $config['bundle'];
+        // is this an edit or insert?
+        // load the key
+        $pk = $this->HandleFormMap($config['entity_key'], $record_group);
+        // load the values array
+        $values = array();
+        $values['groupname'] = $this->groupname; // pass this in for special hook handling
+        foreach ($config['fields'] as $key => $map) {
+          if ($map['value_src_type']) {
+            $values[$key] = $this->HandleFormMap($map, $record_group);
+          } else {
+            // @todo - throw an error or alert about malformed entry
+          }
+        }
+        //dpm($record_group, 'record group');
+        //dpm($pk, 'pk field for group');
+        if ($pk) {
+          // PK set, so this is an update
+          //$values['pid'] = $pk;
+          $e = dh_properties_enforce_singularity($values, 'singular');
+          //dpm($e, "dh_properties_enforce_singularity returns entity ");
+          /*
+          $e = entity_load_single($entity_type, $pk);
+          foreach ($values as $key => $val) {
+            $e->{$key} = $val;
+          }
+          */
+        } else {
+          // no PK set, so this is an insert
+          //dpm($values,'calling entity_create with values');
+          $values['bundle'] = $bundle;
+          $e = entity_create($entity_type, $values);
+        }
+        // now that values are assigned load formRowPlugins for the row and process save functions
+        $this->formRowPlugins($record_group, $e, 'save');
+        if ($e) {
+          //dpm($e,'entity to save');
+          entity_save($entity_type, $e);
+        }
+      }
+    }
   }
 }
 ?>

@@ -15,8 +15,36 @@ function om_agman_ctools_plugin_directory($owner, $plugin_type) {
   if ($owner == 'dh' && $plugin_type == 'dh_variables') {
     return 'plugins/' . $plugin_type;
   }
+  if ($owner == 'dh' && $plugin_type == 'dh_components') {
+    return 'plugins/' . $plugin_type;
+  }
 }
 
+/**
+ * Implements hook_views_api().
+ * 
+ * Used for enabling using templates inside my module
+ */
+function om_agman_views_api() {
+  return array(
+    'api' => 3, 
+    'path' => drupal_get_path('module', 'om_agman'), 
+    'template path' => drupal_get_path('module', 'om_agman') . '/templates',
+  );
+}
+
+/*
+function om_agman_theme($existing, $type, $theme, $path) {
+  return array (
+    'views-view-table--ipm-planning-grid' => array (
+      'variables' => array('view' => NULL, 'options' => NULL, 'rows' => NULL, 'title' => NULL),
+      'template' => 'views-view-table--ipm-planning-grid' ,
+      'base hook' => 'views_view_table',
+      'path' => drupal_get_path('module', 'om_agman'),
+    ),
+  ); 
+}
+*/
 
 function om_agman_entity_ts_event_types_alter(&$event_types) {
   // insert ts events for AR fields/properties ()such as startdate, enddate, dh_link_submittal_feature) 
@@ -70,6 +98,54 @@ function om_agman_form_process_npk(&$element) {
     );
     $element[$key]['#parents'][] = $key;
   }
+  return $element;
+}
+
+function om_agman_get_block_farmid($blockid) {
+  return dh_getMpFacilityHydroId($blockid);
+}
+
+function om_agman_get_farm_blocks($farmid) {
+  return array();
+}
+
+function om_agman_form_block_select(&$element, $farmid = FALSE) {
+  $deftable = array(); // need to translate normal select to table select syntax
+  $def = $element['und']['#default_value'];
+  $src_format = $element['und']['#type'];
+  //dpm($element,'block select element');
+  //dpm($def,'block select #default_value');
+  foreach ($def as $selkey => $selopt ) {
+    $deftable[$selopt] = 1;
+    if (!$farmid or empty($farmid)) {
+      // if this is a new event, caller must specify farmid
+      // otherwise try to guess from one of the existing options, 
+      // if src_format is 'select' we expect hydroid to be the value
+      // otherwise this is already formatted as a check list so we expect hydroid to be the key
+      $eid = ($src_format == 'select') ? $selopt : $selkey;
+      $farmid = om_agman_get_block_farmid($eid);
+    }
+  }
+  //dpm($farmid,"farm id");
+  $element['und']['#empty'] = t('None Selected.');
+  $element['und']['#type'] = 'tableselect';
+  $element['und']['#default_value'] = $deftable;
+  $element['und']['#header'] = array(
+    'label' => 'Block', 
+  );
+  $opts = array();
+  // get vineyard blocks
+  if ($farmid) {
+    $blockids = dh_get_facility_mps($farmid);
+    $q = db_query("select hydroid, name from {dh_feature} where hydroid IN (:blocklist) order by name", array(':blocklist' => $blockids));
+    foreach ($q as $block) {
+      $id = $block->hydroid;
+      $opts[$id]['label'] .= $block->name;
+    }
+  }
+  // END - tableselect
+  $element['und']['#options'] = $opts;
+  
   return $element;
 }
 ?>

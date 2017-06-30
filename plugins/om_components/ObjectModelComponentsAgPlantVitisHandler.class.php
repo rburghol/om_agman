@@ -69,6 +69,7 @@ class ObjectModelComponentsAgPlantVitisHandler extends ObjectModelComponentsDefa
   // when we go to D8 this will be relevant
     // public function buildOptionsForm(&$form, FormStateInterface $form_state) {
   // until then, we use the old school method
+  // need to change this to buildForm and leave buildOptionsForm for config in panels/blocks
   public function buildOptionsForm(&$form, $form_state) {
     parent::buildOptionsForm($form, $form_state);
     $hidden = array();
@@ -102,7 +103,7 @@ class ObjectModelComponentsAgPlantVitisHandler extends ObjectModelComponentsDefa
       'second' => 'Second',
       'third' => 'Third',
       'fourth' => 'Fourth',
-      'fifth' => 'Fiifth',
+      'fifth' => 'Fifth',
     );
     $form['growth_stages']['bud_break_week'] = array(
       '#title' => t('Week of Bud Break' . " (" . $this->growth_stage_dates['bud_break']['begin'] . ")"),
