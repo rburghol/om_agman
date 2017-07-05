@@ -157,8 +157,8 @@ class DHErefPropGrid extends dhPropertiesGroup {
       $q .= " AND (ent.$eidcol in ($features)) ";
       //$q .= " AND (ent.$eref_target in ($features)) ";
     }
-    $q .= " LIMIT $this->limit ";
     $q .= " ORDER BY targ.$tlabel ";
+    $q .= " LIMIT $this->limit ";
     $this->query = $q;
     //dpm($q, "Query");
     //dpm($this->query, "Query");
