@@ -108,12 +108,38 @@ class dHVariablePluginAppAmounts extends dHVariablePluginAppRates {
 class dHVariablePluginInventoryAmounts extends dHVariablePluginAppRates {
   // @todo:
   
+  var $units_varkey = 'agchem_amount_type';
+  
   public function hiddenFields() {
     return array('propname', 'pid', 'enddate', 'featureid', 'entity_type', 'bundle', 'varunits');
   }
   
+  public function getDefaultUnits($entity) {
+    // load the units for the target adminreg chemical registration
+    $vars = dh_varkey2varid($this->units_varkey);
+    $varid = array_shift($vars);
+    $prop_info = array(
+      'featureid' => $entity->target_id,
+      'entity_type' => 'dh_adminreg_feature',
+      'bundle' => 'dh_properties',
+      'varid' => $varid,
+    );
+    //$units = isset($varinfo['varunits'
+    $prop = dh_get_properties($prop_info, 'singular');
+    //dpm($prop,'prop');
+    if ($prop) {
+      $pptr = array_shift($prop['dh_properties']);
+      $prec = entity_load_single('dh_properties', $pptr->pid);
+      //dpm($prec,'prec');
+      return $prec->propcode;
+    } else {
+      return FALSE;
+    }
+  }
+  
   public function formRowEdit(&$rowform, $row) {
     // apply custom settings here
+    //dpm($rowform,'rowform');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
@@ -128,6 +154,7 @@ class dHVariablePluginInventoryAmounts extends dHVariablePluginAppRates {
       'g' => 'grams',
       'mg' => 'mg',
     );
+    // @todo: what is this?  I think it is a remnant
     $tos = field_get_items($type, $entity, $map['value']);
     foreach ($froms as $fr) {
       $value[] = $fr['target_id'];
@@ -136,15 +163,60 @@ class dHVariablePluginInventoryAmounts extends dHVariablePluginAppRates {
     $rowform[$this->row_map['code']]['#options'] = $ra_units;
     $rowform[$this->row_map['code']]['#size'] = 1;
     $rowform[$this->row_map['code']]['#title'] = '';
+    $rowform[$this->row_map['code']]['#default_value'] = strlen($rowform[$this->row_map['code']]['#default_value']) ? $rowform[$this->row_map['code']]['#default_value'] : $this->getDefaultUnits($row);
     $rowform['startdate']['#type'] = 'date_popup';
     $date_format = 'Y-m-d';
     $rowform['startdate']['#default_value'] = empty($row->startdate) ? date('Y-m-d') : date($date_format,$row->startdate);
     // @todo: figure this visibility into one single place
-    // thse should automatically be hidden by the optionDefaults setting but for some reason...
+    // these should automatically be hidden by the optionDefaults setting but for some reason...
     $this->hideFormRowEditFields($rowform);
+    //dpm($rowform,'rowform');
     
   }
 }
+
+class dHVariablePluginInventoryEvent extends dHVariablePluginDefault {
+  // @todo:
+  
+  public function hiddenFields() {
+    //return array('propname', 'pid', 'enddate', 'featureid', 'entity_type', 'bundle', 'varunits');
+    return array();
+  }
+  
+  public function formRowEdit(&$rowform, $entity) {
+    
+    $rowform['startdate']['#title'] = t('Date Inventory Taken');
+    $rowform['startdate']['#type'] = 'date_popup';
+    $date_format = 'Y-m-d';
+    $rowform['startdate']['#default_value'] = empty($entity->startdate) ? date('Y-m-d') : date($date_format,$entity->startdate);
+    $rowform['startdate']['#date_format'] = $date_format;
+    $this->hideFormRowEditFields($rowform);
+  }
+  
+  public function save(&$entity) {
+    // add a ts event for this if this is a property
+    // we must avoid doing this if it is a TS because we would create an endless recursion
+    // @todo: move this to base class or module code
+    // time resolutions:
+    //   singular - only one ts event ever for this feature/varid combo
+    //   tstime_singular - only onets event for this feature/varid/tstime combo
+    $feature = $this->getParentEntity($entity);
+    if ($entity->entityType() == 'dh_properties') {
+      $ts_rec = array(
+        'varid' => $entity->varid,
+        'tsvalue' => NULL,
+        'tscode' => 'inventory_completed',
+        //'tstime' => mktime(),
+        'tstime' => $entity->startdate,
+        'featureid' => $entity->featureid,
+        'entity_type' => $feature->entityType(),
+      );
+      dh_update_timeseries($ts_rec, 'tstime_singular');
+    }
+  }
+
+}
+
 class dHVariablePluginAppRateUnits extends dHVariablePluginDefault {
   // only used to select units, no values
   // @todo:

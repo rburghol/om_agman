@@ -65,40 +65,22 @@ function om_agman_entity_ts_event_types_alter(&$event_types) {
         'tscode' => array('value_src_type' => 'constant', 'value' => NULL),
       ),
     ),
+    'agman_event_adminreg_feature' => array(
+      'bundle' => 'agchem_app', // FALSE means it happens for all
+      'entity_type' => 'dh_adminreg_feature',
+      'multiplicity' => 'singular',
+      'featureid' => array('value_src_type'=> 'property', 'value' => 'adminid'),
+      'map' => array(
+        // object permits sending an integer OR varkey to varid and controller figures it out
+        'varid' => array('value_src_type'=> 'constant', 'value' => 'agchem_application_event'),
+        'tstime' => array('value_src_type'=> 'property', 'value' => 'startdate'),
+        'tsendtime' => array('value_src_type'=> 'property', 'value' => 'enddate'),
+        'modified' => array('value_src_type'=> 'property', 'value' => 'modified'),
+        'tsvalue' => array('value_src_type' => 'constant', 'value' => NULL),
+        'tscode' => array('value_src_type' => 'property', 'value' => 'ftype'),
+      ),
+    ),
   );
-}
-
-
-function om_agman_form_process_npk(&$element) {
-  //$element['#type'] = 'container';
-  $element['#tree'] = TRUE;
-  $element['#attributes'] = array(
-    'class' => array('container-inline-date'),
-  );
-  //$element['#parents'] = !isset($element['#parents']) ? array() : $element['#parents'];
-  if (empty($element['#value'])) {
-    $element['#value'] = array(
-      'n' => 0,
-      'p' => 0,
-      'k' => 0,
-    );
-  }
-  foreach ($element['#value'] as $key => $val) {
-    $element[$key] = array(
-      '#input' => TRUE,
-      '#prefix' => strtoupper($key),
-      '#type' => 'textfield',
-      '#default_value' => $val,
-      //'#value' => $val,
-      '#size' => 3,
-      '#width' => 3,
-      '#maxlength' => 6,
-      '#required' => FALSE,
-      '#parents' => array(),
-    );
-    $element[$key]['#parents'][] = $key;
-  }
-  return $element;
 }
 
 function om_agman_get_block_farmid($blockid) {
@@ -147,5 +129,111 @@ function om_agman_form_block_select(&$element, $farmid = FALSE) {
   $element['und']['#options'] = $opts;
   
   return $element;
+}
+
+// custom fiueldformatters
+/**
+ * Implements hook_field_formatter_info().
+ */
+function om_agman_field_formatter_info() {
+  return array(
+    'entityreference_quick_action' => array(
+      'label' => t('Add an action link to an entityreference field.'),
+      // The important bit...
+      'field types' => array('entityreference'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function om_agman_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  
+  // @todo: we may simply opt to add this to the standard field link handler as a patch since it 
+  // would be useful and would not require a special handler
+  if ($display['type'] == 'entityreference_quick_action') {
+    $element['confirm'] = array(
+      '#title' => t('Add confirm pop-up'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['entityreference_quick_action'],
+    );
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ * @todo: do we need this?
+function om_agman_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $summary = array();
+
+  if ($display['type'] == 'entityreference_delete') {
+    $summary[] = $settings['link'] ? t('Link to the referenced entity') : t('No link');
+  }
+
+  if ($display['type'] == 'entityreference_entity_view') {
+    $entity_info = entity_get_info($field['settings']['target_type']);
+    $view_mode_label = $settings['view_mode'] == 'default' ? t('Default') : $settings['view_mode'];
+    if (isset($entity_info['view modes'][$settings['view_mode']]['label'])) {
+      $view_mode_label = $entity_info['view modes'][$settings['view_mode']]['label'];
+    }
+    $summary[] = t('Rendered as @mode', array('@mode' => $view_mode_label));
+    $summary[] = !empty($settings['links']) ? t('Display links') : t('Do not display links');
+  }
+
+  return implode('<br />', $summary);
+}
+ */
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function om_agman_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $result = array();
+  $settings = $display['settings'];
+
+  // Rebuild the items list to contain only those with access.
+  foreach ($items as $key => $item) {
+    if (empty($item['access'])) {
+      unset($items[$key]);
+    }
+  }
+
+  switch ($display['type']) {
+    case 'entityreference_quick_action':
+      $args = arg(); // @todo: should get these from the view so that we can take advantage of any set on the view itself - probably can access from the display object
+      $base = implode("/", $args);
+      $query = drupal_get_query_parameters();
+      $link = l("Bloom x", $base, array( 
+        'attributes' => array(
+          'onclick' => 'return confirm( "Are you sure you want to delete?" ); '
+        ), 
+        'query' => $query 
+        ) 
+      );
+      $handler = entityreference_get_selection_handler($field, $instance, $entity_type, $entity);
+
+      foreach ($items as $delta => $item) {
+        $label = $handler->getLabel($item['entity']);
+        // If the link is to be displayed and the entity has a uri, display a link.
+        // Note the assignment ($url = ) here is intended to be an assignment.
+        if ($display['settings']['link'] && ($uri = entity_uri($field['settings']['target_type'], $item['entity']))) {
+          $result[$delta] = array('#markup' => l($label, $uri['path'], $uri['options']));
+        }
+        else {
+          $result[$delta] = array('#markup' => check_plain($label));
+        }
+      }
+      break;
+  }
+
+  return $result;
 }
 ?>

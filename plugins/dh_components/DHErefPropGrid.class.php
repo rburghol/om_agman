@@ -114,8 +114,11 @@ class DHErefPropGrid extends dhPropertiesGroup {
     // get varid
     // create a query that outer joins if insert ability is requested
     $q = "  select var.hydroid as varid, ";
-    $q .= " var.varname, var.varkey, ";
-    $q .= " p.*, var.varunits, ";
+    $q .= " var.varname, var.varkey, var.varunits, ";
+    $q .= " p.pid, eref.$eref_pkcol as featureid, ";
+    $q .= " '$this->prop_entity_type' AS entity_type, p.bundle,  ";
+    $q .= " p.startdate, p.enddate, p.propname, p.propcode, ";
+    $q .= " p.propvalue, p.modified, ";
     $q .= " targ.$tlabel as target_label, ";
     $q .= " ent.$eidcol as from_id, eref.$eref_target as target_id ";
     $q .= " from {$eref_entity_table} as ent ";
@@ -171,8 +174,8 @@ class DHErefPropGrid extends dhPropertiesGroup {
     }
     $this->data = array();
     $q = db_query($this->query);
-    //dpm($q, "initial data");
     foreach ($q as $prow) {
+      //dpm($prow, "initial data");
       if ($prow->pid == NULL) {
         // this is an insert request
         $prow->propname = $prow->varkey;
