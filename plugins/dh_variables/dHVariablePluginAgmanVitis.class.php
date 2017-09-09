@@ -222,4 +222,44 @@ class dHVariablePluginVitisBudBreak extends dHVariablePluginDefault {
   }
 
 }
+
+
+class dHVariablePluginFruitChemSample extends dHVariablePluginDefault {
+  // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
+  //        handle in views - maybe a setting in the filter or jumplists itself?
+  //  default: agchem_apply_fert_ee
+  //       fr: agchem_apply_fert_fr 
+  
+  public function __construct($conf = array()) {
+    parent::__construct($conf);
+  }
+  public function hiddenFields() {
+    return array('tid', 'featureid', 'entity_type', 'bundle','tscode');
+  }
+  
+  
+  public function formRowEdit(&$rowform, $row) {
+    // apply custom settings here
+    //dpm($row,'row');
+    $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
+    if (!$varinfo) {
+      return FALSE;
+    }
+    $rowform['tsvalue']['#title'] = 'Avg. Brix:';
+    $rowform['tsvalue']['#type'] = 'markup';
+    $rowform['tsvalue']['#markup'] = $row->tsvalue;
+    $rowform['tstext']['#title'] = t('Sample brix values (csv)');
+    $this->hideFormRowEditFields($rowform);
+  }
+  
+  public function formRowSave(&$rowvalues, &$row) {
+    parent::formRowSave($rowvalues, $row);
+    // special save handlers
+    // later can have different tokens to allow brix, acidity, etc. but now just assume all csv brix
+    $brix = explode(',', $row->tstext['und'][0]['value']);
+    
+    $row->tsvalue = round(array_sum($brix) / count($brix),1); 
+  }
+
+}
 ?>
