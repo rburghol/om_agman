@@ -266,7 +266,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // @todo: handle teaser mode and full mode with plugin support
     //        this won't happen till we enable at module level however, now it only 
     //        is shown when selecting "plugin" in the view mode in views
-    $hidden = array_keys($content);
+    $content['#view_mode'] = $view_mode;
+    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
     foreach ($hidden as $col) {
       $content[$col]['#type'] = 'hidden';
     }
@@ -303,7 +304,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // see docs for drupal function l() for link config syntax
     // get list of blocks
     // get list of chems
-    $uri = "/ipm-live-events/$vineyard/sprayquan/$feature->adminid";
+    $uri = "ipm-live-events/$vineyard/sprayquan/$feature->adminid";
     $link = array(
       '#type' => 'link',
       '#prefix' => '&nbsp;',
@@ -332,10 +333,20 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'full':
       case 'plugin':
       default:
-        $content['body']['#markup'] = $title; 
-        $content['body']['#markup'] .= 'Blocks: ' .implode(', ', $block_names) . "\n";
-        $content['body']['#markup'] .= 'Materials: ' .implode(', ', $chem_names) . "\n";
+        $content['title'] = array(
+          '#type' => 'item',
+          '#markup' => $title,
+        );         
+        $content['blocks'] = array(
+          '#type' => 'item',
+          '#markup' => 'Blocks: ' .implode(', ', $block_names),
+        );         
+        $content['materials'] = array(
+          '#type' => 'item',
+          '#markup' => 'Materials: ' .implode(', ', $chem_names),
+        );
         $content['link'] = $link; 
+        $entity->title = $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
       break;
     }
