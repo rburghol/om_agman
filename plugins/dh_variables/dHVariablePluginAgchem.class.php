@@ -67,6 +67,34 @@ class dHVariablePluginFRAC extends dHVariablePluginDefault {
     }
   }
   
+  public function buildContent(&$content, &$entity, $view_mode) {
+    // special render handlers when using a content array
+    // get all FRAC Codes associated with this entity
+    $values = array(
+      'varid' => $entity->varid,
+      'featureid' => $entity->featureid,
+      'entity_type' => $entity->entity_type,
+    );
+    $result = dh_get_properties($values, 'all');$result = $query->execute();
+    if (isset($result['dh_properties'])) {
+      $frac_pids = array_keys($result['dh_properties']);
+      $frac_obs = entity_load('dh_properties', $frac_pids);
+    }
+    //dpm($frac_obs,'frac obs');
+    $fracs = array();
+    foreach ($frac_obs as $frac) {
+      $fracs[] = $frac->propcode;
+    }
+    switch($view_mode) {
+      default:
+        $content['title'] = array(
+          '#type' => 'item',
+          '#markup' => implode(',', $fracs),
+        );
+      break;
+    }
+  }
+  
   public function save(&$entity) {
     
   }
@@ -121,12 +149,15 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
       return FALSE;
     }
     $codename = $this->row_map['code'];
+    /*
+    // I think this is no longer used?
     list($n, $p, $k) = explode('-',$row->$codename);
     $vals = array(
       'n'=>$n,
       'p'=>$p,
       'k'=>$k,
     );
+    */
     $date_format = 'Y-m-d';
     $rowform['tstime']['#type'] = 'date_popup';
     $rowform['tstime']['#date_format'] = $date_format;
@@ -139,6 +170,25 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
     //$rowform[$codename] = array(
     //  '#type' => 'agchem_npk',
     //
+    
+    $ra_units = array(
+      'lbs' => 'lbs',
+      'oz' => 'oz',
+      'tons' => 'tons',
+      'kg' => 'kg',
+      'g' => 'g',
+    );
+    $rowform['units']['#type'] = 'select';
+    $rowform['units']['#options'] = $ra_units;
+    $rowform['units']['#size'] = 1;
+    $unit_rec = array(
+      'varid' => dh_varkey2varid('agchem_rate_type', TRUE),
+      'featureid' => $row->tid,
+      'entity_type' => 'dh_timeseries',
+    );
+    $unit_selected = dh_properties_enforce_singularity($unit_rec, 'singular');
+    //dpm($unit_selected,'unit ');
+    $rowform['units']['#default_value'] = $unit_selected->propcode;
     
     $rowform[$codename]['#type'] = 'hidden';
     $pieces = $this->process_npk($row->$codename);
@@ -157,17 +207,6 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
     $rowform['n-p-k'][] = array(
       '#markup' => "</table>",
     );
-    //$group->buildForm($rowform, $blank);
-    //$rowform[$codename]['#process'] = array('om_agman_form_process_npk');
-    //$rowform[$codename]['#input'] = TRUE;
-    //$rowform[$codename]['#value'] = $vals;
-    // @todo: understand how date makes a multi field form
-      // date has:
-        // date_select_element_value_callback - turns date pieces into properly formatted date
-      // tutorial: https://www.drupal.org/node/169815
-    // store these as children of propcode/tscode
-    //om_agman_form_process_npk($rowform[$codename]);
-    // store these as children of a new variable
     
     $hidden = array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle');
     foreach ($hidden as $hide_this) {
@@ -181,8 +220,48 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
     parent::formRowSave($rowvalues, $row);
     $codename = $this->row_map['code'];
     $row->$codename = implode('-', array($rowvalues['n'], $rowvalues['p'], $rowvalues['k']));
+    $unit_rec = array(
+      'varid' => dh_varkey2varid('agchem_rate_type', TRUE),
+      'propname' => 'units',
+      'propcode' => $rowvalues['units'],
+      'propvalue' => NULL,
+      'bundle' => 'dh_properties',
+      'featureid' => $row->tid,
+      'entity_type' => 'dh_timeseries',
+    );
+    dh_update_properties($unit_rec, 'propcode_singular');
     //dpm($row);
     // special save handlers
+    // amount, and concentration (%) of each element
+    // varkeys = chem_fraction (code = formula/symbol), chem_amount(code = formula/symbol) 
+    $constits = array(
+      'n', 'p', 'k'
+    );
+    foreach ($constits as $con) {
+      $conc_rec = array(
+        'varid' => dh_varkey2varid('chem_pct', TRUE),
+        'propname' => '%' . $con,
+        'propvalue' => $rowvalues[$con],
+        'propcode' => $con,
+        'bundle' => 'dh_properties',
+        'featureid' => $row->tid,
+        'entity_type' => 'dh_timeseries',
+      );
+      dh_update_properties($conc_rec, 'propcode_singular');
+      // inherits units from tsevent tscode
+      $amt_rec = array(
+        'varid' => dh_varkey2varid('chem_amount', TRUE),
+        'propname' => 'Total ' . $con,
+        'propvalue' => $rowvalues['tsvalue'] * $rowvalues[$con] / 100.0,
+        'bundle' => 'dh_properties',
+        'propcode' => $con,
+        'featureid' => $row->tid,
+        'entity_type' => 'dh_timeseries',
+      );
+      $amt[$con] = $rowvalues['tsvalue'] * $rowvalues[$con] / 100.0;
+      dh_update_properties($amt_rec, 'propcode_singular');
+    }
+    drupal_set_message("Saved fertilizer event, $rowvalues[tsvalue] $rowvalues[units] of $rowvalues[tscode] for total of " . implode('-',$amt) ."$rowvalues[units] of each on " . date('Y-m-d', dh_handletimestamp($rowvalues['tstime'])));
   }
 
 }
@@ -262,6 +341,54 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     
   }
   
+  public function chem_info(&$feature) {
+    // given an adminreg event feature, returns the chems and their attributes
+    $chems = array();
+    $chem_names = array();
+    $field_chems = field_get_items('dh_adminreg_feature', $feature, 'field_link_to_registered_agchem');
+     foreach ($field_chems as $to) {
+      $chems[$to['target_id']] = array(
+        'adminid' => $to['target_id'],
+        'eref_id' => $to['erefid'],
+      );
+    }
+    $feature->chems = $chems;
+    $vol_info = array(
+      'featureid' => $feature->adminid,
+      'entity_type' => 'dh_adminreg_feature',
+      'bundle' => 'dh_properties',
+      'varkey' => 'agchem_spray_vol_gal',
+    );
+    $vol_prop = dh_properties_enforce_singularity($vol_info, 'singular');
+    //dpm($vol_prop,'vol prop');
+    $feature->agchem_spray_vol_gal = $vol_prop;
+    foreach ($feature->chems as $cix => $chem) {
+      $fe = entity_load_single('dh_adminreg_feature', $chem['adminid']);
+      // amount to mix/apply
+      $amt = array(
+        'featureid' => $chem['eref_id'],
+        'entity_type' => 'field_link_to_registered_agchem',
+        'bundle' => 'dh_properties',
+        'varkey' => 'agchem_amount',
+      );
+      $fe->amount = dh_properties_enforce_singularity($amt, 'singular');
+      // amount units (from chem)
+      $amt_unit = array(
+        'featureid' => $fe->adminid,
+        'entity_type' => 'dh_adminreg_feature',
+        'bundle' => 'dh_properties',
+        'varkey' => 'agchem_amount_type',
+      );
+      $fe->units = dh_properties_enforce_singularity($amt_unit, 'singular');
+      $feature->chems[$cix] = $fe;
+      $chem_names[] = $fe->name . ' @ ' . $fe->amount->propvalue . ' ' . $fe->units->propcode;
+      // @todo: create and use properties plugin to render rate and amounts info
+    }
+    $chem_list = implode(', ', $chem_names);
+    $feature->chem_list = $chem_list;
+    
+  }
+  
   public function buildContent(&$content, &$entity, $view_mode) {
     // @todo: handle teaser mode and full mode with plugin support
     //        this won't happen till we enable at module level however, now it only 
@@ -285,20 +412,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $vineyard = dh_getMpFacilityHydroId($fe->hydroid);
       }
     }
-    $chems = array();
-    $chem_names = array();
-    $field_chems = field_get_items('dh_adminreg_feature', $feature, 'field_link_to_registered_agchem');
-    foreach ($field_chems as $to) {
-      $chems[$to['target_id']] = array(
-        'adminid' => $to['target_id'],
-        'eref_id' => $to['eref_id'],
-      );
-    }
-    $chem_entities = entity_load('dh_adminreg_feature', array_keys($chems));
-    foreach ($chem_entities as $fe) {
-      $chem_names[] = $fe->name;
-      // @todo: create and use properties plugin to render rate and amounts info
-    }
+    // *****************************
+    // Get and Render Chems & Rates
+    $this->chem_info($feature);
+    // END - Chems and rates
+    // 
     $title = $feature->name; 
     $entity->tscode = $title . ' on ' .implode(' ', $block_names);
     // see docs for drupal function l() for link config syntax
@@ -307,19 +425,36 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $uri = "ipm-live-events/$vineyard/sprayquan/$feature->adminid";
     $link = array(
       '#type' => 'link',
-      '#prefix' => '&nbsp;',
+      '#prefix' => '&nbsp; ',
       '#suffix' => '<br>',
       '#title' => 'Go to ' . $uri,
       '#href' => $uri,
       'query' => array(
         'finaldest' => 'ipm-home/all/all/',
       ),
+      '#options' => array(
+        'attributes' => array(
+           'class' => array('editlink')
+         ),
+      ),
     );
     switch ($view_mode) {
       case 'teaser':
-        unset($content['title']['#type']);
-        $content['body']['#type']= 'item'; 
-        $content['body']['#markup'] = $title; 
+        $content['title'] = array(
+          '#type' => 'item',
+          '#markup' => $title,
+        );
+        $content['blocks'] = array(
+          '#type' => 'item',
+          '#markup' => '<b>Blocks:</b> ' .implode(', ', $block_names),
+        );         
+        $content['materials'] = array(
+          '#type' => 'item',
+          '#markup' => '<b>Materials:</b> ' . $feature->chem_list,
+        );
+        #$content['link'] = $link; 
+        $entity->title = $title;
+        $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
       break;
       
       case 'ical_summary':
@@ -332,20 +467,16 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       
       case 'full':
       case 'plugin':
-      default:
-        $content['title'] = array(
+      default:   
+        $content['title'] = $link;
+        $content['title']['#title'] = $title;
+        $content['body'] = array(
           '#type' => 'item',
-          '#markup' => $title,
-        );         
-        $content['blocks'] = array(
-          '#type' => 'item',
-          '#markup' => 'Blocks: ' .implode(', ', $block_names),
-        );         
-        $content['materials'] = array(
-          '#type' => 'item',
-          '#markup' => 'Materials: ' .implode(', ', $chem_names),
+          '#markup' => '<b>Blocks:</b> ' .implode(', ', $block_names),
         );
-        $content['link'] = $link; 
+        $content['body']['#markup'] .= "<br><b>Volume:</b> " . $feature->agchem_spray_vol_gal->propvalue . " gals";
+        $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
+
         $entity->title = $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
       break;

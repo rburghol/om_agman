@@ -17,6 +17,10 @@
  * @ingroup views_templates
  */
 $yrwk_rows = array();
+$yrwk_master = array(); //@todo: had yrwk_rows as foreach and an attribute -- 
+                        // corrected but if this breaks, 
+                        // go ahead and replace all "yrwk_master" with "yrwk_rows" even 
+                        // though that is dodgey code
 $yrwk_dels = array(); // keep track of delimiters
 // iterate through rows and group by the selected date field
 // this is hard coded for this display to be the week field
@@ -24,10 +28,11 @@ foreach ($rows as $row_count => $row) {
  if (isset($row['yrwk'])) {
    $yrwk = $row['yrwk'];
    foreach ($row as $key => $values) {
-     $yrwk_rows[$yrwk][$key][] = $values;
+     $yrwk_master[$yrwk][$key][] = $values;
+     //$yrwk_rows[$yrwk][$key][] = $values;
    }
  } else {
-   dpm($row, "Row does not have 'yrwk' column");
+   //dpm($row, "Row does not have 'yrwk' column");
  }
 }
 $i = 0;
@@ -41,7 +46,9 @@ $efficacy = array(
   6=> 'None',
 );
 $rendered_rows = array();
-foreach ($yrwk_rows as $yrwk => $yrwk_rows) {
+
+#foreach ($yrwk_rows as $yrwk => $yrwk_rows) {
+foreach ($yrwk_master as $yrwk => $yrwk_rows) {
  // apply default grouping by unique
  foreach ($yrwk_rows as $key => $values) {
    $row[$key] = implode(', ', array_unique($values));

@@ -73,6 +73,73 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginDefault {
 
 }
 
+class dHVariablePluginPercentSelector extends dHVariablePluginDefault {
+  public function pct_list($inc = 10) {
+    $pcts = array();
+    if (is_array($inc)) {
+      // we already have our list of percents, just work it out
+      foreach ($inc as $i) {
+        $dec = floatval($i) / 100.0;
+        $pcts["$dec"] = $i . " %";
+      }
+    } else {
+      $i = $inc;
+      while ($i <= 100) {
+        $dec = floatval($i) / 100.0;
+        $pcts["$dec"] = $i . " %";
+        $i += $inc;
+      }
+    }
+    return $pcts;
+  }
+}
+
+class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
+  // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
+  //        handle in views - maybe a setting in the filter or jumplists itself?
+  //  default: agchem_apply_fert_ee
+  //       fr: agchem_apply_fert_fr 
+  
+  public function __construct($conf = array()) {
+    parent::__construct($conf);
+    $hidden = array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle', 'tscode');
+    foreach ($hidden as $hide_this) {
+      $this->property_conf_default[$hide_this]['hidden'] = 1;
+    }
+  }
+  
+  public function formRowEdit(&$rowform, $row) {
+    // apply custom settings here
+    //dpm($row,'row');
+    $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
+    if (!$varinfo) {
+      return FALSE;
+    }
+    $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
+    $rowform['tsvalue'] = array(
+      '#title' => t('% veraison'),
+      '#type' => 'select',
+      '#options' => $pcts,
+      '#weight' => 2,
+      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : "0.5",
+    );
+    $rowform['actions']['submit']['#value'] = t('Save');
+    $rowform['actions']['delete']['#value'] = t('Delete');
+    $hidden = array('pid', 'startdate', 'featureid', 'entity_type', 'bundle');
+    foreach ($hidden as $hide_this) {
+      $rowform[$hide_this]['#type'] = 'hidden';
+    }
+  }
+  
+  public function formRowSave(&$rowvalues, &$row) {
+    parent::formRowSave($rowvalues, $row);
+    $codename = $this->row_map['code']['name'];
+    $row->$codename = implode('-', array($rowvalues['n'], $rowvalues['p'], $rowvalues['k']));
+    // special save handlers
+  }
+
+}
+
 class dHVariablePluginVitisBudBreak extends dHVariablePluginDefault {
   // @todo: ba
   // Function:
