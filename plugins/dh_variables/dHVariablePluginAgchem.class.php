@@ -286,7 +286,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
-        $uri = token_replace("[site:url]ipm-live-events/$vineyard/sprayquan/$feature->adminid");
+        $uri = token_replace("[site:url]ipm-live-events/$feature->vineyard/sprayquan/$feature->adminid");
         $description .= l(' - View :' . $uri, $uri, array('absolute' => TRUE));
         return $description;
       break;
