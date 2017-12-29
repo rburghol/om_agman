@@ -279,7 +279,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         return $title;
       break;
       case 'event_description':
-        $title = $feature->name . ' on ' . $feature->block_names;
+        $title = $feature->name;
         $description = $title . ' on ' . $feature->block_names;
         $description .= " - " . $feature->agchem_spray_vol_gal->propvalue . " gals H2O";
         $description .= " w/" . $feature->chem_list;
