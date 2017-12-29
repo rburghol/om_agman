@@ -270,58 +270,19 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
 class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     
   public function dh_getValue($entity, $ts = FALSE, $propname = FALSE, $config = array()) {
+    // Get and Render Chems & Rates
+    $feature = $this->getParentEntity($entity);
+    $this->load_event_info($feature);
     switch ($propname) {
       case 'event_title':
-        $blocks = array();
-        $blocks_names = array();
-        $feature = $this->getParentEntity($entity);
-        $field_blocks = field_get_items('dh_adminreg_feature', $feature, 'dh_link_feature_submittal');
-        foreach ($field_blocks as $to) {
-          $blocks[] = $to['target_id'];
-        }
-        $block_entities = entity_load('dh_feature', $blocks);
-        foreach ($block_entities as $fe) {
-          $block_names[] = $fe->name;
-          if (!$vineyard) {
-            $vineyard = dh_getMpFacilityHydroId($fe->hydroid);
-          }
-        }
-        $title = $feature->name; 
-        $title = $title . ' on ' .implode(' ', $block_names);
+        $title = $feature->name . ' on ' . $feature->block_names;
         return $title;
       break;
       case 'event_description':
-        $blocks = array();
-        $blocks_names = array();
-        $feature = $this->getParentEntity($entity);
-        $field_blocks = field_get_items('dh_adminreg_feature', $feature, 'dh_link_feature_submittal');
-        foreach ($field_blocks as $to) {
-          $blocks[] = $to['target_id'];
-        }
-        $block_entities = entity_load('dh_feature', $blocks);
-        foreach ($block_entities as $fe) {
-          $block_names[] = $fe->name;
-          if (!$vineyard) {
-            $vineyard = dh_getMpFacilityHydroId($fe->hydroid);
-          }
-        }
-        $chems = array();
-        $chem_names = array();
-        $field_chems = field_get_items('dh_adminreg_feature', $feature, 'field_link_to_registered_agchem');
-        foreach ($field_chems as $to) {
-          $chems[$to['target_id']] = array(
-            'adminid' => $to['target_id'],
-            'eref_id' => $to['eref_id'],
-          );
-        }
-        $chem_entities = entity_load('dh_adminreg_feature', array_keys($chems));
-        foreach ($chem_entities as $fe) {
-          $chem_names[] = $fe->name;
-          // @todo: create and use properties plugin to render rate and amounts info
-        }
-        $feature = $this->getParentEntity($entity);
-        $description = $title . ' on ' .implode(' ', $block_names);
-        $description .= ' ' .implode(', ', $chem_names);
+        $title = $feature->name . ' on ' . $feature->block_names;
+        $description = $title . ' on ' . $feature->block_names;
+        $description .= " - " . $feature->agchem_spray_vol_gal->propvalue . " gals H2O";
+        $description .= " w/" . $feature->chem_list;
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
@@ -341,7 +302,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     
   }
   
-  public function chem_info(&$feature) {
+  public function load_event_info(&$feature) {
     // given an adminreg event feature, returns the chems and their attributes
     $chems = array();
     $chem_names = array();
@@ -387,6 +348,21 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $chem_list = implode(', ', $chem_names);
     $feature->chem_list = $chem_list;
     
+    // load block and vineyard info
+    $blocks = array();
+    $blocks_names = array();
+    $field_blocks = field_get_items('dh_adminreg_feature', $feature, 'dh_link_feature_submittal');
+    foreach ($field_blocks as $to) {
+      $blocks[] = $to['target_id'];
+    }
+    $feature->block_entities = entity_load('dh_feature', $blocks);
+    foreach ($feature->block_entities as $fe) {
+      $block_names[] = $fe->name;
+      if (!property_exists($feature, 'vineyard')) {
+        $feature->vineyard = dh_getMpFacilityHydroId($fe->hydroid);
+      }
+    }
+    $feature->block_names = implode(', ', $block_names);
   }
   
   public function buildContent(&$content, &$entity, $view_mode) {
@@ -399,26 +375,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       $content[$col]['#type'] = 'hidden';
     }
     $feature = $this->getParentEntity($entity);
-    $blocks = array();
-    $blocks_names = array();
-    $field_blocks = field_get_items('dh_adminreg_feature', $feature, 'dh_link_feature_submittal');
-    foreach ($field_blocks as $to) {
-      $blocks[] = $to['target_id'];
-    }
-    $block_entities = entity_load('dh_feature', $blocks);
-    foreach ($block_entities as $fe) {
-      $block_names[] = $fe->name;
-      if (!$vineyard) {
-        $vineyard = dh_getMpFacilityHydroId($fe->hydroid);
-      }
-    }
     // *****************************
     // Get and Render Chems & Rates
-    $this->chem_info($feature);
-    // END - Chems and rates
-    // 
+    $this->load_event_info($feature);
     $title = $feature->name; 
-    $entity->tscode = $title . ' on ' .implode(' ', $block_names);
+    $entity->tscode = $title . ' on ' . $feature->block_names;
     // see docs for drupal function l() for link config syntax
     // get list of blocks
     // get list of chems
@@ -446,7 +407,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         );
         $content['blocks'] = array(
           '#type' => 'item',
-          '#markup' => '<b>Blocks:</b> ' .implode(', ', $block_names),
+          '#markup' => '<b>Blocks:</b> ' . $feature->block_names
         );         
         $content['materials'] = array(
           '#type' => 'item',
@@ -462,7 +423,13 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         #$content['body']['#type']= 'item'; 
         $content['body']['#markup'] = $title; 
         $content = array();
-        $content['body']['#markup'] .= ' on ' .implode(' ', $block_names);
+        $content['body']['#markup'] .= ' on ' .  $feature->block_names;
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => '<b>Blocks:</b> ' .  $feature->block_names,
+        );
+        $content['body']['#markup'] .= "<br><b>Volume:</b> " . $feature->agchem_spray_vol_gal->propvalue . " gals";
+        $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
       break;
       
       case 'full':
@@ -472,7 +439,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['title']['#title'] = $title;
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => '<b>Blocks:</b> ' .implode(', ', $block_names),
+          '#markup' => '<b>Blocks:</b> ' . $feature->block_names,
         );
         $content['body']['#markup'] .= "<br><b>Volume:</b> " . $feature->agchem_spray_vol_gal->propvalue . " gals";
         $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
