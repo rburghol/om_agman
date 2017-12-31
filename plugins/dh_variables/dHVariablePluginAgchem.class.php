@@ -275,18 +275,18 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $this->load_event_info($feature);
     switch ($propname) {
       case 'event_title':
-        $title = $feature->name . ' on ' . $feature->block_names;
+        $title = $feature->vineyard->name . ": " . $feature->name . ' on ' . $feature->block_names;
         return $title;
       break;
       case 'event_description':
-        $title = $feature->name;
+        $title = $feature->vineyard->name . ": " . $feature->name;
         $description = $title . ' on ' . $feature->block_names;
         $description .= " - " . $feature->agchem_spray_vol_gal->propvalue . " gals H2O";
         $description .= " w/" . $feature->chem_list;
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
-        $uri = token_replace("[site:url]ipm-live-events/$feature->vineyard/sprayquan/$feature->adminid");
+        $uri = token_replace("[site:url]ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid");
         $description .= l(' - View :' . $uri, $uri, array('absolute' => TRUE));
         return $description;
       break;
@@ -359,7 +359,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     foreach ($feature->block_entities as $fe) {
       $block_names[] = $fe->name;
       if (!property_exists($feature, 'vineyard')) {
-        $feature->vineyard = dh_getMpFacilityHydroId($fe->hydroid);
+        $vid = dh_getMpFacilityHydroId($fe->hydroid);
+        if ($vid) {
+          $feature->vineyard = entity_load_single('dh_feature', $vid);
+        }
       }
     }
     $feature->block_names = implode(', ', $block_names);
@@ -378,12 +381,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // *****************************
     // Get and Render Chems & Rates
     $this->load_event_info($feature);
-    $title = $feature->name; 
+    $title = $feature->vineyard->name . ": " . $feature->name;
     $entity->tscode = $title . ' on ' . $feature->block_names;
     // see docs for drupal function l() for link config syntax
     // get list of blocks
     // get list of chems
-    $uri = "ipm-live-events/$vineyard/sprayquan/$feature->adminid";
+    $uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid";
     $link = array(
       '#type' => 'link',
       '#prefix' => '&nbsp; ',
