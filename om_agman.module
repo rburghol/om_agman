@@ -118,7 +118,7 @@ function om_agman_form_block_select(&$element, $farmid = FALSE) {
   $opts = array();
   // get vineyard blocks
   if ($farmid) {
-    $blockids = dh_get_facility_mps($farmid);
+    $blockids = dh_get_facility_mps($farmid, 'landunit');
     $q = db_query("select hydroid, name from {dh_feature} where hydroid IN (:blocklist) order by name", array(':blocklist' => $blockids));
     foreach ($q as $block) {
       $id = $block->hydroid;
