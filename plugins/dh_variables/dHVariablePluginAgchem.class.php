@@ -43,6 +43,65 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
   
 }
 
+class dHVariablePluginAgchemAI extends dHVariablePluginDefault {
+  
+  public function hiddenFields() {
+    return array('pid', 'varid', 'featureid', 'entity_type', 'bundle', 'dh_link_admin_pr_condition');
+  }
+  
+  public function aiList() {
+    $aivarid = dh_varkey2varid('agchem_ai', TRUE);
+    $q = "  select propcode as key, propcode as val from dh_properties ";
+    $q .= " where varid = $aivarid ";
+    $q .= " group by propcode ";
+    $q .= " order by propcode ";
+    $result = db_query($q);
+    return $result->fetchAllKeyed();
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    $form['propvalue']['#title'] = '% Active Ingredient';
+    $ailist = $this->aiList();
+    $form['propcode']['#type'] = 'textfield';
+    $form['propcode']['#title'] = 'a.i. Name';
+    $form['propcode']['#maxlength'] = 128;
+    $form['propcode']['#autocomplete_path'] = 'om_agman/active_ingredient';
+    $form['propcode']['#multiple'] = FALSE;
+    foreach ($this->hiddenFields() as $hide_this) {
+      $form[$hide_this]['#type'] = 'hidden';
+    }
+  }
+  
+  public function save(&$entity) {
+    parent::save();
+  }
+  
+}
+
+class dHVariablePluginAgchemREI extends dHVariablePluginDefault {
+  
+  public function reiCode() {
+    return array(
+      'all' => 'All',
+      'ptg' => 'Pruning, Tying, Girdling',
+      'other' => 'Other',
+    );
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    $form['propcode']['#type'] = 'select';
+    $form['propcode']['#options'] = $this->reiCode();
+    $form['propcode']['#default_value'] = !empty($entity->propcode) ? $entity->propcode : 'all';
+    $form['propcode']['#size'] = 1;
+    $form['propcode']['#multiple'] = FALSE;
+  }
+  
+  public function save(&$entity) {
+    parent::save();
+  }
+  
+}
+
 class dHVariablePluginFRAC extends dHVariablePluginDefault {
   public function formRowEdit(&$form, $entity) {
     $form['propvalue']['#type'] = 'hidden';
@@ -275,18 +334,18 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $this->load_event_info($feature);
     switch ($propname) {
       case 'event_title':
-        $title = $feature->name . ' on ' . $feature->block_names;
+        $title = $feature->vineyard->name . ": " . $feature->name . ' on ' . $feature->block_names;
         return $title;
       break;
       case 'event_description':
-        $title = $feature->name;
+        $title = $feature->vineyard->name . ": " . $feature->name;
         $description = $title . ' on ' . $feature->block_names;
         $description .= " - " . $feature->agchem_spray_vol_gal->propvalue . " gals H2O";
         $description .= " w/" . $feature->chem_list;
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
-        $uri = token_replace("[site:url]ipm-live-events/$feature->vineyard/sprayquan/$feature->adminid");
+        $uri = token_replace("[site:url]ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid");
         $description .= l(' - View :' . $uri, $uri, array('absolute' => TRUE));
         return $description;
       break;
@@ -359,7 +418,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     foreach ($feature->block_entities as $fe) {
       $block_names[] = $fe->name;
       if (!property_exists($feature, 'vineyard')) {
-        $feature->vineyard = dh_getMpFacilityHydroId($fe->hydroid);
+        $vid = dh_getMpFacilityHydroId($fe->hydroid);
+        if ($vid) {
+          $feature->vineyard = entity_load_single('dh_feature', $vid);
+        }
       }
     }
     $feature->block_names = implode(', ', $block_names);
@@ -378,12 +440,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // *****************************
     // Get and Render Chems & Rates
     $this->load_event_info($feature);
-    $title = $feature->name; 
+    $title = $feature->vineyard->name . ": " . $feature->name;
     $entity->tscode = $title . ' on ' . $feature->block_names;
     // see docs for drupal function l() for link config syntax
     // get list of blocks
     // get list of chems
-    $uri = "ipm-live-events/$vineyard/sprayquan/$feature->adminid";
+    $uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid";
     $link = array(
       '#type' => 'link',
       '#prefix' => '&nbsp; ',

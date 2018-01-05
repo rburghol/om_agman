@@ -45,6 +45,24 @@ $efficacy = array(
   5=> 'Poor',
   6=> 'None',
 );
+$efficacy_sym = array(
+  0=> '?',
+  1=> '++',
+  2=> '+',
+  3=> '+',
+  4=> '-',
+  5=> '--',
+  6=> '∅',
+);
+$efficacy_color = array(
+  0=> '#e5e5e5',
+  1=> '#009900',
+  2=> '#33b233',
+  3=> '#66cc66',
+  4=> '#993599',
+  5=> '#ccffcc',
+  6=> '#ffffff',
+);
 $rendered_rows = array();
 
 #foreach ($yrwk_rows as $yrwk => $yrwk_rows) {
@@ -54,6 +72,13 @@ foreach ($yrwk_master as $yrwk => $yrwk_rows) {
    $row[$key] = implode(', ', array_unique($values));
  }
  // find best efficacy
+ $pathos = array(
+   'propvalue' => 'PM',
+   'propvalue_1' => 'DM',
+   'propvalue_2' => 'BR',
+   'propvalue_3' => 'Pho',
+   'propvalue_4' => 'Bot',
+ );
  $eff_cols = array('propvalue', 'propvalue_1', 'propvalue_2', 'propvalue_3', 'propvalue_4');
  foreach ($eff_cols as $col) {
    $eff = array();
@@ -64,7 +89,14 @@ foreach ($yrwk_master as $yrwk => $yrwk_rows) {
        }
      }
      $eff_index = empty($eff) ? 0 : min($eff);
-     $row[$col] = $efficacy[$eff_index];
+     // text label only
+     //$row[$col] = $efficacy[$eff_index];
+     // symbolic only
+     $row[$col] = $efficacy_sym[$eff_index];
+     // text label and color
+     //$row[$col] = '<div style="background-color: ' . $efficacy_color[$eff_index] . '">' . $efficacy[$eff_index] . '</div>';
+     // Pathogen and color
+     //$row[$col] = '<div style="background-color: ' . $efficacy_color[$eff_index] . '">' . $pathos[$col] . '</div>';
    }
  }
  $rendered_rows[] = $row;

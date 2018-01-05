@@ -264,10 +264,46 @@ function om_agman_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
+  
+  $items['om_agman/active_ingredient'] = array(
+    'page callback' => 'om_active_ingredient_ac',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
 
   return $items;
 }
+/**
+ * autocomplete helper
+ * $string = string for search
+ */
+function om_active_ingredient_ac($string) {
+  $matches = array();
+  $aivarid = dh_varkey2varid('agchem_ai', TRUE);
+  /*
+  $result = db_select('dh_properties', 'c')
+    ->fields('c', array('propcode'))
+    ->condition('propcode', '%' . db_like($string) . '%', 'ILIKE')
+    ->condition('varid', $aivarid, '=')
+    ->execute();
+  // save the query to matches
+  foreach ($result as $row) {
+    $matches[$row->city] = check_plain($row->city);
+  }
+  */
+  $q = "  select propcode as key, propcode as val from dh_properties ";
+  $q .= " where varid = $aivarid ";
+  $q .= " and propcode ilike '%$string%' ";
+  $q .= " group by propcode ";
+  $q .= " order by propcode ";
+  error_log($q);
+  $result = db_query($q);
+  $matches = $result->fetchAllKeyed();
 
+
+  // Return the result to the form in json
+  drupal_json_output($matches);
+}
 /**
  * Helper function to make a link.
  * This IS NOT NEEDED, just part of the demo page, but we do this in views with no trouble
