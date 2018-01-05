@@ -90,9 +90,9 @@ foreach ($yrwk_master as $yrwk => $yrwk_rows) {
      }
      $eff_index = empty($eff) ? 0 : min($eff);
      // text label only
-     //$row[$col] = $efficacy[$eff_index];
+     $row[$col] = $efficacy[$eff_index];
      // symbolic only
-     $row[$col] = $efficacy_sym[$eff_index];
+     //$row[$col] = $efficacy_sym[$eff_index];
      // text label and color
      //$row[$col] = '<div style="background-color: ' . $efficacy_color[$eff_index] . '">' . $efficacy[$eff_index] . '</div>';
      // Pathogen and color

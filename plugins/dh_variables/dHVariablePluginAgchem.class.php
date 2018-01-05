@@ -345,7 +345,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
-        $uri = token_replace("[site:url]ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid");
+        $uri = token_replace("[site:url]ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid&finaldest=ipm-home");
         $description .= l(' - View :' . $uri, $uri, array('absolute' => TRUE));
         return $description;
       break;
@@ -445,7 +445,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // see docs for drupal function l() for link config syntax
     // get list of blocks
     // get list of chems
-    $uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid";
+    $uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid&finaldest=ipm-home";
     $link = array(
       '#type' => 'link',
       '#prefix' => '&nbsp; ',
