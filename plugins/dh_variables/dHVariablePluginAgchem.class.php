@@ -43,6 +43,65 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
   
 }
 
+class dHVariablePluginAgchemAI extends dHVariablePluginDefault {
+  
+  public function hiddenFields() {
+    return array('pid', 'varid', 'featureid', 'entity_type', 'bundle', 'dh_link_admin_pr_condition');
+  }
+  
+  public function aiList() {
+    $aivarid = dh_varkey2varid('agchem_ai', TRUE);
+    $q = "  select propcode as key, propcode as val from dh_properties ";
+    $q .= " where varid = $aivarid ";
+    $q .= " group by propcode ";
+    $q .= " order by propcode ";
+    $result = db_query($q);
+    return $result->fetchAllKeyed();
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    $form['propvalue']['#title'] = '% Active Ingredient';
+    $ailist = $this->aiList();
+    $form['propcode']['#type'] = 'textfield';
+    $form['propcode']['#title'] = 'a.i. Name';
+    $form['propcode']['#maxlength'] = 128;
+    $form['propcode']['#autocomplete_path'] = 'om_agman/active_ingredient';
+    $form['propcode']['#multiple'] = FALSE;
+    foreach ($this->hiddenFields() as $hide_this) {
+      $form[$hide_this]['#type'] = 'hidden';
+    }
+  }
+  
+  public function save(&$entity) {
+    parent::save();
+  }
+  
+}
+
+class dHVariablePluginAgchemREI extends dHVariablePluginDefault {
+  
+  public function reiCode() {
+    return array(
+      'all' => 'All',
+      'ptg' => 'Pruning, Tying, Girdling',
+      'other' => 'Other',
+    );
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    $form['propcode']['#type'] = 'select';
+    $form['propcode']['#options'] = $this->reiCode();
+    $form['propcode']['#default_value'] = !empty($entity->propcode) ? $entity->propcode : 'all';
+    $form['propcode']['#size'] = 1;
+    $form['propcode']['#multiple'] = FALSE;
+  }
+  
+  public function save(&$entity) {
+    parent::save();
+  }
+  
+}
+
 class dHVariablePluginFRAC extends dHVariablePluginDefault {
   public function formRowEdit(&$form, $entity) {
     $form['propvalue']['#type'] = 'hidden';
