@@ -338,7 +338,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         return $title;
       break;
       case 'event_description':
-        $title = $feature->vineyard->name . ": " . $feature->name;
+        $title = "<b>What:</b>" . $feature->vineyard->name . " - " . $feature->name;
         $description = $title . ' on ' . $feature->block_names;
         $description .= " - " . $feature->agchem_spray_vol_gal->propvalue . " gals H2O";
         $description .= " w/" . $feature->chem_list;
@@ -405,6 +405,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       // @todo: create and use properties plugin to render rate and amounts info
     }
     $chem_list = implode(', ', $chem_names);
+    $feature->chem_items = $chem_names;
     $feature->chem_list = $chem_list;
     
     // load block and vineyard info
@@ -440,7 +441,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // *****************************
     // Get and Render Chems & Rates
     $this->load_event_info($feature);
-    $title = $feature->vineyard->name . ": " . $feature->name;
+    $title = $feature->vineyard->name . " - " . $feature->name;
     $entity->tscode = $title . ' on ' . $feature->block_names;
     // see docs for drupal function l() for link config syntax
     // get list of blocks
@@ -483,7 +484,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'ical_summary':
         unset($content['title']['#type']);
         #$content['body']['#type']= 'item'; 
-        $content['body']['#markup'] = $title; 
+        $content['body']['#markup'] = "<b>What:</b>" . $title; 
         $content = array();
         $content['body']['#markup'] .= ' on ' .  $feature->block_names;
         $content['body'] = array(
@@ -504,7 +505,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           '#markup' => '<b>Blocks:</b> ' . $feature->block_names,
         );
         $content['body']['#markup'] .= "<br><b>Volume:</b> " . $feature->agchem_spray_vol_gal->propvalue . " gals";
-        $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
+        $chem_list = "<ul><li>" . implode('</li><li>', $feature->chem_items) . "</li></ul>";
+        $content['body']['#markup'] .= "<br><b>Materials:</b> $chem_list";
+        //$content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
 
         $entity->title = $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 

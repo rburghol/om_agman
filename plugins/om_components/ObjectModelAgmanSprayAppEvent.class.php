@@ -355,7 +355,11 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $chemgrid->buildForm($form, $form_state);
     //$form['chemgrid'] = array('#markup' => "Query: " . $chemgrid->query);
     $form['event_settings']['#weight'] = 5;
+    $form['event_settings']['#prefix'] = '<div class="input-group input-group-lg">';
+    $form['event_settings']['#suffix'] = '</div">';
     $form['chem_rates']['#weight'] = 6;
+    $form['chem_rates']['#prefix'] = '<div class="input-group input-group-lg">';
+    $form['chem_rates']['#suffix'] = '</div">';
     $form['description']['#weight'] = 7;
     $form['data']['#tree'] = TRUE;
     $form['actions'] = array('#type' => 'actions');
@@ -672,8 +676,13 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $rate_range = empty($rate_limits) ? '---' : implode(' to ', $rate_limits) . " $rate_units";
     $rowform['rate_range'] = array(
       '#coltitle' => 'Label Range',
-      '#markup' => $rate_range,
+      '#markup' => "($rate_range)",
     );
+    $rowform['rate_range']['#coltitle'] .= '<br>* % Canopy';
+    $rowform['rate_range']['#markup'] .= '<br> * ' . ($scale * 100) . '%';
+    //$rowform['rate_range']['#coltitle'] .= '<br>Suggested Range';
+    $rowform['rate_range']['#markup'] .= '<br> = ' . $rate_suggestions;
+    /*
     $rowform['rate_scaled'] = array(
       '#coltitle' => 'Scaled by % Canopy',
       '#markup' => ($scale * 100) . '%',
@@ -682,14 +691,20 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#coltitle' => 'Suggested Range',
       '#markup' => $rate_suggestions,
     );
+    */
+    
     $row->rate_propvalue = empty($row->rate_propvalue) ? round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Rate',
       '#required' => TRUE,
+      '#prefix' => '<div class="input-group input-group-lg">',
+      //'#prefix' => '<div class="col-xs-12">',
+      '#suffix' => '</div>',
       '#type' => 'textfield',
       '#element_validate' => array('element_validate_number'),
-      '#size' => 4,
+      //'#size' => 16,
       //'#attributes' => array('disabled' => 'disabled'),
+      //'#attributes' => array( 'size' => 16),
       '#default_value' => $row->rate_propvalue,
     );
     // textual description of rate units
@@ -746,14 +761,17 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     );
     $amount_units = empty($row->rate_units) ? '' : $ra_conv[$row->rate_units];
     $rowform['batch_total'] = array(
-      '#coltitle' => 'Amount per Tank',
-      '#markup' => $batch_val . " $amount_units",
+      '#coltitle' => 'Per Tank / Total',
+      //'#markup' => $batch_val . " $amount_units",
+      '#markup' => $batch_val . " $amount_units" . " / " . $total_val . " $amount_units",
     );
+    /*
     $rowform['amount_propvalue'] = array(
       '#coltitle' => 'Total Spray',
       '#markup' => $total_val . " $amount_units",
       '#default_value' => $total_val,
     );
+    */
     
     $this->formRowVisibility($rowform, $row);
     
