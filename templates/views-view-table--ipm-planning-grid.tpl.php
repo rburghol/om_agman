@@ -74,6 +74,9 @@ foreach ($yrwk_master as $yrwk => $yrwk_rows) {
        unset($values[$ix]);
      }
    }
+   if (empty($values)) {
+     $values[] = ' ';
+   }
    $row[$key] = implode(', ', array_unique($values));
  }
  // find best efficacy
