@@ -69,6 +69,11 @@ $rendered_rows = array();
 foreach ($yrwk_master as $yrwk => $yrwk_rows) {
  // apply default grouping by unique
  foreach ($yrwk_rows as $key => $values) {
+   foreach ($values as $ix => $val) {
+     if (empty($val)) {
+       unset($values[$ix]);
+     }
+   }
    $row[$key] = implode(', ', array_unique($values));
  }
  // find best efficacy
