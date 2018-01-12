@@ -73,9 +73,13 @@ foreach ($yrwk_master as $yrwk => $yrwk_rows) {
      if (empty($val)) {
        unset($values[$ix]);
      }
+     if ( (count($values) > 1) and (strip_tags($val) == '--')) {
+       dpm($values);
+       unset($values[$ix]);
+     }
    }
    if (empty($values)) {
-     $values[] = ' ';
+     $values[] = '--';
    }
    $row[$key] = implode(', ', array_unique($values));
  }

@@ -31,6 +31,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       'bundle' => 'dh_properties'
     );
     $conf['groupname'] = 'event_settings'; 
+    $conf['render_layout'] = 'unformatted_striped'; 
     $conf['display'] = array('properties' => array());
     $hiddens = array('propname', 'startdate', 'enddate', 'featureid', 'entity_type', 'propcode', 'pid');
     foreach ($hiddens as $prop) {
@@ -278,6 +279,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     //dpm($this->dh_adminreg_feature,"event object");
     $form['show_agchem_event_area'] = array(
       '#prefix' => t('Total Area to Spray: '),
+      '#attributes' => array( 'class' => array('control-label')),
       '#suffix' => $this->dh_adminreg_feature->dh_properties['agchem_event_area']->varunits,
       '#markup' => empty($this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue) ? 0 : $this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue,
       //'#description' => t('Event Description'),
@@ -355,7 +357,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $chemgrid->buildForm($form, $form_state);
     //$form['chemgrid'] = array('#markup' => "Query: " . $chemgrid->query);
     $form['event_settings']['#weight'] = 5;
-    $form['event_settings']['#prefix'] = '<div class="input-group input-group-lg">';
+    $form['event_settings']['#prefix'] = '<div class="input-group input-group-sm">';
     $form['event_settings']['#suffix'] = '</div">';
     $form['chem_rates']['#weight'] = 6;
     $form['chem_rates']['#prefix'] = '<div class="input-group input-group-lg">';
@@ -370,7 +372,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     );
     $this->eventprops = $eventprops;
     $this->chemgrid = $chemgrid;
-    //dpm($form,'form');
+    dpm($form,'form');
   }
   public function submitForm(array &$form, $form_state) {
     //dpm($form_state,'form_state');
@@ -441,8 +443,8 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
   var $env = array();
   var $eref_name = FALSE;
   var $eref_entity = 'from'; // from or to
-  var $default_rate_var = 'agchem_rate_lbsac'; 
-  var $default_amount_var = 'agchem_mass_lbs'; 
+  var $rate_varkey = 'agchem_rate'; 
+  var $amount_varkey = 'agchem_amount'; 
   var $batch_amount = 1; 
   var $total_amount = 1; 
   var $event_area = 1; 
@@ -549,9 +551,9 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $q .= "   and chemlink.entity_type = 'dh_adminreg_feature' ";
     $q .= " ) ";
     $q .= " left outer join {dh_variabledefinition} as rv ";
-    $q .= " on (rv.varkey = 'agchem_rate') ";
+    $q .= " on (rv.varkey = '$this->rate_varkey') ";
     $q .= " left outer join {dh_variabledefinition} as av ";
-    $q .= " on (av.varkey = 'agchem_amount') ";
+    $q .= " on (av.varkey = '$this->amount_varkey') ";
     // join to the application rate property (non-dim)
     $q .= " left outer join {dh_properties} as rate ";
     $q .= " on ( ";
@@ -652,12 +654,14 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#required' => TRUE,
     );
     // static non-dimensional varid
+    /*
     $rowform['rate_varid'] = array(
       '#type' => 'hidden',
       '#coltitle' => 'Rate Var',
-      '#value' => empty($row->rate_varid) ? $this->default_rate_var : $row->rate_varid,
+      '#value' => empty($row->rate_varid) ? $this->rate_varkey : $row->rate_varid,
       '#required' => TRUE,
     );
+    */
     // set up rate limits now so we can make a default guess if this is a new record
     $rate_limits = array();
     if ($row->rate_lo > 0) {
@@ -726,11 +730,13 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#default_value' => empty($row->amount_featureid) ? NULL : $row->amount_featureid,
       '#required' => TRUE,
     );
+    /*
     $rowform['amount_varid'] = array(
       '#type' => 'hidden',
-      '#default_value' => empty($row->amount_varid) ? $this->default_amount_var : $row->amount_varid,
+      '#default_value' => empty($row->amount_varid) ? $this->amount_varkey : $row->amount_varid,
       '#required' => TRUE,
     );
+    */
     // batch total
     // this can be refreshed in the form via javascript?
     // check if batch size is > total volume to spray, make match = total
@@ -844,8 +850,8 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         ),
         'varid' => array(
           'fieldname'=> 'varid', 
-          'value_src_type' => 'form_key', 
-          'value_val_key' => 'rate_varid', 
+          'value_src_type' => 'constant', 
+          'value_val_key' => dh_varkey2varid($this->rate_varkey, TRUE), 
         ),
         'propvalue' => array (
           'fieldname'=> 'propvalue',
@@ -904,8 +910,8 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         ),
         'varid' => array(
           'fieldname'=> 'varid', 
-          'value_src_type' => 'form_key', 
-          'value_val_key' => 'amount_varid', 
+          'value_src_type' => 'constant', 
+          'value_val_key' => dh_varkey2varid($this->amount_varkey, TRUE), 
         ),
         'propvalue' => array (
           'fieldname'=> 'propvalue',
