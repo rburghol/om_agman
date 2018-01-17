@@ -269,22 +269,25 @@ class dHVariablePluginCanopyScaler extends dHVariablePluginDefault {
     }
   }
   
+  public function scaler(&$form, $fieldname) {
+    $scale_opts = array();
+    for ($i = 5; $i <= 100; $i += 5) {
+      $pct = $i/100;
+      $scale_opts["$pct"] = "$i %";
+    }
+    $form[$fieldname] = (!$form[$fieldname]) ? array() : $form[$fieldname];
+    $form[$fieldname]['#type'] = 'select';
+    $form[$fieldname]['#options'] = $scale_opts;
+    $form[$fieldname]['#size'] = 1;
+  }
+  
   public function formRowEdit(&$rowform, $row) {
     // apply custom settings here
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
-    $valcol = $this->row_map['value'];
-    $rowform[$valcol] = (!$rowform[$valcol]) ? array() : $rowform[$valcol];
-    $scale_opts = array();
-    for ($i = 5; $i <= 100; $i += 5) {
-      $pct = $i/100;
-      $scale_opts["$pct"] = "$i %";
-    }
-    $rowform[$valcol]['#type'] = 'select';
-    $rowform[$valcol]['#options'] = $scale_opts;
-    $rowform[$valcol]['#size'] = 1;
+    $this->scaler($rowform, $this->row_map['value']);
     // on change, update:
       // total spray volume = default_rate * canopy_frac
       // each rows recommended rates = low_rate * canopy_frac, hi_rate * canopy_frac (text only)

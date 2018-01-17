@@ -372,7 +372,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     );
     $this->eventprops = $eventprops;
     $this->chemgrid = $chemgrid;
-    dpm($form,'form');
+    //dpm($form,'form');
   }
   public function submitForm(array &$form, $form_state) {
     //dpm($form_state,'form_state');
@@ -641,18 +641,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $pc = $this->conf['display']['properties'];
     //dpm($pc, "Prop conf");
     $fc = $this->conf['display']['fields'];
-    $rowform['rate_pid'] = array(
-      '#type' => 'hidden',
-      '#value' => $row->rate_pid,
-    );
-    $rowform['name'] = array(
-      '#markup' => $row->name,
-    );
-    $rowform['rate_featureid'] = array(
-      '#type' => 'hidden',
-      '#value' => empty($row->rate_featureid) ? NULL : $row->rate_featureid,
-      '#required' => TRUE,
-    );
     // static non-dimensional varid
     /*
     $rowform['rate_varid'] = array(
@@ -672,20 +660,27 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     }
     // evaluate the recs
     sort($rate_limits);
+    //dpm($this,'this');
+    //dpm($row,'row');
     $rate_units = empty($row->rate_units) ? 'floz/acre' : $row->rate_units;
     $scale = $this->scaleFactor($this->canopy_frac, $rate_units);
     //$rate_adjusted = array_map(function($el) { return $el * $this->canopy_frac; }, $rate_limits);
     $rate_adjusted = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
     $rate_suggestions = empty($rate_limits) ? '---' : implode(' to ', $rate_adjusted) . " $rate_units ";
     $rate_range = empty($rate_limits) ? '---' : implode(' to ', $rate_limits) . " $rate_units";
+    
     $rowform['rate_range'] = array(
-      '#coltitle' => 'Label Range',
-      '#markup' => "($rate_range)",
+      '#coltitle' => 'Material Label Range',
+      '#markup' => "<strong>$row->name</strong>",
     );
-    $rowform['rate_range']['#coltitle'] .= '<br>* % Canopy';
-    $rowform['rate_range']['#markup'] .= '<br> * ' . ($scale * 100) . '%';
+    $rowform['rate_range']['#markup'] .= "<br>&nbsp;&nbsp;($rate_range)";
+    $vol_per_vols = array('oz/gal');
+    // dont scale if it is a concentration based since volume is already scaled
+    if (!in_array($rate_units, $vol_per_vols)) {
+      $rowform['rate_range']['#markup'] .= '<br>&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy';
+    }
     //$rowform['rate_range']['#coltitle'] .= '<br>Suggested Range';
-    $rowform['rate_range']['#markup'] .= '<br> = ' . $rate_suggestions;
+    $rowform['rate_range']['#markup'] .= '<br>&nbsp;&nbsp; = ' . $rate_suggestions;
     /*
     $rowform['rate_scaled'] = array(
       '#coltitle' => 'Scaled by % Canopy',
@@ -701,34 +696,15 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Rate',
       '#required' => TRUE,
-      '#prefix' => '<div class="input-group input-group-lg">',
+      //'#prefix' => '<div class="input-group input-group-sm">',
       //'#prefix' => '<div class="col-xs-12">',
-      '#suffix' => '</div>',
+      //'#suffix' => '</div>',
       '#type' => 'textfield',
       '#element_validate' => array('element_validate_number'),
-      //'#size' => 16,
+      '#size' => 8,
       //'#attributes' => array('disabled' => 'disabled'),
       //'#attributes' => array( 'size' => 16),
       '#default_value' => $row->rate_propvalue,
-    );
-    // textual description of rate units
-    // linked from chem admin record, ozac, flozac, ozgal, flozgal, lbsac, lbsgal
-    $rowform['rate_units'] = array(
-      '#type' => 'hidden',
-      '#default_value' => empty($row->rate_units) ? '' : $row->rate_units,
-    );
-    $rowform['amount_pid'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $row->amount_pid,
-    );
-    // variable dimensional varid, should be specified by Chem admin record
-    // dh_property - agchem_rate_group
-    // if this is not specified on the chem admin record, show a select list
-    // default to flozac
-    $rowform['amount_featureid'] = array(
-      '#type' => 'hidden',
-      '#default_value' => empty($row->amount_featureid) ? NULL : $row->amount_featureid,
-      '#required' => TRUE,
     );
     /*
     $rowform['amount_varid'] = array(
@@ -778,6 +754,34 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#default_value' => $total_val,
     );
     */
+    // textual description of rate units
+    // linked from chem admin record, ozac, flozac, ozgal, flozgal, lbsac, lbsgal
+    $rowform['rate_units'] = array(
+      '#type' => 'hidden',
+      '#default_value' => empty($row->rate_units) ? '' : $row->rate_units,
+    );
+    $rowform['amount_pid'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $row->amount_pid,
+    );
+    $rowform['rate_pid'] = array(
+      '#type' => 'hidden',
+      '#value' => $row->rate_pid,
+    );
+    $rowform['rate_featureid'] = array(
+      '#type' => 'hidden',
+      '#value' => empty($row->rate_featureid) ? NULL : $row->rate_featureid,
+      '#required' => TRUE,
+    );
+    // variable dimensional varid, should be specified by Chem admin record
+    // dh_property - agchem_rate_group
+    // if this is not specified on the chem admin record, show a select list
+    // default to flozac
+    $rowform['amount_featureid'] = array(
+      '#type' => 'hidden',
+      '#default_value' => empty($row->amount_featureid) ? NULL : $row->amount_featureid,
+      '#required' => TRUE,
+    );
     
     $this->formRowVisibility($rowform, $row);
     
