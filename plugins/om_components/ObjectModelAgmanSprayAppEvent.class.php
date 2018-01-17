@@ -100,6 +100,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       $conf['varid_ordered'][] = $id[0];
     }
     $this->dh_adminreg_feature->loadComponents($criteria);
+    //dpm($this->dh_adminreg_feature,'after loadComponents');
   }
   
   public function setEventDefault(&$conf, $varkey, $value, $overwrite = FALSE) {
@@ -692,7 +693,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     );
     */
     
-    $row->rate_propvalue = empty($row->rate_propvalue) ? round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
+    $row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Rate',
       '#required' => TRUE,
