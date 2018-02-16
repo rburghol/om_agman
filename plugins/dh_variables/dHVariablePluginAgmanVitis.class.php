@@ -140,6 +140,40 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
 
 }
 
+class dHVariablePluginVitisHarvest extends dHVariablePluginPercentSelector {
+
+  public function hiddenFields() {
+    return array('tid', 'featureid', 'entity_type', 'bundle', 'tscode');
+  }
+  
+  public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row); // does hiding etc.
+    // apply custom settings here
+    //dpm($row,'row');
+    $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
+    if (!$varinfo) {
+      return FALSE;
+    }
+    $pcts = $this->pct_list(array(10,20,30,40,50, 60, 70, 80, 90, 100));
+    $rowform['tstime']['#type'] = 'date_popup';
+    $rowform['tstime']['#title'] = 'Beginning';
+    $rowform['tstime']['#date_format'] = 'Y-m-d';
+    $rowform['tsendtime']['#type'] = 'date_popup';
+    $rowform['tsendtime']['#title'] = 'End';
+    $rowform['tsendtime']['#date_format'] = 'Y-m-d';
+    $rowform['tsvalue'] = array(
+      '#title' => t('% Harvested'),
+      '#type' => 'select',
+      '#options' => $pcts,
+      '#weight' => 2,
+      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : "1.0",
+    );
+    $rowform['actions']['submit']['#value'] = t('Save');
+    $rowform['actions']['delete']['#value'] = t('Delete');
+  }
+
+}
+
 class dHVariablePluginVitisBudBreak extends dHVariablePluginDefault {
   // @todo: ba
   // Function:
