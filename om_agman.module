@@ -270,8 +270,48 @@ function om_agman_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
+  
+  $items['om_agman/vitis_varieties'] = array(
+    'page callback' => 'om_vitis_varieties',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
 
   return $items;
+}
+/**
+ * autocomplete helper
+ * $string = string for search
+ */
+function om_vitis_varieties($string) {
+  watchdog('dh',"Called om_vitis_varieties($string)");
+  $matches = array();
+  $aivarid = dh_varkey2varid('agman_plant', TRUE);
+  /*
+  $result = db_select('dh_properties', 'c')
+    ->fields('c', array('propcode'))
+    ->condition('propcode', '%' . db_like($string) . '%', 'ILIKE')
+    ->condition('varid', $aivarid, '=')
+    ->execute();
+  // save the query to matches
+  foreach ($result as $row) {
+    $matches[$row->city] = check_plain($row->city);
+  }
+  */
+  // @todo - name should be swapped for code?
+  //$q = "  select propcode as key, propcode as val from dh_properties ";
+  $q = "  select propname as key, propname as val from dh_properties ";
+  $q .= " where varid = $aivarid ";
+  $q .= " and propname ilike '%$string%' ";
+  $q .= " group by propname ";
+  $q .= " order by propname ";
+  error_log($q);
+  $result = db_query($q);
+  $matches = $result->fetchAllKeyed();
+
+
+  // Return the result to the form in json
+  drupal_json_output($matches);
 }
 /**
  * autocomplete helper
@@ -405,6 +445,7 @@ function om_agman_agchem_materials_select($hydroid, &$form, $fname, $viewname, $
   }
   $form[$fname]['und']['#empty'] = t('No content available.');
   $form[$fname]['und']['#type'] = 'tableselect';
+  $form[$fname]['und']['#required'] = TRUE;
   $form[$fname]['und']['#default_value'] = $deftable;
   $form[$fname]['und']['#header'] = array(
     'label' => 'Material', 
@@ -417,18 +458,17 @@ function om_agman_agchem_materials_select($hydroid, &$form, $fname, $viewname, $
     'BR' => 'BR', 
     'Bot' => 'Bot'
   );
+  // not really icons yet but soon neeedto sort out image paths that are not in themes
+  // see here: https://api.drupal.org/api/drupal/includes!common.inc/function/drupal_get_path/7.x
+  $icons = array(
+    'fungicide' => '(f)',
+    'herbicide' => '(h)',
+    'insecticide' => '(i)',
+    'pesticide' => '(p)',
+  );
   $opts = array();
-  $view = views_get_view($viewname);
-  $view->set_display($displayname);
-  $view->set_arguments(array($hydroid));
-  // change the amount of items to show
-  $view->set_items_per_page(75);
-  $view->pre_execute();
-  $view->execute();
-  $view->style_plugin->render_fields($view->result);
-  //dpm($view,'view');
-  foreach($view->result as $result) {
-    $id = $result->$id_field;
+  dpm($form,'form');
+  foreach($form[$fname]['und']['#options'] as $id => $result) {
     // format the material
     $material = entity_load_single('dh_adminreg_feature', $id);
     $criteria = array();
@@ -463,7 +503,7 @@ function om_agman_agchem_materials_select($hydroid, &$form, $fname, $viewname, $
     
     // BEGIN - tableselect
     $opts[$id] = array(
-      'label' => $material->name, 
+      'label' => $material->name . ' ' . $icons[$material->ftype], 
     );
     //dpm($material->dh_properties, 'props');
     //dpm($material->prop_varkey_map, 'prop map');
@@ -489,6 +529,7 @@ function om_agman_agchem_materials_select($hydroid, &$form, $fname, $viewname, $
     }
     // END - tableselect
   }
+  //dpm($form[$fname],'select');
   $form[$fname]['und']['#options'] = $opts;
 }
 

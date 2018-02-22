@@ -4,25 +4,33 @@ module_load_include('inc', 'dh', 'plugins/dh.display');
 class dHVariablePluginAppRates extends dHVariablePluginDefault {
   // @todo:
   
-  public function __construct($conf = array()) {
-    parent::__construct($conf);
-  }
-  public function optionDefaults($conf = array()) {
-    parent::optionDefaults($conf);
-    //dpm($this->hiddenFields(), 'hiding optionDefaults');
-    foreach ($this->hiddenFields() as $hide_this) {
-      $this->property_conf_default[$hide_this]['hidden'] = 1;
-    }
-  }
-  public function hideFormRowEditFields(&$rowform) {
-    //dpm($this->hiddenFields(), 'hiding hideFormRowEditFields');
-    foreach ($this->hiddenFields() as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
-    }
-  }
-  
   public function hiddenFields() {
     return array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle', 'varunits');
+  }
+  
+  public function amountUnits() {
+    return array(
+      'floz' => 'fluid oz',
+      'gals' => 'gals',
+      'qt/acre' => 'quarts',
+      'oz' => 'oz',
+      'lbs' => 'lbs',
+      'g' => 'grams',
+      'mg' => 'mg',
+    );
+  }
+  
+  public function rateUnits() {
+    return array(
+      'floz/acre' => 'fluid oz/acre',
+      'gals/acre' => 'gals/acre',
+      'oz/acre' => 'oz/acre',
+      'qt/acre' => 'quart/acre',
+      'lbs/acre' => 'lbs/acre',
+      'oz/gal' => 'oz/gal',
+      'floz/gal' => 'fluid oz/gal',
+      'lbs/gal' => 'lbs/gal',
+    );
   }
   
   public function formRowEdit(&$rowform, $row) {
@@ -32,21 +40,11 @@ class dHVariablePluginAppRates extends dHVariablePluginDefault {
       return FALSE;
     }
     $rowform[$this->row_map['code']] = (!$rowform[$this->row_map['code']]) ? array() : $rowform[$this->row_map['code']];
-    $ra_units = array(
-      'floz/acre' => 'fluid oz/acre',
-      'gals/acre' => 'gals/acre',
-      'oz/acre' => 'oz/acre',
-      'lbs/acre' => 'lbs/acre',
-      'oz/gal' => 'oz/gal',
-      'floz/gal' => 'fluid oz/gal',
-      'lbs/gal' => 'lbs/gal',
-    );
     $rowform[$this->row_map['code']]['#type'] = 'select';
-    $rowform[$this->row_map['code']]['#options'] = $ra_units;
+    $rowform[$this->row_map['code']]['#options'] = $this->rateUnits();
     $rowform[$this->row_map['code']]['#size'] = 1;
     // @todo: figure this visibility into one single place
     // thse should automatically be hidden by the optionDefaults setting but for some reason...
-    $this->hideFormRowEditFields($rowform);
     
   }
   
@@ -84,16 +82,8 @@ class dHVariablePluginAppAmounts extends dHVariablePluginAppRates {
       return FALSE;
     }
     $rowform[$this->row_map['code']] = (!$rowform[$this->row_map['code']]) ? array() : $rowform[$this->row_map['code']];
-    $ra_units = array(
-      'floz' => 'fluid oz',
-      'gals' => 'gals',
-      'oz' => 'oz',
-      'lbs' => 'lbs',
-      'g' => 'grams',
-      'mg' => 'mg',
-    );
     $rowform[$this->row_map['code']]['#type'] = 'select';
-    $rowform[$this->row_map['code']]['#options'] = $ra_units;
+    $rowform[$this->row_map['code']]['#options'] = $this->amountUnits();
     $rowform[$this->row_map['code']]['#size'] = 1;
     // @todo: figure this visibility into one single place
     // thse should automatically be hidden by the optionDefaults setting but for some reason...
@@ -114,6 +104,7 @@ class dHVariablePluginInventoryAmounts extends dHVariablePluginAppRates {
     return array('propname', 'pid', 'enddate', 'featureid', 'entity_type', 'bundle', 'varunits');
   }
   
+
   public function getDefaultUnits($entity) {
     // load the units for the target adminreg chemical registration
     $vars = dh_varkey2varid($this->units_varkey);
@@ -146,21 +137,13 @@ class dHVariablePluginInventoryAmounts extends dHVariablePluginAppRates {
     }
     $rowform['varname']['#markup'] = $row->target_label;
     $rowform[$this->row_map['code']] = (!$rowform[$this->row_map['code']]) ? array() : $rowform[$this->row_map['code']];
-    $ra_units = array(
-      'floz' => 'fluid oz',
-      'gals' => 'gals',
-      'oz' => 'oz',
-      'lbs' => 'lbs',
-      'g' => 'grams',
-      'mg' => 'mg',
-    );
     // @todo: what is this?  I think it is a remnant
     $tos = field_get_items($type, $entity, $map['value']);
     foreach ($froms as $fr) {
       $value[] = $fr['target_id'];
     }
     $rowform[$this->row_map['code']]['#type'] = 'select';
-    $rowform[$this->row_map['code']]['#options'] = $ra_units;
+    $rowform[$this->row_map['code']]['#options'] = $this->amountUnits();
     $rowform[$this->row_map['code']]['#size'] = 1;
     $rowform[$this->row_map['code']]['#title'] = '';
     $rowform[$this->row_map['code']]['#default_value'] = strlen($rowform[$this->row_map['code']]['#default_value']) ? $rowform[$this->row_map['code']]['#default_value'] : $this->getDefaultUnits($row);
@@ -217,16 +200,13 @@ class dHVariablePluginInventoryEvent extends dHVariablePluginDefault {
 
 }
 
-class dHVariablePluginAppRateUnits extends dHVariablePluginDefault {
+class dHVariablePluginAppRateUnits extends dHVariablePluginAppRates {
   // only used to select units, no values
   // @todo:
   
-  public function __construct($conf = array()) {
-    parent::__construct($conf);
-    $hidden = array('propvalue');
-    foreach ($hidden as $hide_this) {
-      $this->property_conf_default[$hide_this]['hidden'] = 1;
-    }
+  public function hiddenFields() {
+    $hidden = parent::hiddenFields();
+    $hidden[] = 'propvalue';
   }
   
   public function formRowEdit(&$rowform, $row) {
@@ -236,24 +216,10 @@ class dHVariablePluginAppRateUnits extends dHVariablePluginDefault {
       return FALSE;
     }
     $rowform[$this->row_map['code']] = (!$rowform[$this->row_map['code']]) ? array() : $rowform[$this->row_map['code']];
-    $ra_units = array(
-      'floz/acre' => 'fluid oz/acre',
-      'gals/acre' => 'gals/acre',
-      'oz/acre' => 'oz/acre',
-      'lbs/acre' => 'lbs/acre',
-      'oz/gal' => 'oz/gal',
-      'floz/gal' => 'fluid oz/gal',
-      'lbs/gal' => 'lbs/gal',
-    );
     $rowform[$this->row_map['code']]['#type'] = 'select';
-    $rowform[$this->row_map['code']]['#options'] = $ra_units;
+    $rowform[$this->row_map['code']]['#options'] = $this->rateUnits();
     $rowform[$this->row_map['code']]['#size'] = 1;
-    // @todo: figure this visibility into one single place
-    // thse should automatically be hidden by the optionDefaults setting but for some reason...
-    $hidden = array('pid', 'propvalue','startdate', 'enddate', 'featureid', 'entity_type', 'bundle');
-    foreach ($hidden as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
-    }
+
   }
 }
 

@@ -1,0 +1,63 @@
+
+/**
+ * @file
+ * Stuff for CSS (IPM Modeling CSS)
+ */
+
+.ipm-text-protection0
+{
+  background-color:green;
+  border:5px solid rgba(255,255,255,0.5);
+  color:black;
+  font-weight:bold;
+  text-align:center;
+  border-radius:50%;
+  line-height:32px;
+  width:40px;
+  height:40px;
+  vertical-align: middle;
+  position: relative;
+}
+
+.ipm-text-protection1
+{
+  background:yellow;
+  border:5px solid rgba(255,255,255,0.5);
+  color:black;
+  font-weight:bold;
+  text-align:center;
+  border-radius:50%;
+  line-height:32px;
+  width:40px;
+  height:40px;
+  vertical-align: middle;
+  position: relative;
+}
+.ipm-text-protection2
+{
+  background:orange;
+  border:5px solid rgba(255,255,255,0.5);
+  color:black;
+  font-weight:bold;
+  text-align:center;
+  border-radius:50%;
+  line-height:32px;
+  width:40px;
+  height:40px;
+  vertical-align: middle;
+  position: relative;
+}
+.ipm-text-protection3
+{
+  background:red;
+  border:5px solid rgba(255,255,255,0.5);
+  color:black;
+  font-weight:bold;
+  text-align:center;
+  border-radius:50%;
+  line-height:32px;
+  width:40px;
+  height:40px;
+  vertical-align: middle;
+  position: relative;
+}
