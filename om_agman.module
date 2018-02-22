@@ -467,7 +467,7 @@ function om_agman_agchem_materials_select($hydroid, &$form, $fname, $viewname, $
     'pesticide' => '(p)',
   );
   $opts = array();
-  dpm($form,'form');
+  //dpm($form,'form');
   foreach($form[$fname]['und']['#options'] as $id => $result) {
     // format the material
     $material = entity_load_single('dh_adminreg_feature', $id);
