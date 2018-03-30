@@ -699,7 +699,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#required' => TRUE,
       //'#prefix' => '<div class="input-group input-group-sm">',
       //'#prefix' => '<div class="col-xs-12">',
-      //'#suffix' => '</div>',
+      '#suffix' => $rate_units,
       '#type' => 'textfield',
       '#element_validate' => array('element_validate_number'),
       '#size' => 8,
