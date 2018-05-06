@@ -183,7 +183,7 @@ class dHVPLast24DiseaseRisk extends dHVPDiseaseRiskSummary {
     $entity->tstime = $summary['tstime'];
     $entity->tsendtime = $summary['tsendtime'];
     $entity->tsvalue = $summary['max_value'];
-    $entity->tscode = ($summary['max_value'] == NULL) ? 'unknown' : $this->risk_codes[$summary['max_value']];
+    $entity->tscode = ($summary['max_value'] === NULL) ? 'unknown' : $this->risk_codes[$summary['max_value']];
     //dpm($entity,'final entity');
     parent::save($entity);
   }
