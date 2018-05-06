@@ -23,7 +23,7 @@ class dHVPDiseaseRiskSummary extends dHVariablePluginDefault {
     $q .= "   and tstime < $end ";
     $q .= "   and varid = $varid ";
     $q .= " group by featureid, entity_type ";
-    dpm($q,"query for var = $varkey");
+    //dpm($q,"query for var = $varkey");
     $result = db_query($q);
     $record = $result->fetchAssoc();
     if (empty($record)) {
@@ -35,7 +35,7 @@ class dHVPDiseaseRiskSummary extends dHVariablePluginDefault {
         'mean_value' => NULL,
       );
     }
-    dpm($record,'record');
+    //dpm($record,'record');
     return $record;
   }
   
@@ -183,8 +183,8 @@ class dHVPLast24DiseaseRisk extends dHVPDiseaseRiskSummary {
     $entity->tstime = $summary['tstime'];
     $entity->tsendtime = $summary['tsendtime'];
     $entity->tsvalue = $summary['max_value'];
-    $entity->tscode = empty($summary['max_value']) ? 'unknown' : $this->risk_codes[$summary['max_value']];
-    dpm($entity,'final entity');
+    $entity->tscode = ($summary['max_value'] == NULL) ? 'unknown' : $this->risk_codes[$summary['max_value']];
+    //dpm($entity,'final entity');
     parent::save($entity);
   }
   /*
@@ -288,6 +288,26 @@ class dHVPLast24BotrytisRisk extends dHVPLast24DiseaseRisk {
   // Create a Most recent data summary
   var $obs_varkey = 'frisk_botrytis_index';
   var $summary_varkey = 'frisk_pd_last24hrs_botrytis_idx';
+}
+
+class dHVPLast24PowderyRisk extends dHVPLast24DiseaseRisk {
+  // Create a Most recent data summary
+  var $obs_varkey = 'frisk_powderymildew_index';
+  var $summary_varkey = 'frisk_pd_last24hrs_pmildew_idx';
+}
+
+
+class dHVPLast24BlackRotRisk extends dHVPLast24DiseaseRisk {
+  // Create a Most recent data summary
+  var $obs_varkey = 'frisk_blackrot_index';
+  var $summary_varkey = 'frisk_pd_last24hrs_blackrot_idx';
+}
+
+
+class dHVPLast24PhomopsisRisk extends dHVPLast24DiseaseRisk {
+  // Create a Most recent data summary
+  var $obs_varkey = 'frisk_phomopsis_index';
+  var $summary_varkey = 'frisk_pd_last24hrs_phomopsis_idx';
 }
 
 ?>
