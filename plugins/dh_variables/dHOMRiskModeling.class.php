@@ -163,15 +163,14 @@ class dHVPLast24DiseaseRisk extends dHVPDiseaseRiskSummary {
   
   public function summarizeLast24Hours($entity) {
     // $entity is the dh_timeseries entity in question
-    $varids = dh_varkey2varid($this->obs_varkey);
-    //dpm($varids, $this->darkness_varkey);
-    $varid = array_shift( $varids);
-    $date = dh_handletimestamp(date('Y-m-d'));
-    $entity->tstime = $date;
+    // gets last 24 from observations timestamp
+    $begin = dh_handletimestamp($entity->tstime) - 86400;
+    $date = date('Y-m-d', dh_handletimestamp($entity->tstime));
+    $end = $date . " 23:59:59";
     //dpm('range'," $begin, $end");
-    $summary = $this->summarizeDaily($entity);
+    $summary = $this->summarizeTimePeriod($entity->entity_type, $entity->featureid, $this->obs_varkey, $begin, $end);
     $varids = dh_varkey2varid($this->summary_varkey);
-    //dpm($varids, $this->darkness_varkey);
+    //dpm($varids, $this->daily_varkey);
     $summary['varid'] = array_shift( $varids);
     return $summary;
   }
