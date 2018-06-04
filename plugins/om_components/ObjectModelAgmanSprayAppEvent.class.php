@@ -307,6 +307,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#type' => 'select',
       '#title' => t('Status'),
       '#weight' => 2,
+      '#default_value' => $this->dh_adminreg_feature->fstatus,
       '#options' => array(
         'planned' => t('Planned'),
         'complete' => t('Complete'),
