@@ -303,6 +303,16 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#default_value' => 'agchem_app_plan',
       '#required' => TRUE,
     );
+    $form['fstatus'] = array(
+      '#type' => 'select',
+      '#title' => t('Status'),
+      '#weight' => 2,
+      '#options' => array(
+        'planned' => t('Planned'),
+        'complete' => t('Complete'),
+        'cancelled' => t('Cancelled'),
+      ),
+    );
     // Machine-readable type name.
     $form['bundle'] = array(
       '#type' => 'hidden',
@@ -678,6 +688,16 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $vol_per_vols = array('oz/gal');
     // dont scale if it is a concentration based since volume is already scaled
     if (!in_array($rate_units, $vol_per_vols)) {
+      // load ai % if available
+      $ai_info = array(
+        'varkey' => 'agchem_ai',
+        'entity_type' => 'dh_adminreg_feature',
+        'featureid' => $row->chemid,
+      );
+      $result = dh_get_properties($ai_info);
+      if (property_exists($result, 'dh_properties')) {
+        
+      }
       $rowform['rate_range']['#markup'] .= '<br>&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy';
     }
     //$rowform['rate_range']['#coltitle'] .= '<br>Suggested Range';
