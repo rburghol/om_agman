@@ -166,7 +166,7 @@ class dHVariablePluginVitisHarvest extends dHVariablePluginPercentSelector {
       '#type' => 'select',
       '#options' => $pcts,
       '#weight' => 2,
-      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : "1.0",
+      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : "1",
     );
     $rowform['actions']['submit']['#value'] = t('Save');
     $rowform['actions']['delete']['#value'] = t('Delete');
