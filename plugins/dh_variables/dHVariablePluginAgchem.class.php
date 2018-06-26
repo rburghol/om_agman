@@ -432,6 +432,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // @todo: handle teaser mode and full mode with plugin support
     //        this won't happen till we enable at module level however, now it only 
     //        is shown when selecting "plugin" in the view mode in views
+    $now = dh_handletimestamp(date('Y-m-d'));
     $content['#view_mode'] = $view_mode;
     $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
     foreach ($hidden as $col) {
@@ -504,6 +505,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           '#type' => 'item',
           '#markup' => '<b>Blocks:</b> ' . $feature->block_names,
         );
+        if ($now > $entity->tstime) {
+          $content['body']['#prefix'] = '<div class="help-block">';
+          $content['body']['#suffix'] = '</div>';
+        }
         $content['body']['#markup'] .= "<br><b>Volume:</b> " . $feature->agchem_spray_vol_gal->propvalue . " gals";
         $chem_list = "<ul><li>" . implode('</li><li>', $feature->chem_items) . "</li></ul>";
         $content['body']['#markup'] .= "<br><b>Materials:</b> $chem_list";
