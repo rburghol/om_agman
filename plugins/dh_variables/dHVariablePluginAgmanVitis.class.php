@@ -375,7 +375,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginDefault {
     $rowform['tsvalue']['#title'] = 'Avg. Brix:';
     $rowform['tsvalue']['#type'] = 'markup';
     $rowform['tsvalue']['#markup'] = $row->tsvalue;
-    $rowform['tstext']['#title'] = t('Sample brix values (csv)');
+    $rowform['tstext']['und'][0]['value']['#title'] = t('Sample brix values (csv)');
+    $rowform['tstext']['und'][0]['value']['#description'] = t('Enter your sample measurement here, if you have done multiple measurement for a single block add them here separated by commas (ex: 23.5,24.1,22.9) and a median value will be calculated.');
     $this->hideFormRowEditFields($rowform);
   }
   
