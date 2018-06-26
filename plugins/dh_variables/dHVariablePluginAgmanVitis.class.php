@@ -115,6 +115,7 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
     if (!$varinfo) {
       return FALSE;
     }
+    $rowform['tstime']['#type'] = 'date_popup';
     $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
     $rowform['tsvalue'] = array(
       '#title' => t('% veraison'),
