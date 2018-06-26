@@ -92,6 +92,31 @@ class dHVariablePluginPercentSelector extends dHVariablePluginDefault {
     }
     return $pcts;
   }
+  
+  public function formRowEdit(&$rowform, $row) {
+    // apply custom settings here
+    //dpm($row,'row');
+    $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
+    if (!$varinfo) {
+      return FALSE;
+    }
+    $rowform['tstime']['#type'] = 'date_popup';
+    $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
+    $rowform['tsvalue'] = array(
+      '#title' => t($varinfo->varname),
+      '#type' => 'select',
+      '#options' => $pcts,
+      '#weight' => 2,
+      '#description' => $varinfo->vardesc,
+      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : "0.5",
+    );
+    $rowform['actions']['submit']['#value'] = t('Save');
+    $rowform['actions']['delete']['#value'] = t('Delete');
+    $hidden = array('pid', 'startdate', 'featureid', 'entity_type', 'bundle');
+    foreach ($hidden as $hide_this) {
+      $rowform[$hide_this]['#type'] = 'hidden';
+    }
+  }
 }
 
 class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
@@ -118,7 +143,7 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
     $rowform['tstime']['#type'] = 'date_popup';
     $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
     $rowform['tsvalue'] = array(
-      '#title' => t('% veraison'),
+      '#title' => t('% Veraison'),
       '#type' => 'select',
       '#options' => $pcts,
       '#weight' => 2,
