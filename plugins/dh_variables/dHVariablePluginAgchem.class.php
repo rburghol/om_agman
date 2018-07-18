@@ -332,6 +332,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // Get and Render Chems & Rates
     $feature = $this->getParentEntity($entity);
     $this->load_event_info($feature);
+    $args = arg();
+    $page = (strlen($args[0]) > 0) ? $args[0] : 'ipm-home';
     switch ($propname) {
       case 'event_title':
         $title = $feature->vineyard->name . ": " . $feature->name . ' on ' . $feature->block_names;
@@ -345,7 +347,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
-        $uri = token_replace("[site:url]ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid&finaldest=ipm-home");
+        $uri = token_replace("[site:url]ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid&finaldest=$page");
         $description .= l(' - View :' . $uri, $uri, array('absolute' => TRUE));
         return $description;
       break;
@@ -433,6 +435,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     //        this won't happen till we enable at module level however, now it only 
     //        is shown when selecting "plugin" in the view mode in views
     $now = dh_handletimestamp(date('Y-m-d'));
+    $args = arg();
+    $page = (strlen($args[0]) > 0) ? $args[0] : 'ipm-home';
     $content['#view_mode'] = $view_mode;
     $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
     foreach ($hidden as $col) {
@@ -447,7 +451,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // see docs for drupal function l() for link config syntax
     // get list of blocks
     // get list of chems
-    $uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid&finaldest=ipm-home";
+    $uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid&finaldest=$page";
     $link = array(
       '#type' => 'link',
       '#prefix' => '&nbsp; ',
@@ -455,7 +459,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       '#title' => 'Go to ' . $uri,
       '#href' => $uri,
       'query' => array(
-        'finaldest' => 'ipm-home/all/all/',
+        'finaldest' => $page,
       ),
       '#options' => array(
         'attributes' => array(
@@ -478,7 +482,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           '#markup' => '<b>Materials:</b> ' . $feature->chem_list,
         );
         #$content['link'] = $link; 
-        $entity->title = $title;
+        $entity->title = date('Y-m-d', $feature->startdate) . $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
       break;
       
@@ -500,7 +504,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'plugin':
       default:   
         $content['title'] = $link;
-        $content['title']['#title'] = $title;
+        $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',
           '#markup' => '<b>Blocks:</b> ' . $feature->block_names,
