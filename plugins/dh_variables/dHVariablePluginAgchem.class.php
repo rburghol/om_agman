@@ -134,7 +134,7 @@ class dHVariablePluginFRAC extends dHVariablePluginDefault {
       'featureid' => $entity->featureid,
       'entity_type' => $entity->entity_type,
     );
-    $result = dh_get_properties($values, 'all');$result = $query->execute();
+    $result = dh_get_properties($values, 'all');
     if (isset($result['dh_properties'])) {
       $frac_pids = array_keys($result['dh_properties']);
       $frac_obs = entity_load('dh_properties', $frac_pids);
