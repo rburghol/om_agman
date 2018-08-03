@@ -172,7 +172,8 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
     foreach ($hidden as $col) {
       $content[$col]['#type'] = 'hidden';
     }
-    $pct = ($entity->propvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->propvalue);
+    dpm($entity,'entity');
+    $pct = ($entity->tsvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->tsvalue);
     switch($view_mode) {
       default:
         $content['title'] = array(
