@@ -164,6 +164,28 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
     // special save handlers
   }
 
+  public function buildContent(&$content, &$entity, $view_mode) {
+    // special render handlers when using a content array
+    // get all FRAC Codes associated with this entity
+    $feature = $this->getParentEntity($entity);
+    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
+    foreach ($hidden as $col) {
+      $content[$col]['#type'] = 'hidden';
+    }
+    $pct = ($entity->propvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->propvalue);
+    switch($view_mode) {
+      default:
+        $content['title'] = array(
+          '#type' => 'item',
+          '#markup' => "Verasion @ $pct in " . $feature->name,
+        );
+        //$content['body'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "Verasion @ $pct in " . $feature->name,
+        //);
+      break;
+    }
+  }
 }
 
 class dHVariablePluginVitisHarvest extends dHVariablePluginPercentSelector {
