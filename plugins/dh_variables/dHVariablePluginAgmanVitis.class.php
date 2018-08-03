@@ -79,7 +79,7 @@ class dHVariablePluginPercentSelector extends dHVariablePluginDefault {
     if (is_array($inc)) {
       // we already have our list of percents, just work it out
       foreach ($inc as $i) {
-        $dec = floatval($i) / 100.0;
+        $dec = floatval(preg_replace('/\D/', '', $i)) / 100.0;
         $pcts["$dec"] = $i . " %";
       }
     } else {
