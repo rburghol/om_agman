@@ -334,6 +334,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $this->load_event_info($feature);
     $args = arg();
     $page = (strlen($args[0]) > 0) ? $args[0] : 'ipm-home';
+    if (strpos($page, 'ical') !== false) {
+      // catch this -- hack
+      // @todo: make finaldest part of the entity render plugin in views so we don't have to do this
+      $page = 'ipm-home';
+    }
     switch ($propname) {
       case 'event_title':
         $title = $feature->vineyard->name . ": " . $feature->name . ' on ' . $feature->block_names;
@@ -436,7 +441,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     //        is shown when selecting "plugin" in the view mode in views
     $now = dh_handletimestamp(date('Y-m-d'));
     $args = arg();
-    $page = (strlen($args[0]) > 0) ? $args[0] : 'ipm-home';
+    $page = ((strlen($args[0]) > 0) and (strpos($view_mode, 'ical') === false )) ? $args[0] : 'ipm-home';
+    if (strpos($page, 'ical') !== false) {
+      // catch this -- hack
+      // @todo: make finaldest part of the entity render plugin in views so we don't have to do this
+      $page = 'ipm-home';
+    }
     $content['#view_mode'] = $view_mode;
     $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
     foreach ($hidden as $col) {

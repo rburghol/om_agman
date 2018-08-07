@@ -175,14 +175,26 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
     $pct = ($entity->tsvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->tsvalue) . '%';
     switch($view_mode) {
       default:
-        $content['title'] = array(
-          '#type' => 'item',
-          '#markup' => "Verasion @ $pct in " . $feature->name,
-        );
-        //$content['body'] = array(
+        //$content['title'] = array(
         //  '#type' => 'item',
         //  '#markup' => "Verasion @ $pct in " . $feature->name,
         //);
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "Verasion @ $pct in " . $feature->name,
+        );
+      break;
+      case 'ical_summary':
+        //$content['title'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "Verasion @ $pct in " . $feature->name,
+        //);
+        unset($content['title']['#type']);
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "Verasion @ $pct in " . $feature->name,
+        );
       break;
     }
   }
