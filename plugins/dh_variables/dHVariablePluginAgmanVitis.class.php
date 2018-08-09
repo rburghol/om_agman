@@ -162,6 +162,7 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
       '#type' => 'select',
       '#options' => $options,
       '#size' => 1,
+      '#weight' => -1,
       '#default_value' => $rowform['featureid']['#default_value'],
     );
     $rowform['tstime']['#type'] = 'date_popup';
