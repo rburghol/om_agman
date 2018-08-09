@@ -131,6 +131,44 @@ function om_agman_form_block_select(&$element, $farmid = FALSE) {
   return $element;
 }
 
+function dh_facility_tree_select($facs, $include_fac = TRUE, $mp_bundle = FALSE, $mp_ftype = FALSE) {
+  // create associative array hydroid -> name 
+  $facs = is_array($facs) ? $facs : array($facs);
+  $faclist = array();
+  foreach ($facs as $facid) {
+    // we have the option to pass in objects if we like
+    if (!is_object($fac)) {
+      $fac = entity_load_single('dh_feature', $facid);
+    }
+    $faclist[$fac->hydroid] = $fac->name;
+  }
+  // sort by name, preserving keys
+  asort($faclist);
+  $options = array();
+  // create select list options from these
+  foreach ($faclist as $facid => $facname) {
+    // get blocks, sorted by name
+    $options[$facname] = array();
+    if ($include_fac) {
+      $options[$facname][$facid] = 'All ' . $facname;
+    }
+    $blockids = dh_get_facility_mps($facid, $mp_bundle, $mp_ftype);
+    $blocks = entity_load('dh_feature', $blockids);
+    
+    $blocklist = array();
+    foreach ($blocks as $block) {
+      //dpm($block,'block');
+      $blocklist[$block->hydroid] = $block->name;
+    }
+    asort($blocklist);
+    foreach ($blocklist as $blockid => $blockname) {
+      $options[$facname][$blockid] = $blockname;
+    }
+  }
+  //dpm($options,'opts');
+  return $options;
+}
+
 // custom field formatters
 /**
  * Implements hook_field_formatter_info().

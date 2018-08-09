@@ -127,7 +127,7 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
   
   public function __construct($conf = array()) {
     parent::__construct($conf);
-    $hidden = array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle', 'tscode');
+    $hidden = array('pid', 'startdate', 'enddate', 'entity_type', 'bundle', 'tscode');
     foreach ($hidden as $hide_this) {
       $this->property_conf_default[$hide_this]['hidden'] = 1;
     }
@@ -135,11 +135,35 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
   
   public function formRowEdit(&$rowform, $row) {
     // apply custom settings here
-    //dpm($row,'row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
+    // get facility
+    $feature = $this->getParentEntity($row);
+    if ($feature->bundle <> 'facility') {
+      // this is a block, get the parent
+      $facility = dh_getMpFacilityEntity($feature);
+      $bundle = $feature->bundle;
+      $ftype = $feature->ftype;
+    } else {
+      $facility = $feature;
+      $bundle = 'landunit';
+      $ftype = FALSE;
+    }
+    $options = dh_facility_tree_select($facility->hydroid, TRUE, $bundle, $ftype);
+    /*
+    $elements['featureid']['#type'] = 'select';
+    $elements['featureid']['#options'] = $options;
+    unset($elements['featureid']['#theme']);
+    */
+    $rowform['featureid'] = array(
+      '#title' => t('Location'),
+      '#type' => 'select',
+      '#options' => $options,
+      '#size' => 1,
+      '#default_value' => $rowform['featureid']['#default_value'],
+    );
     $rowform['tstime']['#type'] = 'date_popup';
     $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
     $rowform['tsvalue'] = array(
@@ -151,10 +175,12 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
     );
     $rowform['actions']['submit']['#value'] = t('Save');
     $rowform['actions']['delete']['#value'] = t('Delete');
-    $hidden = array('pid', 'startdate', 'featureid', 'entity_type', 'bundle');
+    /*
+    $hidden = array('pid', 'startdate', 'entity_type', 'bundle');
     foreach ($hidden as $hide_this) {
       $rowform[$hide_this]['#type'] = 'hidden';
     }
+    */
   }
   
   public function formRowSave(&$rowvalues, &$row) {
@@ -181,7 +207,7 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
         //);
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "Verasion @ $pct in " . $feature->name,
+          '#markup' => "Veraison @ $pct in " . $feature->name,
         );
       break;
       case 'ical_summary':
