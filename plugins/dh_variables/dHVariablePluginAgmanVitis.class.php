@@ -6,6 +6,115 @@ module_load_include('inc', 'dh', 'plugins/dh.display');
 //   pruning, hedging, tying, leaf pulling, training, shoot thinning
 //  should show end time and mark as optional in case users want to track time spent
 
+
+class dHVariablePluginCodeAttribute extends dHVariablePluginDefault {
+  var $default_code = '';
+  
+  public function hiddenFields() {
+    return array('tstime','featureid','tsendtime','entity_type','tsvalue');
+  }
+  public function formRowEdit(&$rowform, $row) {
+    $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
+    if (!$varinfo) {
+      return FALSE;
+    }
+    $rowform['tscode'] = array(
+      '#title' => t($varinfo->varname),
+      '#type' => 'textfield',
+      '#description' => $varinfo->vardesc,
+      '#default_value' => !empty($row->tscode) ? $row->tscode : "0.0",
+    );
+  }
+}
+class dHVariablePluginNumericAttribute extends dHVariablePluginDefault {
+  var $default_value = 0.0;
+  var $default_code = '';
+  
+  public function hiddenFields() {
+    return array('tstime','featureid','tsendtime','entity_type','tscode');
+  }
+  public function formRowEdit(&$rowform, $row) {
+    $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
+    if (!$varinfo) {
+      return FALSE;
+    }
+    $rowform['tsvalue'] = array(
+      '#title' => t($varinfo->varname),
+      '#type' => 'textfield',
+      '#description' => $varinfo->vardesc,
+      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : "0.0",
+    );
+  }
+}
+
+class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
+  // provides location management standardization
+  // and some common functions like pct_list() handling
+  
+  public function getDefaults($entity, &$defaults = array()) {
+    //parent::getDefaults($entity, $defaults);
+    // Example:
+    /*
+    $defaults += array(
+      'berry_weight_g' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'propvalue' => 0.0,
+        'propname' => 'Berry Weight',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'berry_weight_g',
+        'varid' => dh_varkey2varid('berry_weight_g', TRUE),
+      ),
+    );
+    */
+    return $defaults;
+  }
+  public function formRowEdit(&$rowform, $row) {
+    // apply custom settings here
+    //dpm($row,'row');
+    $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
+    if (!$varinfo) {
+      return FALSE;
+    }
+    foreach ($hidden as $hide_this) {
+      $rowform[$hide_this]['#type'] = 'hidden';
+    }
+    // get facility
+    $feature = $this->getParentEntity($row);
+    if ($feature->bundle <> 'facility') {
+      // this is a block, get the parent
+      $facility = dh_getMpFacilityEntity($feature);
+      $bundle = $feature->bundle;
+      $ftype = $feature->ftype;
+    } else {
+      $facility = $feature;
+      $bundle = 'landunit';
+      $ftype = FALSE;
+    }
+    $options = dh_facility_tree_select($facility->hydroid, TRUE, $bundle, $ftype);
+  }
+    
+  public function pct_list($inc = 10) {
+    $pcts = array();
+    if (is_array($inc)) {
+      // we already have our list of percents, just work it out
+      foreach ($inc as $i) {
+        $dec = floatval(preg_replace('/\D/', '', $i)) / 100.0;
+        $pcts["$dec"] = $i . " %";
+      }
+    } else {
+      $i = $inc;
+      while ($i <= 100) {
+        $dec = floatval($i) / 100.0;
+        $pcts["$dec"] = $i . " %";
+        $i += $inc;
+      }
+    }
+    return $pcts;
+  }
+  
+}
 class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginDefault {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
   //        handle in views - maybe a setting in the filter or jumplists itself?
@@ -134,29 +243,14 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
   }
   
   public function formRowEdit(&$rowform, $row) {
+    // parent method handles location stuff
+    parent::formRowEdit($rowform, $row);
     // apply custom settings here
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
-    // get facility
-    $feature = $this->getParentEntity($row);
-    if ($feature->bundle <> 'facility') {
-      // this is a block, get the parent
-      $facility = dh_getMpFacilityEntity($feature);
-      $bundle = $feature->bundle;
-      $ftype = $feature->ftype;
-    } else {
-      $facility = $feature;
-      $bundle = 'landunit';
-      $ftype = FALSE;
-    }
-    $options = dh_facility_tree_select($facility->hydroid, TRUE, $bundle, $ftype);
-    /*
-    $elements['featureid']['#type'] = 'select';
-    $elements['featureid']['#options'] = $options;
-    unset($elements['featureid']['#theme']);
-    */
+    
     $rowform['featureid'] = array(
       '#title' => t('Location'),
       '#type' => 'select',
@@ -227,7 +321,7 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
   }
 }
 
-class dHVariablePluginVitisHarvest extends dHVariablePluginPercentSelector {
+class dHVariablePluginVitisHarvest extends dHVariablePluginAgmanAction {
 
   public function hiddenFields() {
     return array('tid', 'featureid', 'entity_type', 'bundle', 'tscode');
@@ -261,7 +355,7 @@ class dHVariablePluginVitisHarvest extends dHVariablePluginPercentSelector {
 
 }
 
-class dHVariablePluginVitisBudBreak extends dHVariablePluginDefault {
+class dHVariablePluginVitisBudBreak extends dHVariablePluginAgmanAction {
   // @todo: ba
   // Function:
   //  * Creates a paired set of TS events, linked by featureid and date 
@@ -325,6 +419,7 @@ class dHVariablePluginVitisBudBreak extends dHVariablePluginDefault {
   }
   
   public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row); // does hiding etc.
     // apply custom settings here
     //dpm($row,'row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
@@ -412,7 +507,7 @@ class dHVariablePluginVitisBudBreak extends dHVariablePluginDefault {
 }
 
 
-class dHVariablePluginFruitChemSample extends dHVariablePluginDefault {
+class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
   //        handle in views - maybe a setting in the filter or jumplists itself?
   //  default: agchem_apply_fert_ee
@@ -422,32 +517,147 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginDefault {
     parent::__construct($conf);
   }
   public function hiddenFields() {
-    return array('tid', 'featureid', 'entity_type', 'bundle','tscode');
+    return array('tid', 'featureid', 'entity_type', 'bundle','tscode', 'tsvalue');
   }
   
+  public function getDefaults($entity, &$defaults = array()) {
+    parent::getDefaults($entity, $defaults);
+    $defaults += array(
+      'berry_weight_g' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'propvalue' => 0.0,
+        'propname' => 'Berry Weight',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'berry_weight_g',
+        'varid' => dh_varkey2varid('berry_weight_g', TRUE),
+      ),
+      'brix' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'propvalue' => 0.0,
+        'propname' => 'Brix',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'brix',
+        'varid' => dh_varkey2varid('brix', TRUE),
+      ),
+      'ph' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'propvalue' => 3.5,
+        'propname' => 'pH',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ph',
+        'varid' => dh_varkey2varid('ph', TRUE),
+      ),
+      'water_content_pct' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'propvalue' => 0.5,
+        'propname' => 'Water Content',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'water_content_pct',
+        'varid' => dh_varkey2varid('water_content_pct', TRUE),
+      ), 
+      'total_phenolics_aug' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'propvalue' => 0.0,
+        'propname' => 'Total Phenolics',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'total_phenolics_aug',
+        'varid' => dh_varkey2varid('total_phenolics_aug', TRUE),
+      ),
+      'total_anthocyanin_mgg' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'propvalue' => 0.0,
+        'propname' => 'Total anthocyanin',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'total_anthocyanin_mgg',
+        'varid' => dh_varkey2varid('total_anthocyanin_mgg', TRUE),
+      ),
+    );
+    return $defaults;
+  }
   
-  public function formRowEdit(&$rowform, $row) {
+  public function formRowEdit(&$rowform, $entity) {
+    parent::formRowEdit($rowform, $row); // does location
     // apply custom settings here
-    //dpm($row,'row');
-    $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
+    //dpm($entity,'entity');
+    $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
-    $rowform['tsvalue']['#title'] = 'Avg. Brix:';
-    $rowform['tsvalue']['#type'] = 'markup';
-    $rowform['tsvalue']['#markup'] = $row->tsvalue;
-    $rowform['tstext']['und'][0]['value']['#title'] = t('Sample brix values (csv)');
-    $rowform['tstext']['und'][0]['value']['#description'] = t('Enter your sample measurement here, if you have done multiple measurement for a single block add them here separated by commas (ex: 23.5,24.1,22.9) and a median value will be calculated.');
     $this->hideFormRowEditFields($rowform);
+    $dopples = $this->getDefaults($entity);
+    foreach ($dopples as $thisvar) {
+      $dopple = $this->loadReplicant($entity, $thisvar['varkey']);
+      $dopple_form = array();
+      //dpm($dopple,'dopple = ' . $thisvar['varkey']);
+      dh_variables_formRowPlugins($dopple_form, $dopple);
+      $rowform[$dopple->varkey] = $dopple_form['tsvalue'];
+    }
   }
   
-  public function formRowSave(&$rowvalues, &$row) {
-    parent::formRowSave($rowvalues, $row);
+  public function formRowSave(&$rowvalues, &$entity) {
+    parent::formRowSave($rowvalues, $entity);
+    //dpm($rowvalues,'Saving Row');
+    //dpm($entity,'Saving entity');
     // special save handlers
-    // later can have different tokens to allow brix, acidity, etc. but now just assume all csv brix
-    $brix = explode(',', $row->tstext['und'][0]['value']);
-    
-    $row->tsvalue = round(array_sum($brix) / count($brix),1); 
+    $entity->tsvalue = $rowvalues['brix']; 
+    $dopples = $this->getDefaults($entity);
+    //dpm($dopples,'dopples');
+    foreach ($dopples as $thisvar) {
+      $dopple = $this->loadReplicant($entity, $thisvar['varkey']);
+      //dpm($dopple,'dopple = ' . $thisvar['varkey']);
+      $dopple->tsvalue = $rowvalues[$thisvar['varkey']];
+      entity_save('dh_timeseries', $dopple);
+    }
+  }
+  
+  public function loadReplicant(&$entity, $varkey, $exclude_cached = FALSE, $repl_bundle = FALSE) {
+    // to prevent infinite loops of accidentally recursive replicants 
+    // we need some protections:
+    //   $exclude_cached - if it was retrieved from the cache it might be recursive
+
+    if ($entity->entityType() == 'dh_properties') {
+      $bundle = !$repl_bundle ? 'dh_properties' : $repl_bundle;
+      $replicant_info = array(
+        'featureid' => $entity->featureid,
+        'entity_type' => $entity->entity_type,
+        'bundle' => $bundle,
+        'varkey' => $varkey,
+      );
+      $replicant_entity = dh_properties_enforce_singularity($replicant_info, 'singular');
+    } else {
+      // must be timeseries
+      $replicant_info = array(
+        'featureid' => $entity->featureid,
+        'entity_type' => $entity->entity_type,
+        'tstime' => $entity->tstime,
+        'tsendtime' => $entity->tsendtime,
+        'varkey' => $varkey,
+      );
+      $replicant_entity = dh_timeseries_enforce_singularity($replicant_info, 'tstime_singular');
+    }
+    if (!is_object($replicant_entity)) {
+      $replicant_entity = entity_create($entity->entityType(), $replicant_info);
+    }
+    // check custody chain -- return false if a match exists indicating recursion
+    if (in_array($entity, $entity->entity_chain)) {
+      $replicant_entity = FALSE;
+    } else {
+      $entity->entity_chain[] = &$replicant_entity;
+      $replicant_entity->entity_chain = $entity->entity_chain;
+    }
+    return $replicant_entity;
   }
 
 }
