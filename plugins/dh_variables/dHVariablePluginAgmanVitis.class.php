@@ -599,6 +599,10 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     $dopples = $this->getDefaults($entity);
     foreach ($dopples as $thisvar) {
       $dopple = $this->loadReplicant($entity, $thisvar['varkey']);
+      if ( ($thisvar['varkey'] == 'brix') and ($dopple->is_new) and ($entity->tsvalue > 0)) {
+        // this is an old-school value, so copy the brix value over from the parent
+        $dopple->tsvalue = $entity->tsvalue;
+      }
       $dopple_form = array();
       //dpm($dopple,'dopple = ' . $thisvar['varkey']);
       dh_variables_formRowPlugins($dopple_form, $dopple);
@@ -620,44 +624,6 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       $dopple->tsvalue = $rowvalues[$thisvar['varkey']];
       entity_save('dh_timeseries', $dopple);
     }
-  }
-  
-  public function loadReplicant(&$entity, $varkey, $exclude_cached = FALSE, $repl_bundle = FALSE) {
-    // to prevent infinite loops of accidentally recursive replicants 
-    // we need some protections:
-    //   $exclude_cached - if it was retrieved from the cache it might be recursive
-
-    if ($entity->entityType() == 'dh_properties') {
-      $bundle = !$repl_bundle ? 'dh_properties' : $repl_bundle;
-      $replicant_info = array(
-        'featureid' => $entity->featureid,
-        'entity_type' => $entity->entity_type,
-        'bundle' => $bundle,
-        'varkey' => $varkey,
-      );
-      $replicant_entity = dh_properties_enforce_singularity($replicant_info, 'singular');
-    } else {
-      // must be timeseries
-      $replicant_info = array(
-        'featureid' => $entity->featureid,
-        'entity_type' => $entity->entity_type,
-        'tstime' => $entity->tstime,
-        'tsendtime' => $entity->tsendtime,
-        'varkey' => $varkey,
-      );
-      $replicant_entity = dh_timeseries_enforce_singularity($replicant_info, 'tstime_singular');
-    }
-    if (!is_object($replicant_entity)) {
-      $replicant_entity = entity_create($entity->entityType(), $replicant_info);
-    }
-    // check custody chain -- return false if a match exists indicating recursion
-    if (in_array($entity, $entity->entity_chain)) {
-      $replicant_entity = FALSE;
-    } else {
-      $entity->entity_chain[] = &$replicant_entity;
-      $replicant_entity->entity_chain = $entity->entity_chain;
-    }
-    return $replicant_entity;
   }
 
 }
