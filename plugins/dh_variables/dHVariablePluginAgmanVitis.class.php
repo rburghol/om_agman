@@ -133,7 +133,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
   }
   
 }
-class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginDefault {
+class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
   //        handle in views - maybe a setting in the filter or jumplists itself?
   //  default: agchem_apply_fert_ee
@@ -148,6 +148,7 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginDefault {
   }
   
   public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row); // does hiding etc.
     // apply custom settings here
     //dpm($row,'row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
