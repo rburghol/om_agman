@@ -42,7 +42,7 @@ class dHVariablePluginNumericAttribute extends dHVariablePluginDefault {
       '#title' => t($varinfo->varname),
       '#type' => 'textfield',
       '#description' => $varinfo->vardesc,
-      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : "0.0",
+      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : NULL,
     );
   }
 }
@@ -112,6 +112,15 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
       }
     }
     return $pcts;
+  }
+  
+  function rangeList($start, $end, $inc = 1, $scaler = 1) {
+    // ex: 0 to 1.0 by 0.1, 
+    $range_list = array();
+    for ($i = $start; $i <= $end; $i += $inc) {
+      $range_list["$i"] = $i;
+    }
+    return $range_list;
   }
   
 }
@@ -523,15 +532,25 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
-      'berry_weight_g' => array(
+      'sample_weight_g' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
         'propvalue' => 0.0,
-        'propname' => 'Berry Weight',
+        'propname' => 'Sample Weight',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
-        'varkey' => 'berry_weight_g',
-        'varid' => dh_varkey2varid('berry_weight_g', TRUE),
+        'varkey' => 'sample_weight_g',
+        'varid' => dh_varkey2varid('sample_weight_g', TRUE),
+      ),
+      'sample_size_berries' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'propvalue' => 0.0,
+        'propname' => 'Berry Count',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'sample_size_berries',
+        'varid' => dh_varkey2varid('sample_size_berries', TRUE),
       ),
       'brix' => array(
         'entity_type' => $entity->entityType(),
@@ -552,6 +571,16 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'featureid' => $entity->identifier(),
         'varkey' => 'ph',
         'varid' => dh_varkey2varid('ph', TRUE),
+      ),
+      'berry_weight_g' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'propvalue' => 0.0,
+        'propname' => 'Berry Weight',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'berry_weight_g',
+        'varid' => dh_varkey2varid('berry_weight_g', TRUE),
       ),
       'water_content_pct' => array(
         'entity_type' => $entity->entityType(),
@@ -607,16 +636,27 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       //dpm($dopple,'dopple = ' . $thisvar['varkey']);
       dh_variables_formRowPlugins($dopple_form, $dopple);
       $rowform[$dopple->varkey] = $dopple_form['tsvalue'];
+      if ($thisvar['varkey'] == 'ph') {
+        $rowform[$dopple->varkey]['#type'] = 'select';
+        $rowform[$dopple->varkey]['#options'] = array_merge(
+          array(0 => 'NA'),
+          $this->rangeList(3, 5, $inc = 0.01)
+        );
+      } 
     }
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
     parent::formRowSave($rowvalues, $entity);
-    //dpm($rowvalues,'Saving Row');
+    //dpm($rowvalues,'Saving Values');
     //dpm($entity,'Saving entity');
     // special save handlers
     $entity->tsvalue = $rowvalues['brix']; 
     $dopples = $this->getDefaults($entity);
+    if (($rowvalues['sample_weight_g'] > 0) and ($rowvalues['sample_size_berries'] > 0)) {
+      // auto-calculate berry weight
+      $rowvalues['berry_weight_g'] = floatval($rowvalues['sample_weight_g']) / floatval($rowvalues['sample_size_berries']);
+    }
     //dpm($dopples,'dopples');
     foreach ($dopples as $thisvar) {
       $dopple = $this->loadReplicant($entity, $thisvar['varkey']);
