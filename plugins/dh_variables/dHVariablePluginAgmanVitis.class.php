@@ -71,6 +71,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
     return $defaults;
   }
   public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row); // does hiding etc.
     // apply custom settings here
     //dpm($row,'row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
@@ -526,7 +527,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     parent::__construct($conf);
   }
   public function hiddenFields() {
-    return array('tid', 'featureid', 'entity_type', 'bundle','tscode', 'tsvalue');
+    return array('tid', 'entity_type', 'bundle','tscode', 'tsvalue');
   }
   
   public function getDefaults($entity, &$defaults = array()) {
@@ -617,14 +618,13 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   }
   
   public function formRowEdit(&$rowform, $entity) {
-    parent::formRowEdit($rowform, $row); // does location
+    parent::formRowEdit($rowform, $entity); // does location
     // apply custom settings here
-    //dpm($entity,'entity');
+    //dpm($rowform,'rowform');
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
-    $this->hideFormRowEditFields($rowform);
     $dopples = $this->getDefaults($entity);
     foreach ($dopples as $thisvar) {
       $dopple = $this->loadReplicant($entity, $thisvar['varkey']);
