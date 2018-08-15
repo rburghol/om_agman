@@ -93,6 +93,14 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
       $ftype = FALSE;
     }
     $options = dh_facility_tree_select($facility->hydroid, TRUE, $bundle, $ftype);
+    $rowform['featureid'] = array(
+      '#title' => t('Location'),
+      '#type' => 'select',
+      '#options' => $options,
+      '#size' => 1,
+      '#weight' => -1,
+      '#default_value' => $rowform['featureid']['#default_value'],
+    );
   }
     
   public function pct_list($inc = 10) {
@@ -237,7 +245,7 @@ class dHVariablePluginPercentSelector extends dHVariablePluginDefault {
   }
 }
 
-class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
+class dHVariablePluginVitisVeraison extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
   //        handle in views - maybe a setting in the filter or jumplists itself?
   //  default: agchem_apply_fert_ee
@@ -260,14 +268,6 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginPercentSelector {
       return FALSE;
     }
     
-    $rowform['featureid'] = array(
-      '#title' => t('Location'),
-      '#type' => 'select',
-      '#options' => $options,
-      '#size' => 1,
-      '#weight' => -1,
-      '#default_value' => $rowform['featureid']['#default_value'],
-    );
     $rowform['tstime']['#type'] = 'date_popup';
     $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
     $rowform['tsvalue'] = array(
