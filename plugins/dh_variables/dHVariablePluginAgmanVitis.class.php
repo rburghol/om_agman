@@ -201,7 +201,7 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
 
 }
 
-class dHVariablePluginPercentSelector extends dHVariablePluginDefault {
+class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
   public function pct_list($inc = 10) {
     $pcts = array();
     if (is_array($inc)) {
@@ -222,6 +222,7 @@ class dHVariablePluginPercentSelector extends dHVariablePluginDefault {
   }
   
   public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row); // does hiding etc.
     // apply custom settings here
     //dpm($row,'row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
@@ -240,10 +241,6 @@ class dHVariablePluginPercentSelector extends dHVariablePluginDefault {
     );
     $rowform['actions']['submit']['#value'] = t('Save');
     $rowform['actions']['delete']['#value'] = t('Delete');
-    $hidden = array('pid', 'startdate', 'featureid', 'entity_type', 'bundle');
-    foreach ($hidden as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
-    }
   }
 }
 
@@ -493,10 +490,6 @@ class dHVariablePluginVitisBudBreak extends dHVariablePluginAgmanAction {
       '#default_value' => $row->ext_value,
       '#required' => TRUE,
     );
-    $hidden = array('pid', 'tsendtime', 'featureid', 'entity_type', 'bundle');
-    foreach ($hidden as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
-    }
     return;
   }
 

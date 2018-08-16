@@ -304,13 +304,13 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#required' => TRUE,
     );
     $form['fstatus'] = array(
-      '#type' => 'select',
+      '#type' => 'radios',
       '#title' => t('Status'),
       '#weight' => 2,
       '#default_value' => $this->dh_adminreg_feature->fstatus,
       '#options' => array(
         'planned' => t('Planned'),
-        'complete' => t('Complete'),
+        'completed' => t('Complete'),
         'cancelled' => t('Cancelled'),
       ),
     );
