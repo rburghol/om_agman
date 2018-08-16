@@ -78,9 +78,6 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
     if (!$varinfo) {
       return FALSE;
     }
-    foreach ($hidden as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
-    }
     // get facility
     $feature = $this->getParentEntity($row);
     if ($feature->bundle <> 'facility') {
@@ -241,6 +238,37 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
     );
     $rowform['actions']['submit']['#value'] = t('Save');
     $rowform['actions']['delete']['#value'] = t('Delete');
+  }
+  public function hiddenFields() {
+    return array('tid', 'varid', 'featureid', 'entity_type', 'bundle', 'tsendtime');
+  }
+}
+
+class dHVariablePluginIPMIncident extends dHVariablePluginPercentSelector {
+  
+  public function incidentCodes() {
+    return array(
+//    'Disease' => array(
+//      'org_botrytis' => 'Botrytis',
+//      'org_black_rot' => 'Downy Mildew',
+//      'hail' => 'Powdery Mildew',
+//      'org_black_rot' => 'Black Rot',
+//      'org_phomopsis' => 'Phomopsis',
+//    ),
+      'hail' => 'Hail',
+      'insect_damage' => 'Insect Damage',
+      'leaf_burn' => 'Leaf Burn',
+    );
+  }
+  public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row); // does hiding etc.
+    $pcts = $this->pct_list(array('<1', 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, '>95'));
+    $rowform['tsvalue']['#options'] = $pcts;
+    $rowform['tsvalue']['#title'] = t('% of Plants Affected');
+    $rowform['tscode']['#title'] = t('Incident Type');
+    $rowform['tscode']['#type'] = 'select';
+    $rowform['tscode']['#options'] = $this->incidentCodes();
+    $rowform['tscode']['#size'] = 1;
   }
 }
 
