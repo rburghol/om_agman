@@ -159,9 +159,58 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
     parent::create();
   }
   
+  public function convert_attributes_to_dh_props($entity) {
+    $props = $this->getDefaults($entity);
+    //dpm($props,'props to convert');
+    foreach ($props as $thisvar) {
+      $replicant = $this->loadReplicant($entity, $thisvar['varkey']);
+      if (!$replicant->is_new) {
+        entity_delete('dh_timeseries', $replicant->tid);
+      }
+      $convert_value = FALSE; // flag to see if we need to convert (in case we are called multiple times)
+      $load_property = FALSE;
+      $propvalue = NULL;
+      $pn = $this->handleFormPropname($thisvar['propname']);
+      // check for conversion from value to property
+      // this could need to change as fully loaded objects could be stored as array  that are then loaded as object or handled more completely
+      // in Form API *I think*
+      // but for now, this handles the case where a property value is stashed on the object
+      // cases:
+      // - property exists, and IS object: check for form API munged name and copy over, otherwise, do nothing
+      // - property exists and is NOT object: stash the value, load the prop object, and setValue to stashed
+      // - property does not exist: load property and return
+      if (property_exists($entity, $thisvar['propname']) and !is_object($entity->{$thisvar['propname']})) {
+        // if the prop is not an object, stash the value and load property, 
+        $convert_value = TRUE;
+        $propvalue = $entity->{$thisvar['propname']};
+        $load_property = TRUE;
+      }
+      if ( ($pn <> $this->propname) and property_exists($entity, $pn) ) {
+        // handle case where prop name had spaces and was munged by form API
+        $propvalue = $entity->{$pn};
+        $convert_value = TRUE;
+      }
+      if (!property_exists($entity, $thisvar['propname']) ) {
+        $load_property = TRUE;
+      }
+      if ($load_property) {
+        $this->loadProperties($entity, FALSE, $thisvar['propname']);
+      }
+      // now, apply the stashed value to the property
+      if ($convert_value and is_object($entity->{$thisvar['propname']})) {
+        $prop = $entity->{$thisvar['propname']};
+        foreach ($prop->dh_variables_plugins as $plugin) {
+          $plugin->applyEntityAttribute($prop, $propvalue);
+        }
+      }
+    }
+  }
+  
   public function insert(&$entity) {
     //$entity->propname = 'blankShell';
     //dpm($entity,'insert(entity)');
+    // check for transition from ts to prop
+    $this->convert_attributes_to_dh_props($entity);
     $this->updateProperties($entity);
     parent::insert();
   }
@@ -169,6 +218,8 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
   public function update(&$entity) {
     //$entity->propname = 'blankShell';
     //dpm($entity,'update(entity)');
+    // check for transition from ts to prop
+    $this->convert_attributes_to_dh_props($entity);
     $this->updateProperties($entity);
     parent::update();
   }
@@ -179,23 +230,33 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
     parent::save();
   }
   
-  public function loadProperties(&$entity) {
+  public function loadProperties(&$entity, $overwrite = FALSE, $propname = FALSE) {
     $props = $this->getDefaults($entity);
     //dpm($props,'props to loadProperties');
-    foreach ($props as $thisvar) {
-      $prop = dh_properties_enforce_singularity($thisvar, 'name');
-      //dpm($prop,'prop to load');
-      if (!$prop) {
-        // prop does not exist, so need to create
-        // @todo: manage this create the prop then pass defaults
-        //$thisvar['featureid'] = $entity->tid;
-        $prop = entity_create('dh_properties', $thisvar);
-      }
-      if (!$prop) {
-        watchdog('om', 'Could not Add Properties in plugin loadProperties');
+    if (!($propname === FALSE)) {
+      // a single prop has been requested
+      if (!array_key_exists($propname, $props)) {
+        watchdog('dh', 'loadProperties(entity, propname) called on dH Variable plugin object but propname = ' . strval($propname) . ' not found');
         return FALSE;
       }
-      $entity->{$prop->propname} = $prop;
+      $props = array($propname => $props[$propname]);
+    }
+    foreach ($props as $thisvar) {
+      if ($overwrite or !property_exists($entity, $thisvar['propname']) or (property_exists($entity, $thisvar['propname']) and !is_object($thisvar['propname'])) ) {
+        $thisvar['featureid'] = $entity->{$this->row_map['id']};
+        $prop = dh_properties_enforce_singularity($thisvar, 'name');
+        //dpm($prop,'prop to load');
+        if (!$prop) {
+          // prop does not exist, so need to create
+          // @todo: manage this create the prop then pass defaults
+          $prop = entity_create('dh_properties', $thisvar);
+        }
+        if (!$prop) {
+          watchdog('om', 'Could not Add Properties in plugin loadProperties');
+          return FALSE;
+        }
+        $entity->{$prop->propname} = $prop;
+      }
     }
     //dpm($entity,'props loaded');
   }
@@ -215,15 +276,18 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
         if (!is_object($entity->{$thisvar['propname']})) {
           // this has been set by the form API as a value 
           // so we need to load/create a property then set the value
-          $prop = dh_properties_enforce_singularity($thisvar, 'name');
+          $thisvar['featureid'] = $entity->{$this->row_map['id']};
+          $thisvar['propvalue'] = $entity->{$thisvar['propname']};
+          $prop = dh_update_properties($thisvar, 'name');
+          //dpm($prop, "added property $thisvar[propname]");
         } else {
           $prop = $entity->{$thisvar['propname']};
+          $prop->featureid = $entity->{$this->row_map['id']};
+          //dpm($prop, "found property $thisvar[propname]");
+          entity_save('dh_properties', $prop);
         }
       }
       //dpm($prop, "updating property $thisvar[propname]");
-      if (is_object($prop)) {
-        entity_save('dh_properties', $prop);
-      }
     }
   }
 }
@@ -786,37 +850,11 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     // not values.  So, Brix and ph, since they are the same with underscores replaced conflict
     // special save handlers
     // so, now we call loadProperties() to insure that all properties are objects
-    $this->loadProperties($entity);
     $entity->tsvalue = $rowvalues['Brix']; 
-    $dopples = $this->getDefaults($entity);
     if (($rowvalues['Berry_Count'] > 0) and ($rowvalues['Sample_Weight'] > 0)) {
       // auto-calculate berry weight
       $rowvalues['Berry_Weight'] = round(floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']),3);
-    }
-    //dpm($dopples,'dopples');
-    // check for transition from ts to prop
-    foreach ($dopples as $thisvar) {
-      $replicant = $this->loadReplicant($entity, $thisvar['varkey']);
-      if (!$replicant->is_new) {
-        entity_delete('dh_timeseries', $replicant->tid);
-      }
-      $pn = $this->handleFormPropname($thisvar['propname']);
-      if (isset($rowvalues[$pn])) {
-        if (property_exists($entity, $thisvar['propname']) and is_object($entity->{$thisvar['propname']})) {
-          $prop = $entity->{$thisvar['propname']};
-          foreach ($prop->dh_variables_plugins as $plugin) {
-            if (method_exists($plugin, 'applyEntityAttribute')) {
-              $plugin->applyEntityAttribute($prop, $rowvalues[$pn]);
-            } else {
-              if (is_numeric($rowvalues[$pn])) {
-                $prop->propvalue = $rowvalues[$pn];
-              } else {
-                $prop->propcode = $rowvalues[$pn];
-              }
-            }
-          }
-        }
-      }
+      $entity->{"Berry Weight"} = round(floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']),3);
     }
   }
 
