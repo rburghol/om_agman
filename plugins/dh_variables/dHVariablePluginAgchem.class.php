@@ -349,6 +349,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $description = $title . ' on ' . $feature->block_names;
         $description .= " - " . $feature->agchem_spray_vol_gal->propvalue . " gals H2O";
         $description .= " w/" . $feature->chem_list;
+        $description .= " - PHI: $feature->phi_date ($feature->phi_chem)";
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
@@ -389,6 +390,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $vol_prop = dh_properties_enforce_singularity($vol_info, 'singular');
     //dpm($vol_prop,'vol prop');
     $feature->agchem_spray_vol_gal = $vol_prop;
+    $feature->phi_ts = $feature->startdate;
+    $feature->phi_chems = array(); // chem w/limiting PHI
+    $feature->phi_info = 'unknown'; // chem w/limiting PHI
     foreach ($feature->chems as $cix => $chem) {
       $fe = entity_load_single('dh_adminreg_feature', $chem['adminid']);
       // amount to mix/apply
@@ -407,14 +411,43 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         'varkey' => 'agchem_amount_type',
       );
       $fe->units = dh_properties_enforce_singularity($amt_unit, 'singular');
-      $feature->chems[$cix] = $fe;
-      $chem_names[] = $fe->name . ' @ ' . $fe->amount->propvalue . ' ' . $fe->units->propcode;
       // @todo: create and use properties plugin to render rate and amounts info
+      // @todo: create and use properties plugin to render PHI info
+      // @todo: create and use properties plugin to render PHI info
+      // PHI - load chem PHI property of agchem
+      $criteria = array(  
+       0 => array(
+        'name' => 'varid',
+        'op' => 'IN',
+        'value' => dh_varkey2varid('agchem_phi'),
+        ),
+      );
+      $fe->loadComponents($criteria);
+      //dpm($fe,'agchem obj');
+      if (isset($fe->dh_properties['agchem_phi']) and is_object($fe->dh_properties['agchem_phi']) ) {
+        $this_phi = $feature->startdate + $fe->dh_properties['agchem_phi']->propvalue * 86400;
+        if ($feature->phi_ts < $this_phi) {
+          $feature->phi_ts = $this_phi;
+          $feature->phi_chems = array($fe->name);
+        } else {
+          // check if multiple have the same PHI
+          if ($feature->phi_ts <= $this_phi) {
+            $feature->phi_ts = $this_phi;
+            $feature->phi_chems[] = $fe->name;
+          }
+        }
+      }
+      $chem_names[] = $fe->name . ' @ ' . $fe->amount->propvalue . ' ' . $fe->units->propcode;
+      $feature->chems[$cix] = $fe;
+      
     }
     $chem_list = implode(', ', $chem_names);
     $feature->chem_items = $chem_names;
     $feature->chem_list = $chem_list;
-    
+    $phi_ts = new DateTime();
+    $phi_ts->setTimestamp($feature->phi_ts);
+    $feature->phi_date = $phi_ts->format("Y-m-d");
+    $feature->phi_chem = count($feature->phi_chems) ? implode(", ", $feature->phi_chems) : 'none';
     // load block and vineyard info
     $blocks = array();
     $blocks_names = array();
@@ -486,10 +519,14 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['blocks'] = array(
           '#type' => 'item',
           '#markup' => '<b>Blocks:</b> ' . $feature->block_names
-        );         
+        );
         $content['materials'] = array(
           '#type' => 'item',
           '#markup' => '<b>Materials:</b> ' . $feature->chem_list,
+        );
+        $content['phi'] = array(
+          '#type' => 'item',
+          '#markup' => '<b>Pre-Harvest:</b> ' . "$feature->phi_date ($feature->phi_chem)",
         );
         #$content['link'] = $link; 
         $entity->title = date('Y-m-d', $feature->startdate) . $title;
@@ -508,6 +545,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         );
         $content['body']['#markup'] .= "<br><b>Volume:</b> " . $feature->agchem_spray_vol_gal->propvalue . " gals";
         $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
+        $content['body']['#markup'] .= "<br><b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
       break;
       
       case 'full':
@@ -527,6 +565,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $chem_list = "<ul><li>" . implode('</li><li>', $feature->chem_items) . "</li></ul>";
         $content['body']['#markup'] .= "<br><b>Materials:</b> $chem_list";
         //$content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
+        $content['body']['#markup'] .= "<b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
 
         $entity->title = $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 

@@ -25,32 +25,47 @@ class dHVariablePluginCodeAttribute extends dHVariablePluginDefault {
       '#default_value' => !empty($row->tscode) ? $row->tscode : "0.0",
     );
   }
+  
+  public function applyEntityAttribute($property, $value) {
+    $property->propcode = $value;
+  }
+  
+  public function getPropertyAttribute($property) {
+    return $property->propcode;
+  }
 }
+
 class dHVariablePluginNumericAttribute extends dHVariablePluginDefault {
   var $default_value = 0.0;
   var $default_code = '';
   
   public function hiddenFields() {
-    return array('tstime','featureid','tsendtime','entity_type','tscode');
+    return array('startdate','featureid','enddate','entity_type','propcode');
   }
   public function formRowEdit(&$rowform, $row) {
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
-    $rowform['tsvalue'] = array(
+    $rowform['propvalue'] = array(
       '#title' => t($varinfo->varname),
       '#type' => 'textfield',
       '#description' => $varinfo->vardesc,
-      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : NULL,
+      '#default_value' => !empty($row->propvalue) ? $row->propvalue : NULL,
     );
+  }
+  public function applyEntityAttribute($property, $value) {
+    $property->propvalue = $value;
+  }
+  
+  public function getPropertyAttribute($property) {
+    return $property->propvalue;
   }
 }
 
 class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
   // provides location management standardization
   // and some common functions like pct_list() handling
-  
   public function getDefaults($entity, &$defaults = array()) {
     //parent::getDefaults($entity, $defaults);
     // Example:
@@ -72,6 +87,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
   }
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
+    $this->loadProperties($row);
     // apply custom settings here
     //dpm($row,'row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
@@ -129,6 +145,87 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
     return $range_list;
   }
   
+  public function setUp(&$entity) {
+    parent::setUp($entity);
+    //$entity->propname = 'blankShell';
+    //dpm($entity,"setUp");
+    //$this->loadProperties($entity);
+  }
+  
+  public function create(&$entity) {
+    //$entity->propname = 'blankShell';
+    //dpm($entity,'create(entity)');
+    //$this->loadProperties($entity);
+    parent::create();
+  }
+  
+  public function insert(&$entity) {
+    //$entity->propname = 'blankShell';
+    //dpm($entity,'insert(entity)');
+    $this->updateProperties($entity);
+    parent::insert();
+  }
+  
+  public function update(&$entity) {
+    //$entity->propname = 'blankShell';
+    //dpm($entity,'update(entity)');
+    $this->updateProperties($entity);
+    parent::update();
+  }
+  
+  public function save(&$entity) {
+    //$entity->propname = 'blankShell';
+    //dpm($entity,'save(entity)');
+    parent::save();
+  }
+  
+  public function loadProperties(&$entity) {
+    $props = $this->getDefaults($entity);
+    //dpm($props,'props to loadProperties');
+    foreach ($props as $thisvar) {
+      $prop = dh_properties_enforce_singularity($thisvar, 'name');
+      //dpm($prop,'prop to load');
+      if (!$prop) {
+        // prop does not exist, so need to create
+        // @todo: manage this create the prop then pass defaults
+        //$thisvar['featureid'] = $entity->tid;
+        $prop = entity_create('dh_properties', $thisvar);
+      }
+      if (!$prop) {
+        watchdog('om', 'Could not Add Properties in plugin loadProperties');
+        return FALSE;
+      }
+      $entity->{$prop->propname} = $prop;
+    }
+    //dpm($entity,'props loaded');
+  }
+  
+  public function updateProperties(&$entity) {
+    // @todo: move this to the base plugin class 
+    //dpm($entity,'updateProperties entity');
+    $props = $this->getDefaults($entity);
+    //dpm($props,'updateProperties');
+    foreach ($props as $thisvar) {
+      // load the property 
+      // if a property with propname is set on $entity, send its value to the plugin 
+      //   * plugin should be stored on the property object already
+      // if prop on entity is an object already, handle directly, otherwise, load it
+      //   the object method is advantageous because we can make things persist
+      if (property_exists($entity, $thisvar['propname'])) {
+        if (!is_object($entity->{$thisvar['propname']})) {
+          // this has been set by the form API as a value 
+          // so we need to load/create a property then set the value
+          $prop = dh_properties_enforce_singularity($thisvar, 'name');
+        } else {
+          $prop = $entity->{$thisvar['propname']};
+        }
+      }
+      //dpm($prop, "updating property $thisvar[propname]");
+      if (is_object($prop)) {
+        entity_save('dh_properties', $prop);
+      }
+    }
+  }
 }
 class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
@@ -549,7 +646,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     parent::__construct($conf);
   }
   public function hiddenFields() {
-    return array('tid', 'entity_type', 'bundle','tscode', 'tsvalue');
+    return array('tid', 'varid', 'entity_type', 'bundle','tscode', 'tsvalue');
   }
   
   public function getDefaults($entity, &$defaults = array()) {
@@ -558,7 +655,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       'sample_weight_g' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
-        'propvalue' => 0.0,
+        'default_propvalue' => 0.0,
         'propname' => 'Sample Weight',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -568,7 +665,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       'sample_size_berries' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
-        'propvalue' => 0.0,
+        'default_propvalue' => 0.0,
         'propname' => 'Berry Count',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -578,7 +675,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       'brix' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
-        'propvalue' => 0.0,
+        'default_propvalue' => 0.0,
         'propname' => 'Brix',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -588,7 +685,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       'ph' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
-        'propvalue' => 3.5,
+        'default_propvalue' => 3.5,
         'propname' => 'pH',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -598,7 +695,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       'berry_weight_g' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
-        'propvalue' => 0.0,
+        'default_propvalue' => 0.0,
         'propname' => 'Berry Weight',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -608,7 +705,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       'water_content_pct' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
-        'propvalue' => 0.5,
+        'default_propvalue' => 0.5,
         'propname' => 'Water Content',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -618,7 +715,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       'total_phenolics_aug' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
-        'propvalue' => 0.0,
+        'default_propvalue' => 0.0,
         'propname' => 'Total Phenolics',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -628,7 +725,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       'total_anthocyanin_mgg' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
-        'propvalue' => 0.0,
+        'default_propvalue' => 0.0,
         'propname' => 'Total anthocyanin',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -642,49 +739,84 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   public function formRowEdit(&$rowform, $entity) {
     parent::formRowEdit($rowform, $entity); // does location
     // apply custom settings here
-    //dpm($rowform,'rowform');
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
     $dopples = $this->getDefaults($entity);
+    //dpm($dopples,'dopples');
     foreach ($dopples as $thisvar) {
-      $dopple = $this->loadReplicant($entity, $thisvar['varkey']);
-      if ( ($thisvar['varkey'] == 'brix') and ($dopple->is_new) and ($entity->tsvalue > 0)) {
-        // this is an old-school value, so copy the brix value over from the parent
-        $dopple->tsvalue = $entity->tsvalue;
+      $pn = $this->handleFormPropname($thisvar['propname']);
+      $dopple = $entity->{$thisvar['propname']};
+      //dpm($dopple,'dopple before dh_update_properties = ' . $pn);
+      // transition this over -- if this has dopples, load them, get values, save as prop then delete
+      $replicant = $this->loadReplicant($entity, $thisvar['varkey']);
+      if (!$replicant->is_new && !$dopple->pid) {
+        // this is an existing dopple, transition to an attached property
+        $thisvar['propvalue'] = $replicant->tsvalue;
+        $thisvar['featureid'] = $entity->tid;
+        dh_update_properties($thisvar, 'name');
       }
+      // old handler used replicants instead of properties00
       $dopple_form = array();
-      //dpm($dopple,'dopple = ' . $thisvar['varkey']);
       dh_variables_formRowPlugins($dopple_form, $dopple);
-      $rowform[$dopple->varkey] = $dopple_form['tsvalue'];
+      $rowform[$pn] = $dopple_form['propvalue'];
+      //dpm($rowform[$pn],"Adding $pn to form");
+      // @todo: put this in a plugin, and have a method to add a for as single named attribute
       if ($thisvar['varkey'] == 'ph') {
-        $rowform[$dopple->varkey]['#type'] = 'select';
-        $rowform[$dopple->varkey]['#options'] = array_merge(
+      //dpm($dopple,'dopple = ' . $pn);
+        $rowform[$pn]['#type'] = 'select';
+        $rowform[$pn]['#options'] = array_merge(
           array(0 => 'NA'),
           $this->rangeList(3, 5, $inc = 0.01)
         );
       } 
     }
+    //dpm($entity,'entity after formRowEdit');
+    //dpm($rowform,'rowform');
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
     parent::formRowSave($rowvalues, $entity);
     //dpm($rowvalues,'Saving Values');
     //dpm($entity,'Saving entity');
+    // at this point, the form api has already set attributes on the entity equal to form values
+    // but with names munged to replace spaces with underscores
+    // this is at odds with our plugin framework which loads the attached dh_properties as entities
+    // not values.  So, Brix and ph, since they are the same with underscores replaced conflict
     // special save handlers
-    $entity->tsvalue = $rowvalues['brix']; 
+    // so, now we call loadProperties() to insure that all properties are objects
+    $this->loadProperties($entity);
+    $entity->tsvalue = $rowvalues['Brix']; 
     $dopples = $this->getDefaults($entity);
-    if (($rowvalues['sample_weight_g'] > 0) and ($rowvalues['sample_size_berries'] > 0)) {
+    if (($rowvalues['Berry_Count'] > 0) and ($rowvalues['Sample_Weight'] > 0)) {
       // auto-calculate berry weight
-      $rowvalues['berry_weight_g'] = floatval($rowvalues['sample_weight_g']) / floatval($rowvalues['sample_size_berries']);
+      $rowvalues['Berry_Weight'] = round(floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']),3);
     }
     //dpm($dopples,'dopples');
+    // check for transition from ts to prop
     foreach ($dopples as $thisvar) {
-      $dopple = $this->loadReplicant($entity, $thisvar['varkey']);
-      //dpm($dopple,'dopple = ' . $thisvar['varkey']);
-      $dopple->tsvalue = $rowvalues[$thisvar['varkey']];
-      entity_save('dh_timeseries', $dopple);
+      $replicant = $this->loadReplicant($entity, $thisvar['varkey']);
+      if (!$replicant->is_new) {
+        entity_delete('dh_timeseries', $replicant->tid);
+      }
+      $pn = $this->handleFormPropname($thisvar['propname']);
+      if (isset($rowvalues[$pn])) {
+        if (property_exists($entity, $thisvar['propname']) and is_object($entity->{$thisvar['propname']})) {
+          $prop = $entity->{$thisvar['propname']};
+          foreach ($prop->dh_variables_plugins as $plugin) {
+            if (method_exists($plugin, 'applyEntityAttribute')) {
+              $plugin->applyEntityAttribute($prop, $rowvalues[$pn]);
+            } else {
+              if (is_numeric($rowvalues[$pn])) {
+                $prop->propvalue = $rowvalues[$pn];
+              } else {
+                $prop->propcode = $rowvalues[$pn];
+              }
+            }
+          }
+        }
+      }
     }
   }
 
