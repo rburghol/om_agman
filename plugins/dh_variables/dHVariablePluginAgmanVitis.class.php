@@ -136,10 +136,11 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
     return $pcts;
   }
   
-  function rangeList($start, $end, $inc = 1, $scaler = 1) {
+  function rangeList($start, $end, $inc = 1, $round = 0) {
     // ex: 0 to 1.0 by 0.1, 
     $range_list = array();
     for ($i = $start; $i <= $end; $i += $inc) {
+      $i = round($i, $round);
       $range_list["$i"] = $i;
     }
     return $range_list;
@@ -163,10 +164,6 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
     $props = $this->getDefaults($entity);
     //dpm($props,'props to convert');
     foreach ($props as $thisvar) {
-      $replicant = $this->loadReplicant($entity, $thisvar['varkey']);
-      if (!$replicant->is_new) {
-        entity_delete('dh_timeseries', $replicant->tid);
-      }
       $convert_value = FALSE; // flag to see if we need to convert (in case we are called multiple times)
       $load_property = FALSE;
       $propvalue = NULL;
@@ -229,7 +226,6 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
     //dpm($entity,'save(entity)');
     parent::save();
   }
-  
   public function loadProperties(&$entity, $overwrite = FALSE, $propname = FALSE) {
     $props = $this->getDefaults($entity);
     //dpm($props,'props to loadProperties');
@@ -749,7 +745,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       'ph' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
-        'default_propvalue' => 3.5,
+        'default_propvalue' => 3.0,
         'propname' => 'pH',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -815,11 +811,14 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       //dpm($dopple,'dopple before dh_update_properties = ' . $pn);
       // transition this over -- if this has dopples, load them, get values, save as prop then delete
       $replicant = $this->loadReplicant($entity, $thisvar['varkey']);
+      //dpm($replicant,"Replicant for $thisvar[varkey]");
       if (!$replicant->is_new && !$dopple->pid) {
         // this is an existing dopple, transition to an attached property
         $thisvar['propvalue'] = $replicant->tsvalue;
         $thisvar['featureid'] = $entity->tid;
         dh_update_properties($thisvar, 'name');
+        $this->loadProperties($entity, TRUE, $thisvar['propname']);
+        $dopple = $entity->{$thisvar['propname']};
       }
       // old handler used replicants instead of properties00
       $dopple_form = array();
@@ -832,7 +831,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $rowform[$pn]['#type'] = 'select';
         $rowform[$pn]['#options'] = array_merge(
           array(0 => 'NA'),
-          $this->rangeList(3, 5, $inc = 0.01)
+          $this->rangeList(2.0, 5.0, $inc = 0.01, 2)
         );
       } 
     }
