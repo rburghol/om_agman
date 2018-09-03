@@ -38,6 +38,8 @@ class dHVariablePluginCodeAttribute extends dHVariablePluginDefault {
 class dHVariablePluginNumericAttribute extends dHVariablePluginDefault {
   var $default_value = 0.0;
   var $default_code = '';
+  var $pct_range = array('<5', 10, 25, 50, 75, 90, 100);
+  var $pct_default = NULL;
   
   public function hiddenFields() {
     return array('startdate','featureid','enddate','entity_type','propcode');
@@ -47,13 +49,45 @@ class dHVariablePluginNumericAttribute extends dHVariablePluginDefault {
     if (!$varinfo) {
       return FALSE;
     }
-    $rowform['propvalue'] = array(
-      '#title' => t($varinfo->varname),
-      '#type' => 'textfield',
-      '#description' => $varinfo->vardesc,
-      '#default_value' => !empty($row->propvalue) ? $row->propvalue : NULL,
-    );
+    if ($varinfo->datatype == 'percent') {
+      $pcts = $this->pct_list($this->pct_range);
+      $rowform['propvalue'] = array(
+        '#title' => t($varinfo->varname),
+        '#type' => 'select',
+        '#options' => $pcts,
+        '#empty_option' => 'n/a',
+        '#description' => $varinfo->vardesc,
+        '#default_value' => !empty($row->propvalue) ? $row->propvalue : "$this->pct_default",
+      );
+    } else {
+      $rowform['propvalue'] = array(
+        '#title' => t($varinfo->varname),
+        '#type' => 'textfield',
+        '#description' => $varinfo->vardesc,
+        '#default_value' => !empty($row->propvalue) ? $row->propvalue : NULL,
+      );
+    }
   }
+    
+  public function pct_list($inc = 10) {
+    $pcts = array();
+    if (is_array($inc)) {
+      // we already have our list of percents, just work it out
+      foreach ($inc as $i) {
+        $dec = floatval(preg_replace('/\D/', '', $i)) / 100.0;
+        $pcts["$dec"] = $i . " %";
+      }
+    } else {
+      $i = $inc;
+      while ($i <= 100) {
+        $dec = floatval($i) / 100.0;
+        $pcts["$dec"] = $i . " %";
+        $i += $inc;
+      }
+    }
+    return $pcts;
+  }
+  
   public function applyEntityAttribute($property, $value) {
     $property->propvalue = $value;
   }
@@ -95,6 +129,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
       return FALSE;
     }
     // get facility
+    // @todo: handle location only if this is a stand-alone for editing location, otherwise it is a child attribute
     $feature = $this->getParentEntity($row);
     if ($feature->bundle <> 'facility') {
       // this is a block, get the parent
@@ -115,6 +150,10 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
       '#weight' => -1,
       '#default_value' => $rowform['featureid']['#default_value'],
     );
+    $rowform['tscode']['#type'] = 'textfield';
+    $rowform['tscode']['#title'] = t('Row or Sub-Block');
+    $rowform['tscode']['#weight'] = 0;
+    $rowform['tscode']['#description'] = t('Alphanumeric code or description of sub-area for sampling.');
   }
     
   public function pct_list($inc = 10) {
@@ -378,7 +417,7 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
     // apply custom settings here
-    //dpm($row,'row');
+    //dpm($row,'plugin row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
@@ -706,7 +745,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     parent::__construct($conf);
   }
   public function hiddenFields() {
-    return array('tid', 'varid', 'entity_type', 'bundle','tscode', 'tsvalue');
+    return array('tid', 'varid', 'entity_type', 'bundle', 'tsvalue');
   }
   
   public function getDefaults($entity, &$defaults = array()) {
@@ -761,6 +800,16 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'featureid' => $entity->identifier(),
         'varkey' => 'berry_weight_g',
         'varid' => dh_varkey2varid('berry_weight_g', TRUE),
+      ),
+      'seed_lignification' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'default_propvalue' => 0.0,
+        'propname' => 'Seed Lignification',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'seed_lignification',
+        'varid' => dh_varkey2varid('seed_lignification', TRUE),
       ),
       'water_content_pct' => array(
         'entity_type' => $entity->entityType(),
@@ -822,6 +871,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       }
       // old handler used replicants instead of properties00
       $dopple_form = array();
+      //dpm($dopple,'dopple before dh_variables_formRowPlugins = ' . $pn);
       dh_variables_formRowPlugins($dopple_form, $dopple);
       $rowform[$pn] = $dopple_form['propvalue'];
       //dpm($rowform[$pn],"Adding $pn to form");

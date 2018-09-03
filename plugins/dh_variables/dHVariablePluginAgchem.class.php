@@ -422,10 +422,18 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         'value' => dh_varkey2varid('agchem_phi'),
         ),
       );
-      $fe->loadComponents($criteria);
+      
+      $phi_info = array(
+        'featureid' => $fe->adminid,
+        'entity_type' => 'dh_adminreg_feature',
+        'bundle' => 'dh_properties',
+        'varkey' => 'agchem_phi',
+      );
+      $fe->agchem_phi = dh_properties_enforce_singularity($phi_info, 'singular');
+      //$fe->loadComponents($criteria);
       //dpm($fe,'agchem obj');
-      if (isset($fe->dh_properties['agchem_phi']) and is_object($fe->dh_properties['agchem_phi']) ) {
-        $this_phi = $feature->startdate + $fe->dh_properties['agchem_phi']->propvalue * 86400;
+      if (isset($fe->agchem_phi) and is_object($fe->agchem_phi) ) {
+        $this_phi = $feature->startdate + $fe->agchem_phi->propvalue * 86400;
         if ($feature->phi_ts < $this_phi) {
           $feature->phi_ts = $this_phi;
           $feature->phi_chems = array($fe->name);
@@ -437,6 +445,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           }
         }
       }
+      
       $chem_names[] = $fe->name . ' @ ' . $fe->amount->propvalue . ' ' . $fe->units->propcode;
       $feature->chems[$cix] = $fe;
       
