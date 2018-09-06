@@ -811,6 +811,16 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'varkey' => 'seed_lignification',
         'varid' => dh_varkey2varid('seed_lignification', TRUE),
       ),
+      'total_acidity_gpl' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode' => NULL,
+        'default_propvalue' => 0.0,
+        'propname' => 'Total Acidity',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'total_acidity_gpl',
+        'varid' => dh_varkey2varid('total_acidity_gpl', TRUE),
+      ),
       'water_content_pct' => array(
         'entity_type' => $entity->entityType(),
         'propcode' => NULL,
