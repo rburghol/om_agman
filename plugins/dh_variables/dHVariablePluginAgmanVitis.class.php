@@ -36,7 +36,7 @@ class dHVariablePluginCodeAttribute extends dHVariablePluginDefault {
 }
 
 class dHVariablePluginNumericAttribute extends dHVariablePluginDefault {
-  var $default_value = 0.0;
+  var $default_value = 0;
   var $default_code = '';
   var $pct_range = array('<5', 10, 25, 50, 75, 90, 100);
   var $pct_default = NULL;
@@ -49,23 +49,37 @@ class dHVariablePluginNumericAttribute extends dHVariablePluginDefault {
     if (!$varinfo) {
       return FALSE;
     }
-    if ($varinfo->datatype == 'percent') {
-      $pcts = $this->pct_list($this->pct_range);
+    switch ($varinfo->datatype) {
+      case 'percent':
+      $opts = $this->pct_list($this->pct_range);
       $rowform['propvalue'] = array(
         '#title' => t($varinfo->varname),
         '#type' => 'select',
-        '#options' => $pcts,
+        '#options' => $opts,
         '#empty_option' => 'n/a',
+        '#description' => $varinfo->vardesc,
+        '#default_value' => !empty($row->propvalue) ? $row->propvalue : $this->default_value,
+      );
+      break;
+      case 'boolean':
+      $opts = array(0 => 'False', 1 => 'True');
+      $rowform['propvalue'] = array(
+        '#title' => t($varinfo->varname),
+        '#type' => 'select',
+        '#options' => $opts,
         '#description' => $varinfo->vardesc,
         '#default_value' => !empty($row->propvalue) ? $row->propvalue : "$this->pct_default",
       );
-    } else {
+      break;
+      
+      default:
       $rowform['propvalue'] = array(
         '#title' => t($varinfo->varname),
         '#type' => 'textfield',
         '#description' => $varinfo->vardesc,
         '#default_value' => !empty($row->propvalue) ? $row->propvalue : NULL,
       );
+      break;
     }
   }
     
@@ -107,8 +121,8 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
     $defaults += array(
       'berry_weight_g' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'propvalue' => 0.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
         'propname' => 'Berry Weight',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -121,16 +135,22 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
   }
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
-    $this->loadProperties($row);
-    // apply custom settings here
-    //dpm($row,'row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
+    $this->loadProperties($row);
+    // use special vineyard -> block selector
+    $this->addLocationSelector($rowform, $row);
+    // apply custom settings here
+    $this->addAttachedProperties($rowform, $row);
+    //dpm($row,'row');
+  }
+  
+  public function addLocationSelector(&$form, &$entity) {
     // get facility
     // @todo: handle location only if this is a stand-alone for editing location, otherwise it is a child attribute
-    $feature = $this->getParentEntity($row);
+    $feature = $this->getParentEntity($entity);
     if ($feature->bundle <> 'facility') {
       // this is a block, get the parent
       $facility = dh_getMpFacilityEntity($feature);
@@ -142,18 +162,49 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
       $ftype = FALSE;
     }
     $options = dh_facility_tree_select($facility->hydroid, TRUE, $bundle, $ftype);
-    $rowform['featureid'] = array(
+    $form['featureid'] = array(
       '#title' => t('Location'),
       '#type' => 'select',
       '#options' => $options,
       '#size' => 1,
       '#weight' => -1,
-      '#default_value' => $rowform['featureid']['#default_value'],
+      '#default_value' => $form['featureid']['#default_value'],
     );
-    $rowform['tscode']['#type'] = 'textfield';
-    $rowform['tscode']['#title'] = t('Row or Sub-Block');
-    $rowform['tscode']['#weight'] = 0;
-    $rowform['tscode']['#description'] = t('Alphanumeric code or description of sub-area for sampling.');
+    $form['tscode']['#type'] = 'textfield';
+    $form['tscode']['#title'] = t('Row or Sub-Block');
+    $form['tscode']['#weight'] = 0;
+    $form['tscode']['#description'] = t('Alphanumeric code or description of sub-area for sampling.');
+  }
+  
+  public function addAttachedProperties(&$form, &$entity) {
+    $dopples = $this->getDefaults($entity);
+    //dpm($dopples,'dopples');
+    foreach ($dopples as $thisvar) {
+      $pn = $this->handleFormPropname($thisvar['propname']);
+      $dopple = $entity->{$thisvar['propname']};
+      /*
+      //dpm($dopple,'dopple before dh_update_properties = ' . $pn);
+      // old handler used replicants instead of properties00
+      // transition this over -- if this has dopples, load them, get values, save as prop then delete
+      $replicant = $this->loadReplicant($entity, $thisvar['varkey']);
+      //dpm($replicant,"Replicant for $thisvar[varkey]");
+      if (!$replicant->is_new && !$dopple->pid) {
+        // this is an existing dopple, transition to an attached property
+        $thisvar['propvalue'] = $replicant->tsvalue;
+        $thisvar['featureid'] = $entity->tid;
+        dh_update_properties($thisvar, 'name');
+        $this->loadProperties($entity, TRUE, $thisvar['propname']);
+        $dopple = $entity->{$thisvar['propname']};
+      }
+      */
+      $dopple_form = array();
+      //dpm($dopple,'dopple before dh_variables_formRowPlugins = ' . $pn);
+      dh_variables_formRowPlugins($dopple_form, $dopple);
+      $form[$pn] = $dopple_form['propvalue'];
+      //dpm($rowform[$pn],"Adding $pn to form");
+    }
+    //dpm($entity,'entity after formRowEdit');
+    //dpm($rowform,'rowform');
   }
     
   public function pct_list($inc = 10) {
@@ -285,6 +336,12 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefault {
           // prop does not exist, so need to create
           // @todo: manage this create the prop then pass defaults
           $prop = entity_create('dh_properties', $thisvar);
+          if (isset($thisvar['propvalue_default'])) {
+            $prop->propvalue = $thisvar['propvalue_default'];
+          }
+          if (isset($thisvar['propcode_default'])) {
+            $prop->propcode = $thisvar['propcode_default'];
+          }
         }
         if (!$prop) {
           watchdog('om', 'Could not Add Properties in plugin loadProperties');
@@ -458,13 +515,128 @@ class dHVariablePluginIPMIncident extends dHVariablePluginPercentSelector {
   }
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
-    $pcts = $this->pct_list(array('<1', 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, '>95'));
+    $pcts = array('<1');
+    for ($i = 5; $i < 95; $i+= 5) {
+      $pcts[] = $i;
+    }
+    $pcts[] = '>95';
+    $pcts = $this->pct_list($pcts);
     $rowform['tsvalue']['#options'] = $pcts;
     $rowform['tsvalue']['#title'] = t('% of Plants Affected');
     $rowform['tscode']['#title'] = t('Incident Type');
     $rowform['tscode']['#type'] = 'select';
     $rowform['tscode']['#options'] = $this->incidentCodes();
     $rowform['tscode']['#size'] = 1;
+  }
+}
+
+class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
+  
+  public function incidentCodes() {
+    // do this as a query of variables in the 
+    $options = dh_varkey_varselect_options(array("vocabulary = 'fungal_pathogens'"));
+    asort($options);
+    return $options;
+    return array(
+      'org_black_rot' => 'Black Rot',
+      'org_botrytis' => 'Botrytis',
+      'org_black_rot' => 'Downy Mildew',
+      'org_phomopsis' => 'Phomopsis',
+      'org_powdery_mildew' => 'Powdery Mildew',
+      'org_ripe_rot' => 'Ripe Rot',
+    );
+  }
+  
+  public function getDefaults($entity, &$defaults = array()) {
+    parent::getDefaults($entity, $defaults);
+    $defaults += array(
+      'ipm_advanced' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0,
+        'propname' => 'Advanced',
+        'vardesc' => 'Use incidence * extent formula to calculate overall occurence rate.',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_advanced',
+        'varid' => dh_varkey2varid('ipm_advanced', TRUE),
+      ),
+      'ipm_incidence' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.5,
+        'propname' => 'Incidence',
+        'vardesc' => 'Fraction of plants effected (0.0-1.0)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_incidence',
+        'varid' => dh_varkey2varid('ipm_incidence', TRUE),
+      ),
+      'ipm_extent' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.5,
+        'propname' => 'Extent',
+        'vardesc' => 'Fraction effected tissue per plant (0.0-1.0)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_extent',
+        'varid' => dh_varkey2varid('ipm_extent', TRUE),
+      ),
+      'ipm_tissue' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'leaves',
+        'propvalue_default' => 0.0,
+        'propname' => 'Location',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_tissue',
+        'varid' => dh_varkey2varid('ipm_tissue', TRUE),
+      ),
+    );
+    return $defaults;
+  }
+  
+  public function formRowEdit(&$form, $row) {
+    parent::formRowEdit($form, $row); // does hiding etc.
+    // done in parent now, override if ranges are insufficient
+    //$pcts = $this->pct_list(array('<1', 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, '>95'));
+    //$form['tsvalue']['#options'] = $pcts;
+    $form['tsvalue']['#default_value'] = ($row->tid > 0) ? $row->tsvalue : 0.25;
+    $form['tsvalue']['#title'] = t('% Affected (incidence * extent)');
+    $form['tsvalue']['#weight'] = 1;
+    $form['tsvalue']['#type'] = 'select';
+    $form['tscode']['#title'] = t('Organism Type');
+    $form['tscode']['#type'] = 'select';
+    $form['tscode']['#options'] = $this->incidentCodes();
+    $form['tscode']['#size'] = 1;
+    
+    $form['Advanced']['Advanced'] = $form['Advanced'];
+    $form['Advanced']['#type'] = 'fieldset';
+    $form['Advanced']['#collapsible'] = TRUE;
+    $form['Advanced']['#collapsed'] = TRUE;
+    $form['Advanced']['#weight'] = 2;
+    $adv = $row->Advanced;
+    //dpm($adv,'row');
+    //dpm($adv->propvalue,'propvalue');
+    if ($adv->propvalue > 0) {
+      // using advanced notation, so show as expanded
+      $form['Advanced']['#collapsed'] = FALSE;
+      $form['tsvalue']['#type'] = 'hidden';
+      $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
+    }
+    $form['Advanced']['Incidence'] = $form['Incidence'];
+    $form['Advanced']['Extent'] = $form['Extent'];
+    unset($form['Incidence']);
+    unset($form['Extent']);
+  }
+  
+  public function save($entity) {
+    if ($entity->Advanced > 0) {
+      // use advanced notation
+      $entity->tsvalue = $entity->Incidence * $entity->Extent;
+    }
+    parent::save();
   }
 }
 
@@ -753,8 +925,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     $defaults += array(
       'sample_weight_g' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 0.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
         'propname' => 'Sample Weight',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -763,8 +935,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       ),
       'sample_size_berries' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 0.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
         'propname' => 'Berry Count',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -773,8 +945,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       ),
       'brix' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 0.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
         'propname' => 'Brix',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -783,8 +955,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       ),
       'ph' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 3.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 3.0,
         'propname' => 'pH',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -793,8 +965,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       ),
       'berry_weight_g' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 0.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
         'propname' => 'Berry Weight',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -803,8 +975,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       ),
       'seed_lignification' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 0.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
         'propname' => 'Seed Lignification',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -813,8 +985,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       ),
       'total_acidity_gpl' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 0.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
         'propname' => 'Total Acidity',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -823,8 +995,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       ),
       'water_content_pct' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 0.5,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.5,
         'propname' => 'Water Content',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -833,8 +1005,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       ), 
       'total_phenolics_aug' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 0.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
         'propname' => 'Total Phenolics',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -843,8 +1015,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       ),
       'total_anthocyanin_mgg' => array(
         'entity_type' => $entity->entityType(),
-        'propcode' => NULL,
-        'default_propvalue' => 0.0,
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
         'propname' => 'Total anthocyanin',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -857,46 +1029,18 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   
   public function formRowEdit(&$rowform, $entity) {
     parent::formRowEdit($rowform, $entity); // does location
-    // apply custom settings here
-    $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
-    if (!$varinfo) {
-      return FALSE;
-    }
-    $dopples = $this->getDefaults($entity);
-    //dpm($dopples,'dopples');
-    foreach ($dopples as $thisvar) {
-      $pn = $this->handleFormPropname($thisvar['propname']);
-      $dopple = $entity->{$thisvar['propname']};
-      //dpm($dopple,'dopple before dh_update_properties = ' . $pn);
-      // transition this over -- if this has dopples, load them, get values, save as prop then delete
-      $replicant = $this->loadReplicant($entity, $thisvar['varkey']);
-      //dpm($replicant,"Replicant for $thisvar[varkey]");
-      if (!$replicant->is_new && !$dopple->pid) {
-        // this is an existing dopple, transition to an attached property
-        $thisvar['propvalue'] = $replicant->tsvalue;
-        $thisvar['featureid'] = $entity->tid;
-        dh_update_properties($thisvar, 'name');
-        $this->loadProperties($entity, TRUE, $thisvar['propname']);
-        $dopple = $entity->{$thisvar['propname']};
-      }
-      // old handler used replicants instead of properties00
-      $dopple_form = array();
-      //dpm($dopple,'dopple before dh_variables_formRowPlugins = ' . $pn);
-      dh_variables_formRowPlugins($dopple_form, $dopple);
-      $rowform[$pn] = $dopple_form['propvalue'];
-      //dpm($rowform[$pn],"Adding $pn to form");
-      // @todo: put this in a plugin, and have a method to add a for as single named attribute
-      if ($thisvar['varkey'] == 'ph') {
-      //dpm($dopple,'dopple = ' . $pn);
-        $rowform[$pn]['#type'] = 'select';
-        $rowform[$pn]['#options'] = array_merge(
-          array(0 => 'NA'),
-          $this->rangeList(2.0, 5.0, $inc = 0.01, 2)
-        );
-      } 
-    }
-    //dpm($entity,'entity after formRowEdit');
-    //dpm($rowform,'rowform');
+    //dpm($dopple,'dopple = ' . $pn);
+    // override pH format
+    // @todo: put this in plugin, or just eliminate, why should we have a select list for pH?
+    //        maybe just a validator code is all that is needed
+    /*
+    dpm($rowform,'form before ph settings');
+    $rowform['pH']['#type'] = 'select';
+    $rowform['pH']['#options'] = array_merge(
+      array(0 => 'NA'),
+      $this->rangeList(2.0, 5.0, $inc = 0.01, 2)
+    );
+    */
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
