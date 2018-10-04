@@ -1,5 +1,9 @@
 <?php
 module_load_include('inc', 'dh', 'plugins/dh.display');
+module_load_include('module', 'dh');
+// make sure that we have base plugins 
+$plugin_def = ctools_get_plugins('dh', 'dh_variables', 'dHOMmodelElement');
+$class = ctools_plugin_get_class($plugin_def, 'handler');
 
 // viticultural ag management
 // canopy management = class dHVariablePluginVitisCanopyMgmt
