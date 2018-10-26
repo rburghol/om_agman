@@ -481,6 +481,12 @@ function om_agman_agchem_materials_select($hydroid, &$form, $fname, $viewname, $
   foreach ($def as $selopt) {
     $deftable[$selopt] = 1;
   }
+  $dh_farm_feature = entity_load_single('dh_feature', $hydroid);
+  //dpm($dh_farm_feature->field_link_agchem_material,'agchems');
+  $chemids = array();
+  foreach ($dh_farm_feature->field_link_agchem_material['und'] as $link) {
+    $chemids[] = $link['target_id'];
+  }
   $form[$fname]['und']['#empty'] = t('No content available.');
   $form[$fname]['und']['#type'] = 'tableselect';
   $form[$fname]['und']['#required'] = TRUE;
@@ -508,6 +514,10 @@ function om_agman_agchem_materials_select($hydroid, &$form, $fname, $viewname, $
   //dpm($form,'form');
   foreach($form[$fname]['und']['#options'] as $id => $result) {
     // format the material
+    if (!in_array($id, $chemids)) {
+      unset($form[$fname]['und']['#options'][$id]);
+      continue;
+    }
     $material = entity_load_single('dh_adminreg_feature', $id);
     $criteria = array();
     $varkeys = array(
@@ -567,8 +577,8 @@ function om_agman_agchem_materials_select($hydroid, &$form, $fname, $viewname, $
     }
     // END - tableselect
   }
-  //dpm($form[$fname],'select');
   $form[$fname]['und']['#options'] = $opts;
+  //dpm($form[$fname],'select');
 }
 
 
