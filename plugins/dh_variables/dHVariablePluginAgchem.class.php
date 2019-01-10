@@ -99,7 +99,14 @@ class dHVariablePluginAgchemREI extends dHVariablePluginDefault {
   public function save(&$entity) {
     parent::save();
   }
+}
+
+class dHVariablePluginAgchemMaxApps extends dHVariablePluginDefault {
   
+  public function formRowEdit(&$form, $entity) {
+    $form['propcode']['#type'] = 'hidden';
+    $form['propcode']['#prefix'] = 'per year';
+  }
 }
 
 class dHVariablePluginFRAC extends dHVariablePluginDefault {
