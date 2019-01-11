@@ -82,6 +82,7 @@ class dHVariablePluginAgchemPHI extends dHVariablePluginDefault {
   
   public function formRowEdit(&$form, $entity) {
     $form['propcode']['#type'] = 'hidden';
+    $form['propvalue']['#suffix'] = ' days';
   }
 }
 
