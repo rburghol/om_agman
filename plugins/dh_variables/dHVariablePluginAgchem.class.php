@@ -100,8 +100,9 @@ class dHVariablePluginAgchemREI extends dHVariablePluginDefault {
     $form['propcode']['#options'] = $this->reiCode();
     $form['propcode']['#default_value'] = !empty($entity->propcode) ? $entity->propcode : 'all';
     $form['propcode']['#size'] = 1;
-    $form['propcode']['#suffix'] = ' hours';
     $form['propcode']['#multiple'] = FALSE;
+    // value
+    $form['propvalue']['#suffix'] = ' hours';
   }
   
   public function save(&$entity) {
