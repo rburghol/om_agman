@@ -78,6 +78,14 @@ class dHVariablePluginAgchemAI extends dHVariablePluginDefault {
   
 }
 
+class dHVariablePluginAgchemPHI extends dHVariablePluginDefault {
+  
+  public function formRowEdit(&$form, $entity) {
+    $form['propcode']['#type'] = 'hidden';
+    $form['propvalue']['#suffix'] = ' days';
+  }
+}
+
 class dHVariablePluginAgchemREI extends dHVariablePluginDefault {
   
   public function reiCode() {
@@ -94,12 +102,21 @@ class dHVariablePluginAgchemREI extends dHVariablePluginDefault {
     $form['propcode']['#default_value'] = !empty($entity->propcode) ? $entity->propcode : 'all';
     $form['propcode']['#size'] = 1;
     $form['propcode']['#multiple'] = FALSE;
+    // value
+    $form['propvalue']['#suffix'] = ' hours';
   }
   
   public function save(&$entity) {
     parent::save();
   }
+}
+
+class dHVariablePluginAgchemMaxApps extends dHVariablePluginDefault {
   
+  public function formRowEdit(&$form, $entity) {
+    $form['propcode']['#type'] = 'hidden';
+    $form['propcode']['#prefix'] = 'per year';
+  }
 }
 
 class dHVariablePluginFRAC extends dHVariablePluginDefault {
@@ -124,6 +141,7 @@ class dHVariablePluginFRAC extends dHVariablePluginDefault {
     if (!($selected)) {
       $form['propcode']['#default_value'] = array();
     }
+    $form['#weight'] = 1;
   }
   
   public function buildContent(&$content, &$entity, $view_mode) {
