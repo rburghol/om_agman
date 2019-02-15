@@ -26,6 +26,7 @@ function agchem_registration_form($form, &$form_state, $dh_adminreg_feature = nu
     'insecticide' => 'Insecticide',
     'herbicide' => 'Herbicide',
     'fertilizer' => 'Fertilizer',
+    'other' => 'Other',
   );
   
   $form['ftype'] = array(
@@ -71,7 +72,9 @@ function agchem_registration_form($form, &$form_state, $dh_adminreg_feature = nu
   // reformat attached fields
   $form['dh_link_admin_reg_issuer']['und']['#title'] = 'Registering Authority';
   $form['dh_link_admin_reg_issuer']['und']['#multiple'] = FALSE;
-  
+  $form['registration_id']['und'][0]['value']['#required'] = TRUE;
+  $form['registration_id']['und'][0]['value']['#description'] = t('The id issued by the reulatory authority, or in the case of a user-defined material, or non-registered, a unique identifier (for user-defined this can be the same as material name).');
+  //dpm($dh_adminreg_feature,'feature');
   $hiddens = array('dh_link_admin_reg_holder', 'dh_link_admin_record_mgr_id', 'dh_link_admin_dha_usafips', 'dh_geofield', 'field_dha_local_gov', 'dh_link_admin_timeseries');
   //$hiddens = array('dh_link_admin_location', 'dh_link_organization_mps');
   foreach ($hiddens as $hidethis) {
@@ -198,8 +201,12 @@ function agchem_registration_form_submit(&$form, &$form_state) {
   $dh_adminreg_feature = agchem_registration_form_save($form, $form_state);
   dsm("Saving $dh_adminreg_feature->name");
   //dpm($form_state['triggering_element']);
+  // @todo: 
+  // - enforce unique registration ID, regardless if it is a custom - provide guidance
+  // - make admincode equal to registration iD
   if ($form_state['triggering_element']['#id'] == 'edit-rates') {
     $url = implode('/', array('ipm-fungicide-manage', $dh_adminreg_feature->adminid));
+    //dpm($url, "Redirecting to rate edit screen");
   } else {
     $parms = drupal_get_query_parameters();
     if (isset($parms['finaldest'])) {
