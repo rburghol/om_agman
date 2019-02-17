@@ -682,10 +682,16 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $rate_range = empty($rate_limits) ? '---' : implode(' to ', $rate_limits) . " $rate_units";
     
     $rowform['rate_range'] = array(
+      '#type' => 'fieldset',
       '#coltitle' => 'Material Label Range',
-      '#markup' => "<strong>$row->name</strong>",
+      //'#markup' => 'Test TEst',
     );
-    $rowform['rate_range']['#markup'] .= "<br>&nbsp;&nbsp;($rate_range)";
+    $rowform['rate_range']['base_rate'] = array(
+      '#type' => 'item',
+      '#markup' => 
+        "<strong>$row->name</strong>"
+        ."<br>&nbsp;&nbsp;($rate_range)",
+    );
     $vol_per_vols = array('oz/gal');
     // dont scale if it is a concentration based since volume is already scaled
     if (!in_array($rate_units, $vol_per_vols)) {
@@ -699,10 +705,30 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       if (property_exists($result, 'dh_properties')) {
         
       }
-      $rowform['rate_range']['#markup'] .= '<br>&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy';
     }
-    //$rowform['rate_range']['#coltitle'] .= '<br>Suggested Range';
-    $rowform['rate_range']['#markup'] .= '<br>&nbsp;&nbsp; = ' . $rate_suggestions;
+    # dynamically adjusting rate range scaler
+    for ($r = 5; $r <= 100; $r += 5) {
+      // create a set of conditionals
+      // @todo: this is keyed against selct list named 'event_settings[3][propvalue]' 
+      //        which is obviously risky and subject to change if we modify
+      //        Thus, we should chagne this to "addAttachedProperties" method in OM module 
+      $cf = $r/100.0;
+      $scale = $this->scaleFactor($cf, $rate_units);
+      $ra = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
+      $rs = empty($rate_limits) ? '---' : implode(' to ', $ra) . " $rate_units ";
+      $rate_select_key = $r/100.0;
+      $rowform['rate_range']["rate_$r"] = array(
+        '#type' => 'item',
+        '#markup' => '&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy'
+          . '<br>&nbsp;&nbsp; = ' . $rs,
+        '#states' => array(
+          'visible' => array(
+            ':input[name="event_settings[3][propvalue]"]' => array('value' => "$rate_select_key"),
+          ),
+        ),
+      );
+    }
+    //dpm($rowform['rate_range'],"rate ranges");
     /*
     $rowform['rate_scaled'] = array(
       '#coltitle' => 'Scaled by % Canopy',
