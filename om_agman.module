@@ -125,6 +125,9 @@ function om_agman_form_block_select(&$element, $farmid = FALSE) {
       $opts[$id]['label'] .= $block->name;
     }
   }
+  $farm = entity_load_single('dh_feature', $farmid);
+  $element['und']['#prefix'] = "<b>" . t('Blocks to Spray at ') . $farm->name . "</b>";
+  // dpm($element,'el');
   // END - tableselect
   $element['und']['#options'] = $opts;
   

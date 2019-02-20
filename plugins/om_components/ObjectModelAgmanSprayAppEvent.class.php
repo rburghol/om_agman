@@ -330,7 +330,6 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     //$form[$fname]['und']['#options'] = $opts;
     om_agman_form_block_select($form['dh_link_feature_submittal'], $this->dh_farm_feature->hydroid);
     $form['dh_link_feature_submittal']['#weight'] = 3;
-    $form['dh_link_feature_submittal']['#prefix'] = t('Blocks to Spray');
     foreach ($hiddens as $hidethis) {
       if (isset($form[$hidethis])) {
         $form[$hidethis]['#type'] = 'hidden';
