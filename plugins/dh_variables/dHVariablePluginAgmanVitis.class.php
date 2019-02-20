@@ -123,7 +123,34 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
     //$this->loadProperties($entity);
     parent::create();
   }
-
+  public function getLink($entity) {
+    $args = arg();
+    $page = ((strlen($args[0]) > 0) and (strpos($view_mode, 'ical') === false )) ? $args[0] : 'ipm-home';
+    if (strpos($page, 'ical') !== false) {
+      // catch this -- hack
+      // @todo: make finaldest part of the entity render plugin in views so we don't have to do this
+      $page = 'ipm-home';
+    }
+    $uri = "ipm-events/" . $entity->featureid . "/tsform/$entity->tid&finaldest=$page";
+    $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
+    $varname = $varinfo->varname;
+    $link = array(
+      '#type' => 'link',
+      '#prefix' => '&nbsp; ',
+      '#suffix' => '<br>',
+      '#title' => date('Y-m-d',$entity->tstime) . ": $varname event",
+      '#href' => $uri,
+      'query' => array(
+        'finaldest' => $page,
+      ),
+      '#options' => array(
+        'attributes' => array(
+           'class' => array('editlink')
+         ),
+      ),
+    );
+    return $link;
+  }
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
@@ -138,17 +165,8 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
       $content[$col]['#type'] = 'hidden';
     }
     $pct = ($entity->tsvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->tsvalue) . '%';
+    $link = $this->getLink($entity);
     switch($view_mode) {
-      default:
-        //$content['title'] = array(
-        //  '#type' => 'item',
-        //  '#markup' => "$varname @ $pct in " . $feature->name,
-        //);
-        $content['body'] = array(
-          '#type' => 'item',
-          '#markup' => "$varname @ $pct in " . $feature->name,
-        );
-      break;
       case 'ical_summary':
         //$content['title'] = array(
         //  '#type' => 'item',
@@ -156,6 +174,17 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
         //);
         unset($content['title']['#type']);
         $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$varname @ $pct in " . $feature->name,
+        );
+      break;
+      default:
+        //$content['title'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "$varname @ $pct in " . $feature->name,
+        //);
+        $content['title'] = $link;
         $content['body'] = array(
           '#type' => 'item',
           '#markup' => "$varname @ $pct in " . $feature->name,
