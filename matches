@@ -1,0 +1,6 @@
+  pid  | propname | propvalue | startdate | enddate | featureid | varid | status | module |    bundle     |           entity_type           |  vid  | propcode  | uid |  modified  
+-------+----------+-----------+-----------+---------+-----------+-------+--------+--------+---------------+---------------------------------+-------+-----------+-----+------------
+ 42894 |          |        14 |           |         |      1034 |   144 |      1 |        | dh_properties | field_link_to_registered_agchem | 42968 | floz/acre | 171 | 1547837337
+ 42895 |          |      22.8 |           |         |      1034 |   155 |      1 |        | dh_properties | field_link_to_registered_agchem | 42969 | floz      | 171 | 1547837337
+(2 rows)
+

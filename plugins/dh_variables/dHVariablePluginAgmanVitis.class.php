@@ -149,8 +149,10 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
       'vitis_pruning_winter'=>'Dormant Pruning (all)',
       'vitis_pruning_winter_1st'=>'Dormant Pruning (1st)',
       'vitis_pruning_winter_2nd'=>'Dormant Pruning (2nd)',
-      'vitis_pruning_hedging'=>'Hedging',
+      'vitis_training_thinning'=>'Shoot Thinning',
+      'vitis_training_tying'=>'Shoot Positioning/Tying',
       'vitis_deleaf_fruitzone'=>'Leaf Pulling in Fruit Zone',
+      'vitis_pruning_hedging'=>'Hedging',
     );
     $rowform[$timename]['#weight'] = 0;
     $rowform[$codename] = array(
