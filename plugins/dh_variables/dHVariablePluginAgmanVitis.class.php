@@ -14,6 +14,11 @@ $class = ctools_plugin_get_class($plugin_def, 'handler');
 class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
   // provides location management standardization
   // and some common functions like pct_list() handling
+  // and content formatting
+  public function hiddenFields() {
+    return array('tid', 'varid', 'entity_type', 'bundle');
+  }
+  
   public function getDefaults($entity, &$defaults = array()) {
     //parent::getDefaults($entity, $defaults);
     // Example:
@@ -118,6 +123,46 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
     //$this->loadProperties($entity);
     parent::create();
   }
+
+  public function buildContent(&$content, &$entity, $view_mode) {
+    // special render handlers when using a content array
+    // get all FRAC Codes associated with this entity
+    $feature = $this->getParentEntity($entity);
+    $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
+    $varname = $varinfo->varname;
+    if ($varinfo === FALSE) {
+      return;
+    }
+    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
+    foreach ($hidden as $col) {
+      $content[$col]['#type'] = 'hidden';
+    }
+    $pct = ($entity->tsvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->tsvalue) . '%';
+    switch($view_mode) {
+      default:
+        //$content['title'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "$varname @ $pct in " . $feature->name,
+        //);
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$varname @ $pct in " . $feature->name,
+        );
+      break;
+      case 'ical_summary':
+        //$content['title'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "Verasion @ $pct in " . $feature->name,
+        //);
+        unset($content['title']['#type']);
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$varname @ $pct in " . $feature->name,
+        );
+      break;
+    }
+  }
 }
 class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
@@ -127,10 +172,29 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
   
   public function __construct($conf = array()) {
     parent::__construct($conf);
-    $hidden = array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle');
+    $hidden = array('pid', 'startdate', 'enddate', 'entity_type', 'bundle');
     foreach ($hidden as $hide_this) {
       $this->property_conf_default[$hide_this]['hidden'] = 1;
     }
+  }
+  
+  public function pct_list($inc = 10) {
+    $pcts = parent::pct_list($inc);
+    $pcts["0"] = "TBD";
+    return $pcts;
+  }
+  
+  public function getActions() {
+    $actions = array(
+      'vitis_pruning_winter'=>'Dormant Pruning (all)',
+      'vitis_pruning_winter_1st'=>'Dormant Pruning (1st)',
+      'vitis_pruning_winter_2nd'=>'Dormant Pruning (2nd)',
+      'vitis_training_thinning'=>'Shoot Thinning',
+      'vitis_training_tying'=>'Shoot Positioning/Tying',
+      'vitis_deleaf_fruitzone'=>'Leaf Pulling in Fruit Zone',
+      'vitis_pruning_hedging'=>'Hedging',
+    );
+    return $actions;
   }
   
   public function formRowEdit(&$rowform, $row) {
@@ -141,50 +205,78 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
     if (!$varinfo) {
       return FALSE;
     }
-    $codename = $this->row_map['code'];
-    $valname = $this->row_map['value'];
-    $stimename = $this->row_map['start'];
-    $etimename = $this->row_map['end'];
-    $actions = array(
-      'vitis_pruning_winter'=>'Dormant Pruning (all)',
-      'vitis_pruning_winter_1st'=>'Dormant Pruning (1st)',
-      'vitis_pruning_winter_2nd'=>'Dormant Pruning (2nd)',
-      'vitis_training_thinning'=>'Shoot Thinning',
-      'vitis_training_tying'=>'Shoot Positioning/Tying',
-      'vitis_deleaf_fruitzone'=>'Leaf Pulling in Fruit Zone',
-      'vitis_pruning_hedging'=>'Hedging',
-    );
-    $rowform[$timename]['#weight'] = 0;
-    $rowform[$codename] = array(
+    $actions = $this->getActions();
+    $rowform['tstime']['#weight'] = 0;
+    $rowform['tscode'] = array(
       '#title' => t('Activity'),
       '#type' => 'select',
       '#options' => $actions,
       '#weight' => 1,
     );
-    $pcts = array();
-    for ($i = 1; $i <= 20; $i++) {
-      $dec = $i * 0.05;
-      $pcts["$dec"] = $i * 5;
-    }
-    $rowform[$valname] = array(
+    $pcts = $this->pct_list(5);
+    //$pcts = array();
+    //for ($i = 1; $i <= 20; $i++) {
+   //   $dec = $i * 0.05;
+   //   $pcts["$dec"] = $i * 5 . " %";
+    //}
+    $rowform['tsvalue'] = array(
       '#title' => t('% of block completed'),
       '#type' => 'select',
       '#options' => $pcts,
       '#weight' => 2,
-      '#default_value' => !empty($row->$valname) ? $row->$valname : 1.0,
+      '#empty_value' => 0,
+      '#empty_option' => 'TBD',
+      '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : 0,
     );
-    $rowform[$codename]['#default_value'] = $row->$codename;
-    $hidden = array('pid', 'startdate', 'featureid', 'entity_type', 'bundle');
-    foreach ($hidden as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
-    }
+    $rowform['tscode']['#default_value'] = $row->tscode;
   }
   
   public function formRowSave(&$rowvalues, &$row) {
     parent::formRowSave($rowvalues, $row);
-    $codename = $this->row_map['code']['name'];
-    $row->$codename = implode('-', array($rowvalues['n'], $rowvalues['p'], $rowvalues['k']));
+    //$codename = $this->row_map['code']['name'];
+    //$row->$codename = implode('-', array($rowvalues['n'], $rowvalues['p'], $rowvalues['k']));
     // special save handlers
+  }
+
+  public function buildContent(&$content, &$entity, $view_mode) {
+    parent::buildContent($content, $entity, $view_mode);
+    // special render handlers when using a content array
+    // get all FRAC Codes associated with this entity
+    $feature = $this->getParentEntity($entity);
+    $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
+    $varname = $varinfo->varname;
+    if ($varinfo === FALSE) {
+      return;
+    }
+    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
+    foreach ($hidden as $col) {
+      $content[$col]['#type'] = 'hidden';
+    }
+    $actions = $this->getActions();
+    $activity = isset($actions[$entity->tscode]) ? $actions[$entity->tscode] : "Pruning/Canopy";
+    $pct = ($entity->tsvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->tsvalue) . '%';
+    $pcts = $this->pct_list(5);
+    $pct = isset($pcts[$entity->tsvalue]) ? $pcts[$entity->tsvalue] : "TBD";
+    switch($view_mode) {
+      default:
+        //$content['title'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "$varname @ $pct in " . $feature->name,
+        //);
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$activity @ $pct in " . $feature->name,
+        );
+      break;
+      case 'ical_summary':
+        unset($content['title']['#type']);
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$activity @ $pct in " . $feature->name,
+        );
+      break;
+    }
   }
 
 }
