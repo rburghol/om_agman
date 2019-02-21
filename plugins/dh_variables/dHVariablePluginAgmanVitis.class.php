@@ -151,6 +151,47 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
     );
     return $link;
   }
+    
+  public function dh_getValue($entity, $ts = FALSE, $propname = FALSE, $config = array()) {
+    // Get and Render Chems & Rates
+    $feature = $this->getParentEntity($entity);
+    $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
+    $varname = $varinfo->varname;
+    $args = arg();
+    $page = (strlen($args[0]) > 0) ? $args[0] : 'ipm-home';
+    if (strpos($page, 'ical') !== false) {
+      // catch this -- hack
+      // @todo: make finaldest part of the entity render plugin in views so we don't have to do this
+      $page = 'ipm-home';
+    }
+    $pct = (floatval($entity->tsvalue) <= 0.05) ? "<=5%" : round(100.0 * floatval($entity->tsvalue)) . '%';
+    switch ($propname) {
+      case 'event_title':
+        $title = date('Y-m-d',$entity->tstime) . ": $varname event";
+        return $title;
+      break;
+      case 'event_description':
+        //$description = "$varname @ $pct in " . $feature->name;
+        $description = "$varname in " . $feature->name . " @ $entity->tsvalue " . $pct;
+        $link = $this->getLink($entity);
+        $uri = token_replace("[site:url]" . $link['#href']);
+        $query = $link['query'];
+        $query['absolute'] = TRUE;
+        $description .= l('\nView:' . $uri, $uri, $query);
+        return $description;
+      break;
+      
+      default:
+        if (property_exists($propname, $entity)) {
+          return $entity->{$propname};
+        } else {
+          return $entity->varname;
+        }
+      break;
+    }
+    
+  }
+  
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
@@ -546,41 +587,6 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginAgmanAction {
     $codename = $this->row_map['code']['name'];
     $row->$codename = implode('-', array($rowvalues['n'], $rowvalues['p'], $rowvalues['k']));
     // special save handlers
-  }
-
-  public function buildContent(&$content, &$entity, $view_mode) {
-    // special render handlers when using a content array
-    // get all FRAC Codes associated with this entity
-    $feature = $this->getParentEntity($entity);
-    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
-    foreach ($hidden as $col) {
-      $content[$col]['#type'] = 'hidden';
-    }
-    $pct = ($entity->tsvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->tsvalue) . '%';
-    switch($view_mode) {
-      default:
-        //$content['title'] = array(
-        //  '#type' => 'item',
-        //  '#markup' => "Verasion @ $pct in " . $feature->name,
-        //);
-        $content['body'] = array(
-          '#type' => 'item',
-          '#markup' => "Veraison @ $pct in " . $feature->name,
-        );
-      break;
-      case 'ical_summary':
-        //$content['title'] = array(
-        //  '#type' => 'item',
-        //  '#markup' => "Verasion @ $pct in " . $feature->name,
-        //);
-        unset($content['title']['#type']);
-        $content = array();
-        $content['body'] = array(
-          '#type' => 'item',
-          '#markup' => "Verasion @ $pct in " . $feature->name,
-        );
-      break;
-    }
   }
 }
 
