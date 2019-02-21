@@ -705,6 +705,16 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         
       }
     }
+    // final units
+    $ra_conv = array(
+      'oz/acre' => 'oz',
+      'oz/gal' => 'oz',
+      'floz/acre' => 'floz',
+      'lbs/acre' => 'lbs',
+      'gals/acre' => 'gals',
+      'pt/acre' => 'pt',
+      'qt/acre' => 'qt',
+    );
     # dynamically adjusting rate range scaler
     for ($r = 5; $r <= 100; $r += 5) {
       // create a set of conditionals
@@ -727,17 +737,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         ),
       );
     }
-    //dpm($rowform['rate_range'],"rate ranges");
-    /*
-    $rowform['rate_scaled'] = array(
-      '#coltitle' => 'Scaled by % Canopy',
-      '#markup' => ($scale * 100) . '%',
-    );
-    $rowform['rate_recs'] = array(
-      '#coltitle' => 'Suggested Range',
-      '#markup' => $rate_suggestions,
-    );
-    */
     
     $row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
     $rowform['rate_propvalue'] = array(
@@ -753,13 +752,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       //'#attributes' => array( 'size' => 16),
       '#default_value' => $row->rate_propvalue,
     );
-    /*
-    $rowform['amount_varid'] = array(
-      '#type' => 'hidden',
-      '#default_value' => empty($row->amount_varid) ? $this->amount_varkey : $row->amount_varid,
-      '#required' => TRUE,
-    );
-    */
+    
     // batch total
     // this can be refreshed in the form via javascript?
     // check if batch size is > total volume to spray, make match = total
@@ -780,20 +773,24 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         $total_val = ($total_val > 10) ? round($total_val,1) : round($total_val,2);
       break;
     }
-    // now do final units
-    $ra_conv = array(
-      'oz/acre' => 'oz',
-      'oz/gal' => 'oz',
-      'floz/acre' => 'floz',
-      'lbs/acre' => 'lbs',
-      'gals/acre' => 'gals',
-    );
     $amount_units = empty($row->rate_units) ? '' : $ra_conv[$row->rate_units];
     $rowform['batch_total'] = array(
       '#coltitle' => 'Per Tank / Total',
       //'#markup' => $batch_val . " $amount_units",
       '#markup' => $batch_val . " $amount_units" . " / " . $total_val . " $amount_units",
     );
+    // helper conversions for recs in qt and pint
+    $con_small = array('pt/acre' => 16.0, 'qt/acre' => 32.0);
+    if ( ($batch_val <= 10.0) and in_array($rate_units, array_keys($con_small)) ) {
+      // @todo add a conversion to floz 
+      $rac = $con_small[$rate_units];
+      $rowform['batch_total']['#markup'] .= 
+        '<br>(' 
+        . round($batch_val * $rac, 1) 
+        . ' / ' . round($total_val * $rac, 1) 
+        . ' floz)'
+      ;
+    }
     /*
     $rowform['amount_propvalue'] = array(
       '#coltitle' => 'Total Spray',
