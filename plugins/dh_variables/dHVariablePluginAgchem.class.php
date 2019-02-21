@@ -468,7 +468,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       $feature->chems[$cix] = $fe;
       
     }
-    $chem_list = implode(', ', $chem_names);
+    $chem_list = implode(', \n', $chem_names);
     $feature->chem_items = $chem_names;
     $feature->chem_list = $chem_list;
     $phi_ts = new DateTime();
