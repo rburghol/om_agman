@@ -242,7 +242,7 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
       '#options' => $actions,
       '#weight' => 1,
     );
-    $pcts = $this->pct_list(5);
+    $pcts = $this->pct_list(10);
     //$pcts = array();
     //for ($i = 1; $i <= 20; $i++) {
    //   $dec = $i * 0.05;
