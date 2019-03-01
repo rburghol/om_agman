@@ -38,7 +38,7 @@ function dh_sprayquan_form($form, &$form_state, $dh_adminreg_feature = null, $op
     case 'edit':
     $form['actions']['delete'] = array(
       '#type' => 'submit',
-      '#value' => t('Delete Plan'),
+      '#value' => t('Delete Spray Event'),
       '#weight' => 45,
       '#limit_validation_errors' => array(),
       '#submit' => array('dh_sprayquan_form_submit_delete')
@@ -69,11 +69,10 @@ function dh_sprayquan_form($form, &$form_state, $dh_adminreg_feature = null, $op
 function dh_sprayquan_form_submit_delete(&$form, &$form_state) {
   $parms = drupal_get_query_parameters();
   if (isset($parms['finaldest'])) {
-    $url = $parms['finaldest'];
-  } else {
-    $url = implode('/', array('ipm-home', $blockid));
+    $extras['query']['destination'] = $parms['finaldest'];
   }
-  $form_state['redirect'] = 'admin/content/dh_adminreg_feature/manage/' . $form_state['dh_adminreg_feature']->adminid . '/delete&destination=' . $url;
+  $url = implode('/', array('admin/content/dh_adminreg_feature/manage/' . $form_state['dh_adminreg_feature']->adminid . '/delete'));
+  drupal_goto($url, $extras);
 }
 
 function dh_sprayquan_form_save(&$form, &$form_state) {
@@ -191,7 +190,7 @@ if (isset($a[1])) {
     error_reporting(E_ALL);
     // just grab the regular form for proof of concept
     //$elements = entity_ui_get_form('dh_adminreg_feature', $lu, $op, $form_state);
-
+    //dpm($elements,'form');
     $form = drupal_render($elements);
     echo $form;
   } else {
