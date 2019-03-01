@@ -410,12 +410,20 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     } else {
       watchdog('om_agman_spray_event', "SaveDataObjectsAsForm() called without eventprops object");
     }
+    // try to add a default if not set 
+    if (!is_object($this->chemgrid)) {
+      watchdog('om_agman_spray_event', "SaveDataObjectsAsForm() called without chemgrid object");
+      $chem_conf = $this->MaterialEventPropConfDefault();
+      $this->chemgrid = new ObjectModelAgmanSprayMaterialProps($chem_conf);
+      $this->chemgrid->prepareQuery();
+      $this->chemgrid->getData();
+      //dpm($this->chemgrid,'chemgrid');
+      $this->chemgrid->buildForm($form, $form_state);
+    }
     if (is_object($this->chemgrid)) {
       //dpm($this->chemgrid,"chemgrid to check data array");
       $this->chemgrid->SaveDataObjectsAsForm();
-    } else {
-      watchdog('om_agman_spray_event', "SaveDataObjectsAsForm() called without chemgrid object");
-    }
+    } 
   }
   
   public function saveEventTimeseries(&$form, $form_state) {
@@ -738,7 +746,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       );
     }
     
-    $row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
+    $row->rate_propvalue = empty($row->rate_propvalue) ? $this->canopy_frac * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Rate',
       '#required' => TRUE,
@@ -1021,6 +1029,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
   function SubmitFormEntityMap(array &$form, $form_state) {
     // @todo: migrate this to base class dHPropertiesGroup after further testing
     // uses entity_map to handle all inserts and updates
+    //dpm($form_state,'SubmitFormEntityMap');
     foreach ($form_state['values'][$this->groupname] as $record_group) {
       $form_entity_map = array();
       // set up defaults

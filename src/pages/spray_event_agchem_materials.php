@@ -157,7 +157,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
     case 'edit':
     $form['actions']['delete'] = array(
       '#type' => 'submit',
-      '#value' => t('Delete Plan'),
+      '#value' => t('Delete Spray Event'),
       '#weight' => 45,
       '#limit_validation_errors' => array(),
       '#submit' => array('dh_app_plan_form_submit_delete')
