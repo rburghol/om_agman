@@ -265,13 +265,24 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#size' => 30,
       '#weight' => 1,
     );
-    $date_format = 'Y-m-d h:i';
+    $date_format = 'Y-m-d H:i';
     // should have code in here to guess based on the phase/or passed in from the URL
     $form['startdate'] = array(
-      '#title' => t('Application Date'),
+      '#title' => t('Application Start Date/Time'),
       '#description' => t('Planned date for this spray.'),
       '#required' => TRUE,
       '#default_value' => empty($this->dh_adminreg_feature->startdate) ? $this->dh_adminreg_feature->startdate : date($date_format,$this->dh_adminreg_feature->startdate),
+      '#date_format' => $date_format,
+      '#type' => 'date_select',
+      '#date_year_range' => '-5:+5',
+      '#weight' => 2,
+    );
+    // should have code in here to guess based on the phase/or passed in from the URL
+    $form['enddate'] = array(
+      '#title' => t('End Date/Time'),
+      '#description' => t('This will be used to calculate re-entry and post-harvest intervals.'),
+      '#required' => FALSE,
+      '#default_value' => empty($this->dh_adminreg_feature->enddate) ? $this->dh_adminreg_feature->enddate : date($date_format,$this->dh_adminreg_feature->enddate),
       '#date_format' => $date_format,
       '#type' => 'date_select',
       '#date_year_range' => '-5:+5',
