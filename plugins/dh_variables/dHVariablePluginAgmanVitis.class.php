@@ -397,7 +397,51 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
   }
 }
 
-class dHVariablePluginIPMIncident extends dHVariablePluginPercentSelector {
+class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector {
+  
+  public function getDefaults($entity, &$defaults = array()) {
+    parent::getDefaults($entity, $defaults);
+    $defaults += array(
+      'ipm_advanced' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0,
+        'propname' => 'Advanced',
+        'vardesc' => 'Use incidence * extent formula to calculate overall occurence rate.',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_advanced',
+        'varid' => dh_varkey2varid('ipm_advanced', TRUE),
+      ),
+      'ipm_incidence' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.5,
+        'propname' => 'Incidence',
+        'vardesc' => 'Fraction of plants effected (0.0-1.0)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_incidence',
+        'varid' => dh_varkey2varid('ipm_incidence', TRUE),
+      ),
+      'ipm_extent' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.5,
+        'propname' => 'Extent',
+        'vardesc' => 'Fraction effected tissue per plant (0.0-1.0)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_extent',
+        'varid' => dh_varkey2varid('ipm_extent', TRUE),
+      ),
+    );
+    return $defaults;
+  }
+  
+}
+
+class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
   
   public function incidentCodes() {
     return array(
@@ -450,39 +494,6 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
-      'ipm_advanced' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => NULL,
-        'propvalue_default' => 0,
-        'propname' => 'Advanced',
-        'vardesc' => 'Use incidence * extent formula to calculate overall occurence rate.',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_advanced',
-        'varid' => dh_varkey2varid('ipm_advanced', TRUE),
-      ),
-      'ipm_incidence' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => NULL,
-        'propvalue_default' => 0.5,
-        'propname' => 'Incidence',
-        'vardesc' => 'Fraction of plants effected (0.0-1.0)',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_incidence',
-        'varid' => dh_varkey2varid('ipm_incidence', TRUE),
-      ),
-      'ipm_extent' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => NULL,
-        'propvalue_default' => 0.5,
-        'propname' => 'Extent',
-        'vardesc' => 'Fraction effected tissue per plant (0.0-1.0)',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_extent',
-        'varid' => dh_varkey2varid('ipm_extent', TRUE),
-      ),
       'ipm_tissue' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'leaves',
@@ -625,65 +636,14 @@ class dHVariablePluginVitisHarvest extends dHVariablePluginAgmanAction {
 }
 
 class dHVariablePluginVitisBudBreak extends dHVariablePluginAgmanAction {
-  // @todo: ba
-  // Function:
-  //  * Creates a paired set of TS events, linked by featureid and date 
-  //    1. bud break incidence % (of vines in block)
-  //    2. bud break extent % (median of buds per vine) 
-  var $extent_varkey = 'vitis_bud_break_extent';
-  var $incidence_varkey = 'vitis_bud_break';
-  var $save_method = 'form_entity_map';
+  // @todo: make this an incident/extent child (dHVariablePluginIPMIncidentExtent) 
+  //        -- will first need to change extent varid, and supply a resonable default for incident
   
   public function __construct($conf = array()) {
     parent::__construct($conf);
     $hidden = array('tid', 'featureid', 'entity_type', 'bundle');
     foreach ($hidden as $hide_this) {
       $this->property_conf_default[$hide_this]['hidden'] = 1;
-    }
-  }
-  
-  public function alterData(&$row) {
-    // do the parent first which loads the incidence var
-    // then use an EFQ to get the extent var
-    $varid = array_shift(dh_varkey2varid($this->extent_varkey));
-    $stimename = $this->row_map['start'];
-    if (!$row->entity_type) {
-      return FALSE;
-    } else {
-      $ext_info = array(
-        'featureid' => $row->featureid,
-        'entity_type' => $row->entity_type,
-        'bundle' => 'dh_timeseries',
-        'varid' => $varid,
-        'tstime' => $row->tstime,
-      );
-      // 'tstime_singular' forces this entity to have only 1 value per feaureid/varid/tstime
-      //dpm($ext_info,' dh_get_timeseries ext_info');
-      $ext_tsrec = dh_get_timeseries($ext_info, 'tstime_singular');
-      //dpm($this,'this at alterData');
-      //dpm($ext_tsrec,' dh_get_timeseries returned');
-      if ($ext_tsrec) {
-        $rec = array_shift($ext_tsrec['dh_timeseries']);
-        $ext_ts = entity_load_single('dh_timeseries', $rec->tid);
-      } else {
-        $ext_ts = new StdClass;
-        $ext_ts->tid = NULL;
-        $ext_ts->varid = $varid;
-        $ext_ts->tstime = $row->tstime;
-        $ext_ts->featureid = $row->featureid;
-        $ext_ts->entity_type = $row->entity_type;
-        $ext_ts->bundle = 'dh_timeseries';
-        $ext_ts->tscode = NULL;
-        $ext_ts->tsvalue = NULL;
-      }
-      $row->ext_tid = $ext_ts->tid;
-      $row->ext_varid = $ext_ts->varid;
-      $row->ext_tstime = $ext_ts->tstime;
-      $row->ext_featureid = $ext_ts->featureid;
-      $row->ext_entity_type = $ext_ts->entity_type;
-      $row->ext_bundle = $ext_ts->bundle;
-      $row->ext_code = $ext_ts->tscode;
-      $row->ext_value = $ext_ts->tsvalue;
     }
   }
   
@@ -700,12 +660,8 @@ class dHVariablePluginVitisBudBreak extends dHVariablePluginAgmanAction {
     $stimename = $this->row_map['start'];
     $etimename = $this->row_map['end'];
     $rowform[$stimename]['#weight'] = 0;
-    $scale_opts = array();
     $rowform[$codename]['#default_value'] = $row->$codename;
-    for ($i = 5; $i <= 100; $i += 5) {
-      $pct = $i/100;
-      $scale_opts["$pct"] = ($i == 5) ? "<= $i%" : "$i %";
-    }
+    $scale_opts = $this->pct_list(range(0,100,5));
     $rowform[$valname]['#type'] = 'select';
     $rowform[$valname]['#options'] = $scale_opts;
     $rowform[$valname]['#size'] = 1;
@@ -716,59 +672,8 @@ class dHVariablePluginVitisBudBreak extends dHVariablePluginAgmanAction {
       '#weight' => 2,
       '#default_value' => !empty($row->$valname) ? $row->$valname : 1.0,
     );
-    // now load the extent info
-    $this->alterData($row);
-    $rowform['ext_tid'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $row->ext_tid,
-    );
-    $rowform['ext_featureid'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $row->ext_featureid,
-    );
-    $rowform['ext_varid'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $row->ext_varid,
-    );
-    $rowform['ext_bundle'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $row->ext_bundle,
-    );
-    $rowform['ext_entity_type'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $row->ext_entity_type,
-    );
-    $scale_opts = array();
-    for ($i = 10; $i <= 100; $i += 10) {
-      $pct = $i/100;
-      $scale_opts["$pct"] = ($i == 10) ? "<= $i%" : "$i %";
-    }
-    $rowform['ext_value'] = array(
-      '#title' => t('Median % of buds broken per plant'),
-      '#type' => 'select',
-      '#options' => $scale_opts,
-      '#weight' => 2,
-      '#default_value' => $row->ext_value,
-      '#required' => TRUE,
-    );
     return;
   }
-
-  public function formRowSave(&$rowvalues, &$row){
-    // @todo - create stub for this in parent class
-    // this saves the second part of this 
-    $ext_rec = array(
-      'tid' => $row->ext_tid,
-      'varid' => $row->ext_varid,
-      'tsvalue' => $row->ext_value,
-      'tscode' => $row->ext_code,
-      'tstime' => $row->tstime,
-      'featureid' => $row->featureid,
-      'entity_type' => $row->entity_type,
-    );
-    dh_update_timeseries($ext_rec, 'tstime_singular');
-  }
-
 }
 
 
