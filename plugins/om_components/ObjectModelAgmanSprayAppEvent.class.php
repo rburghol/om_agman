@@ -693,16 +693,20 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     //dpm($this,'this');
     //dpm($row,'row');
     $rate_units = empty($row->rate_units) ? 'floz/acre' : $row->rate_units;
+    $plugin = new dHVariablePluginAppRates;
+    $all_units = $plugin->rateUnits();
+    $pretty_units = isset($all_units[$rate_units]) ? $all_units[$rate_units] : $rate_units;
+    
     $scale = $this->scaleFactor($this->canopy_frac, $rate_units);
     //$rate_adjusted = array_map(function($el) { return $el * $this->canopy_frac; }, $rate_limits);
     $rate_adjusted = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
-    $rate_suggestions = empty($rate_limits) ? '---' : implode(' to ', $rate_adjusted) . " $rate_units ";
-    $rate_range = empty($rate_limits) ? '---' : implode(' to ', $rate_limits) . " $rate_units";
+    $rate_suggestions = empty($rate_limits) ? '---' : implode(' to ', $rate_adjusted) . " $pretty_units ";
+    $rate_range = empty($rate_limits) ? '---' : implode(' to ', $rate_limits) . " $pretty_units";
     
     $rowform['rate_range'] = array(
       '#type' => 'fieldset',
       '#coltitle' => 'Material Label Range',
-      //'#markup' => 'Test TEst',
+      //'#markup' => 'Test Test',
     );
     $rowform['rate_range']['base_rate'] = array(
       '#type' => 'item',
@@ -732,6 +736,8 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       'lbs/acre' => 'lbs',
       'gals/acre' => 'gals',
       'pt/acre' => 'pt',
+      'pt/gal' => 'pt',
+      'pt/cgal' => 'pt',
       'qt/acre' => 'qt',
     );
     # dynamically adjusting rate range scaler
@@ -743,7 +749,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $cf = $r/100.0;
       $scale = $this->scaleFactor($cf, $rate_units);
       $ra = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
-      $rs = empty($rate_limits) ? '---' : implode(' to ', $ra) . " $rate_units ";
+      $rs = empty($rate_limits) ? '---' : implode(' to ', $ra) . " $pretty_units ";
       $rate_select_key = $r/100.0;
       $rowform['rate_range']["rate_$r"] = array(
         '#type' => 'item',
@@ -756,14 +762,14 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         ),
       );
     }
-    
-    $row->rate_propvalue = empty($row->rate_propvalue) ? $this->canopy_frac * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
+    // $scale is used here NOT canopy_frac since scale is canopy_frac adjusted in case of concentration based
+    $row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Rate',
       '#required' => TRUE,
       //'#prefix' => '<div class="input-group input-group-sm">',
       //'#prefix' => '<div class="col-xs-12">',
-      '#suffix' => $rate_units,
+      '#suffix' => $pretty_units,
       '#type' => 'textfield',
       '#element_validate' => array('element_validate_number'),
       '#size' => 8,
@@ -799,10 +805,14 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#markup' => $batch_val . " $amount_units" . " / " . $total_val . " $amount_units",
     );
     // helper conversions for recs in qt and pint
-    $con_small = array('pt/acre' => 16.0, 'qt/acre' => 32.0);
-    if ( ($batch_val <= 10.0) and in_array($rate_units, array_keys($con_small)) ) {
+    $con_small = array(
+      'pt' => 16.0, 'qt' => 32.0
+    );
+    list($num, $denom) = explode('/',$row->rate_units);
+    //dpm($con_small," $num, $denom, $row->rate_units ");
+    if ( ($batch_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
       // @todo add a conversion to floz 
-      $rac = $con_small[$rate_units];
+      $rac = $con_small[$num];
       $rowform['batch_total']['#markup'] .= 
         '<br>(' 
         . round($batch_val * $rac, 1) 
@@ -866,14 +876,20 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     return $rate_scale;
   }
   
-  public function rateFactor($area, $total, $rate_units) {
-    // batch total
+  public function rateFactor($area, $water_volume, $rate_units) {
+    // we get both the acreage and the batch total water volume
+    // so we can do either area dependent or concentration dependent
     // this can be refreshed in the form via javascript?
     // @todo: make this based on units, right now it just assumes rate is in oz/ac
-    $volume = array('gal', 'gals', 'liter', 'liters', 'l', 'ml');
+    $volume = array('gal', 'cgals', 'cgal', 'gals', 'liter', 'liters', 'l', 'ml');
     list($num, $denom) = explode('/',$rate_units);
     if (in_array($denom, $volume)) {
-      $factor = $total;
+      if (in_array($denom, array('cgal','cgals'))) {
+        // this is per 100 gal, so divide by 100
+        $factor = $water_volume / 100.0;
+      } else {
+        $factor = $water_volume;
+      }
     } else {
       if ($area > 0) {
         $factor = 1.0 * $area;

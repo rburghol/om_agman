@@ -32,6 +32,7 @@ class dHVariablePluginAppRates extends dHVariablePluginDefault {
       'lbs/acre' => 'lbs/acre',
       'oz/gal' => 'oz/gal',
       'floz/gal' => 'fluid oz/gal',
+      'pt/cgal' => 'pint/100 gal',
       'lbs/gal' => 'lbs/gal',
     );
   }
