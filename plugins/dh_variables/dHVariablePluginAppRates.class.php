@@ -210,6 +210,7 @@ class dHVariablePluginAppRateUnits extends dHVariablePluginAppRates {
   public function hiddenFields() {
     $hidden = parent::hiddenFields();
     $hidden[] = 'propvalue';
+    return $hidden;
   }
   
   public function formRowEdit(&$rowform, $row) {
@@ -222,6 +223,7 @@ class dHVariablePluginAppRateUnits extends dHVariablePluginAppRates {
     $rowform[$this->row_map['code']]['#type'] = 'select';
     $rowform[$this->row_map['code']]['#options'] = $this->rateUnits();
     $rowform[$this->row_map['code']]['#size'] = 1;
+    $rowform['propvalue']['#type'] = 'hidden';
 
   }
 }
