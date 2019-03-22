@@ -1,5 +1,9 @@
 <?php
 module_load_include('inc', 'dh', 'plugins/dh.display');
+module_load_include('module', 'dh');
+// make sure that we have base plugins 
+$plugin_def = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginAgmanAction');
+$class = ctools_plugin_get_class($plugin_def, 'handler');
 
 class dHVariablePluginAppRates extends dHVariablePluginDefault {
   // @todo:
@@ -162,12 +166,11 @@ class dHVariablePluginInventoryAmounts extends dHVariablePluginAppRates {
   }
 }
 
-class dHVariablePluginInventoryEvent extends dHVariablePluginDefault {
+class dHVariablePluginInventoryEvent extends dHVariablePluginAgmanAction {
   // @todo:
   
   public function hiddenFields() {
-    //return array('propname', 'pid', 'enddate', 'featureid', 'entity_type', 'bundle', 'varunits');
-    return array();
+    return array('tid', 'enddate', 'featureid', 'entity_type', 'bundle', 'varunits', 'tsvalue', 'tscode');
   }
   
   public function formRowEdit(&$rowform, $entity) {
@@ -202,6 +205,16 @@ class dHVariablePluginInventoryEvent extends dHVariablePluginDefault {
     }
   }
 
+  public function buildContent(&$content, &$entity, $view_mode) {
+    parent::buildContent($content, $entity, $view_mode);
+    // special render handlers when using a content array
+    // get all FRAC Codes associated with this entity
+    $feature = $this->getParentEntity($entity);
+    $content['body'] = array(
+      '#type' => 'item',
+      '#markup' => "AgChem Inventory done in " . $feature->name,
+    );
+  }
 }
 
 class dHVariablePluginAppRateUnits extends dHVariablePluginAppRates {
