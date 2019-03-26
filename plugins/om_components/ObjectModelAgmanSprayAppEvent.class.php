@@ -383,6 +383,9 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['event_settings']['#suffix'] = '</div">';
     $form['chem_rates']['#weight'] = 6;
     $form['chem_rates']['#prefix'] = '<div class="input-group input-group-lg">';
+    $form['chem_rates']['#prefix'] .= '<span class="warning">';
+    $form['chem_rates']['#prefix'] .= t('Notice: This application is design to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.');
+    $form['chem_rates']['#prefix'] .= '</span>';
     $form['chem_rates']['#suffix'] = '</div">';
     $form['description']['#weight'] = 7;
     $form['data']['#tree'] = TRUE;
