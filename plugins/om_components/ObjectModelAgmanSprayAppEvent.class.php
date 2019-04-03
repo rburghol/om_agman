@@ -282,7 +282,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#title' => t('End Date/Time'),
       '#description' => t('This will be used to calculate re-entry and post-harvest intervals.'),
       '#required' => FALSE,
-      '#default_value' => empty($this->dh_adminreg_feature->enddate) ? $this->dh_adminreg_feature->enddate : date($date_format,$this->dh_adminreg_feature->enddate),
+      '#default_value' => empty($this->dh_adminreg_feature->enddate) ? date($date_format,$this->dh_adminreg_feature->startdate + 3600) : date($date_format,$this->dh_adminreg_feature->enddate),
       '#date_format' => $date_format,
       '#type' => 'date_select',
       '#date_year_range' => '-5:+5',
