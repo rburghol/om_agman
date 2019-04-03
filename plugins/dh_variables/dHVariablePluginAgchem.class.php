@@ -403,7 +403,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       );
     }
     $feature->chems = $chems;
-    $feature->enddate = empty($feature->enddate) ? $feature->startdate + 3600 : $feature->enddate;
+    $feature->enddate = 
+      (empty($feature->enddate) or ($feature->enddate < $feature->startdate)) 
+      ? $feature->startdate + 3600 
+      : $feature->enddate;
     $vol_info = array(
       'featureid' => $feature->adminid,
       'entity_type' => 'dh_adminreg_feature',
