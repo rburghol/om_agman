@@ -368,6 +368,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $description .= " - " . $feature->agchem_spray_vol_gal->propvalue . " gals H2O";
         $description .= '\nw/' . $feature->chem_list;
         $description .= '\nPHI:' ."$feature->phi_date ($feature->phi_chem)";
+        $description .= '\nREI:' ."$feature->rei_date ($feature->rei_chem)";
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
@@ -387,8 +388,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     
   }
   
-  public function load_event_info(&$feature) {
+  public function load_event_info(&$feature, $reload = FALSE) {
     // given an adminreg event feature, returns the chems and their attributes
+    if ($feature->loaded and !$reload) {
+      return;
+    }
     $chems = array();
     $chem_names = array();
     $field_chems = field_get_items('dh_adminreg_feature', $feature, 'field_link_to_registered_agchem');
@@ -399,6 +403,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       );
     }
     $feature->chems = $chems;
+    $feature->enddate = empty($feature->enddate) ? $feature->startdate + 3600 : $feature->enddate;
     $vol_info = array(
       'featureid' => $feature->adminid,
       'entity_type' => 'dh_adminreg_feature',
@@ -407,74 +412,54 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     );
     $vol_prop = dh_properties_enforce_singularity($vol_info, 'singular');
     //dpm($vol_prop,'vol prop');
-    $feature->agchem_spray_vol_gal = $vol_prop;
-    $feature->phi_ts = $feature->startdate;
+    // PHI Defaults
+    $feature->phi_ts = $feature->enddate;
     $feature->phi_chems = array(); // chem w/limiting PHI
     $feature->phi_info = 'unknown'; // chem w/limiting PHI
-    foreach ($feature->chems as $cix => $chem) {
-      $fe = entity_load_single('dh_adminreg_feature', $chem['adminid']);
+    $feature->agchem_spray_vol_gal = $vol_prop;
+    $feature->phi_ts = $feature->enddate;
+    $feature->phi_chems = array(); // chem w/limiting PHI
+    $feature->phi_info = 'unknown'; // chem w/limiting PHI
+    // REI Defaults
+    $feature->rei_ts = $feature->enddate;
+    $feature->rei_chems = array(); // chem w/limiting PHI
+    $feature->rei_info = 'unknown'; // chem w/limiting PHI
+    foreach ($feature->chems as $cix => $cheminfo) {
+      $chem = entity_load_single('dh_adminreg_feature', $cheminfo['adminid']);
       // amount to mix/apply
       $amt = array(
-        'featureid' => $chem['eref_id'],
+        'featureid' => $cheminfo['eref_id'],
         'entity_type' => 'field_link_to_registered_agchem',
         'bundle' => 'dh_properties',
         'varkey' => 'agchem_amount',
       );
-      $fe->amount = dh_properties_enforce_singularity($amt, 'singular');
+      $chem->amount = dh_properties_enforce_singularity($amt, 'singular');
       // amount units (from chem)
       $amt_unit = array(
-        'featureid' => $fe->adminid,
+        'featureid' => $chem->adminid,
         'entity_type' => 'dh_adminreg_feature',
         'bundle' => 'dh_properties',
         'varkey' => 'agchem_amount_type',
       );
-      $fe->units = dh_properties_enforce_singularity($amt_unit, 'singular');
+      $chem->units = dh_properties_enforce_singularity($amt_unit, 'singular');
       // @todo: create and use properties plugin to render rate and amounts info
+      
+      // REI
+      // @todo: create and use properties plugin to render REI info
+      $this->getREIInfo($feature, $chem);
+      // PHI
       // @todo: create and use properties plugin to render PHI info
-      // @todo: create and use properties plugin to render PHI info
-      // PHI - load chem PHI property of agchem
-      $criteria = array(  
-       0 => array(
-        'name' => 'varid',
-        'op' => 'IN',
-        'value' => dh_varkey2varid('agchem_phi'),
-        ),
-      );
+      $this->getPHIInfo($feature, $chem);
       
-      $phi_info = array(
-        'featureid' => $fe->adminid,
-        'entity_type' => 'dh_adminreg_feature',
-        'bundle' => 'dh_properties',
-        'varkey' => 'agchem_phi',
-      );
-      $fe->agchem_phi = dh_properties_enforce_singularity($phi_info, 'singular');
-      //$fe->loadComponents($criteria);
-      //dpm($fe,'agchem obj');
-      if (isset($fe->agchem_phi) and is_object($fe->agchem_phi) ) {
-        $this_phi = $feature->startdate + $fe->agchem_phi->propvalue * 86400;
-        if ($feature->phi_ts < $this_phi) {
-          $feature->phi_ts = $this_phi;
-          $feature->phi_chems = array($fe->name);
-        } else {
-          // check if multiple have the same PHI
-          if ($feature->phi_ts <= $this_phi) {
-            $feature->phi_ts = $this_phi;
-            $feature->phi_chems[] = $fe->name;
-          }
-        }
-      }
-      
-      $chem_names[] = $fe->name . ' @ ' . $fe->amount->propvalue . ' ' . $fe->units->propcode;
-      $feature->chems[$cix] = $fe;
-      
+      $chem_names[] = $chem->name . ' @ ' . $chem->amount->propvalue . ' ' . $chem->units->propcode;
+      $feature->chems[$cix] = $chem;
     }
     $chem_list = implode(', \n', $chem_names);
     $feature->chem_items = $chem_names;
     $feature->chem_list = $chem_list;
-    $phi_ts = new DateTime();
-    $phi_ts->setTimestamp($feature->phi_ts);
-    $feature->phi_date = $phi_ts->format("Y-m-d");
-    $feature->phi_chem = count($feature->phi_chems) ? implode(", ", $feature->phi_chems) : 'none';
+    // Handle Final PHI Date & REI Date
+    $this->getPHIDate($feature);
+    $this->getREIDate($feature);
     // load block and vineyard info
     $blocks = array();
     $blocks_names = array();
@@ -493,6 +478,115 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       }
     }
     $feature->block_names = implode(', ', $block_names);
+    //dpm($feature,'feature');
+    $feature->loaded = TRUE;
+  }
+  
+  public function getPHIDate(&$feature) {
+    //@todo: put this in agchem PHI plugin
+    $phi_ts = new DateTime();
+    $phi_ts->setTimestamp($feature->phi_ts);
+    $feature->phi_date = $phi_ts->format("Y-m-d");
+    $feature->phi_chem = count($feature->phi_chems) ? implode(", ", $feature->phi_chems) : 'none';
+  }
+  
+  public function getREIDate(&$feature) {
+    //@todo: put this in agchem REI plugin
+    //@todo: put this in agchem PHI plugin
+    $rei_ts = new DateTime();
+    $rei_ts->setTimestamp($feature->rei_ts);
+    $feature->rei_date = $rei_ts->format("Y-m-d g:i A");
+    $feature->rei_chem = count($feature->rei_chems) ? implode(", ", $feature->rei_chems) : 'none';
+  }
+  
+  public function getPHIInfo(&$feature, &$chem) {
+    //dpm($chem,'Called getPHIInfo for ' . $chem->name);
+    // PHI - load chem PHI property of agchem
+    // @todo: this can be migrated to the chem PHI variable as a plugin that will get auto added upon load
+    $criteria = array(  
+     0 => array(
+      'name' => 'varid',
+      'op' => 'IN',
+      'value' => dh_varkey2varid('agchem_phi'),
+      ),
+    );
+    
+    $phi_info = array(
+      'featureid' => $chem->adminid,
+      'entity_type' => 'dh_adminreg_feature',
+      'bundle' => 'dh_properties',
+      'varkey' => 'agchem_phi',
+    );
+    $chem->agchem_phi = dh_properties_enforce_singularity($phi_info, 'singular');
+    $chem->agchem_phi->propvalue = empty($chem->agchem_phi->propvalue) ? 0 : $chem->agchem_phi->propvalue;
+    //$chem->loadComponents($criteria);
+    //dpm($chem,'agchem obj');
+    if (isset($chem->agchem_phi) and is_object($chem->agchem_phi) ) {
+      $this_phi = $feature->enddate + $chem->agchem_phi->propvalue * 86400;
+      if ($feature->phi_ts < $this_phi) {
+        $feature->phi_ts = $this_phi;
+        $feature->phi_chems = array($chem->name);
+      } else {
+        // check if multiple have the same PHI
+        if ($feature->phi_ts <= $this_phi) {
+          $feature->phi_ts = $this_phi;
+          $feature->phi_chems[] = $chem->name;
+        }
+      }
+    }
+    
+  }
+  
+  public function getREIInfo(&$feature, &$chem) {
+    //dpm($chem,'Called getREIInfo for ' . $chem->name);
+    // @todo: this can be migrated to the chem REI variable as a plugin that will get auto added upon load
+    $criteria = array(  
+     0 => array(
+      'name' => 'varid',
+      'op' => 'IN',
+      'value' => dh_varkey2varid('agchem_rei'),
+      ),
+    );
+    
+    $rei_info = array(
+      'featureid' => $chem->adminid,
+      'entity_type' => 'dh_adminreg_feature',
+      'bundle' => 'dh_properties',
+      'varkey' => 'agchem_rei',
+    );
+    //@todo: replace this with a universal named property loader
+    $chem->agchem_rei = dh_properties_enforce_singularity($rei_info, 'singular');
+    $chem->agchem_rei->propvalue = empty($chem->agchem_rei->propvalue) ? 0 : $chem->agchem_rei->propvalue;
+    //$chem->loadComponents($criteria);
+    //dpm($chem,'agchem obj');
+    if (isset($chem->agchem_rei) and is_object($chem->agchem_rei) ) {
+      switch ($chem->agchem_rei->propcode) {
+        case 'days':
+          $tunits = 86400;
+        break;
+        case 'hours':
+        default:
+          $tunits = 3600;
+        break;
+      }
+      $this_rei = $feature->enddate + $chem->agchem_rei->propvalue * $tunits;
+      $rei_ts = new DateTime();
+      $rei_ts->setTimestamp($this_rei);
+      $rei_date = $rei_ts->format("Y-m-d g:i A");
+      $event_date = date("Y-m-d g:i A", $feature->enddate);
+      //dsm("$chem->name REI: $event_date($feature->enddate) + " . $chem->agchem_rei->propvalue . " * $tunits = $rei_date");
+      if ($feature->rei_ts < $this_rei) {
+        $feature->rei_ts = $this_rei;
+        $feature->rei_chems = array($chem->name);
+      } else {
+        // check if multiple have the same rei
+        if ($feature->rei_ts <= $this_rei) {
+          $feature->rei_ts = $this_rei;
+          $feature->rei_chems[] = $chem->name;
+        }
+      }
+    }
+    
   }
   
   public function buildContent(&$content, &$entity, $view_mode) {
@@ -573,6 +667,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['body']['#markup'] .= "<br><b>Volume:</b> " . $feature->agchem_spray_vol_gal->propvalue . " gals";
         $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
         $content['body']['#markup'] .= "<br><b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
+        $content['body']['#markup'] .= "<br><b>REI: .$feature->rei_date ($feature->rei_chem)";
       break;
       
       case 'full':
@@ -593,6 +688,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['body']['#markup'] .= "<br><b>Materials:</b> $chem_list";
         //$content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
         $content['body']['#markup'] .= "<b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
+        $content['body']['#markup'] .= "<br><b>REI:</b> $feature->rei_date ($feature->rei_chem)";
 
         $entity->title = $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
