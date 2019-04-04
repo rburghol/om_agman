@@ -116,7 +116,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save'),
+    '#value' => t('Save & Enter Amounts'),
     '#weight' => 40,
     '#submit' => array('dh_app_plan_form_sprayquan')
   );
