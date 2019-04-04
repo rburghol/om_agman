@@ -773,7 +773,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     //$row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Rate',
-      '#title' => 'Rate',
+      '#title' => 'Rate for ' . $row->name,
       '#required' => TRUE,
       //'#prefix' => '<div class="input-group input-group-sm">',
       //'#prefix' => '<div class="col-xs-12">',
