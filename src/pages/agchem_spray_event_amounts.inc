@@ -123,6 +123,19 @@ function dh_sprayquan_form_return(&$form, &$form_state) {
   }
 }
 
+function dh_app_plan_form_submit(&$form, &$form_state) {
+  $dh_adminreg_feature = dh_app_plan_form_save($form, $form_state);
+  $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];
+  $parms = drupal_get_query_parameters();
+  if (isset($parms['finaldest'])) {
+    $url = $parms['finaldest'];
+    drupal_goto($url);
+  } else {
+    $url = implode('/', array('ipm-facility-sprayplan', om_agman_get_block_farmid($blockid), $blockid));
+    drupal_goto($url);
+  }
+}
+
 function dh_sprayquan_form_cancel($form, &$form_state) {
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
   $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];

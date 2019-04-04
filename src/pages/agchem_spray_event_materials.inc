@@ -113,37 +113,10 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   om_agman_agchem_materials_select($dh_adminreg_feature->farmid, $form, $fname, 'ipm_block_select_formulary', 'page_1', 'dh_adminreg_feature_field_data_field_link_agchem_material_ad');
   $form['data']['#tree'] = TRUE;
   
-  // if this is a new event, 
-  // Show the canopy %
-  // otherwise do not since adding a property is kind of hard to do here
-  // handle all the attached stuff with the form plugin, using the data array
-  // load the plugin to handle this aggregate form
-  if (!$dh_adminreg_feature->adminid) {
-    $plugins = ctools_get_plugins('dh', 'dh_variables');
-    //dpm($plugins);
-    // NOTE : these plugins are keyed by file name, perhaps there is a way to make that otherwise
-    // but they are NOT keyed by class (although class often mimics file name)
-    // should load the variable if adminid is not null (i.e. edit not insert)
-    $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginAppRates');
-    $class = ctools_plugin_get_class($plugin, 'handler');
-    if ($class) {
-      $src = new $class(array());
-      $src->scaler($form, 'canopy_fraction');
-    }
-    $form['canopy_fraction']['#title'] = 'Scale Spray to Percent of Maximum Canopy';
-    // @todo - load the property if it exists
-    $form['canopy_fraction']['#default_value'] = empty($dh_adminreg_feature->adminid) ? 1.0 : $form['canopy_fraction']['#default_value'];
-  }
-
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
-    '#weight' => 40,
-  );
-  $form['actions']['sprayquan'] = array(
-    '#type' => 'submit',
-    '#value' => t('Enter Amounts'),
     '#weight' => 40,
     '#submit' => array('dh_app_plan_form_sprayquan')
   );
@@ -191,48 +164,14 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   // load the object
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
+  //@todo: 1 houtr per acre
+  $dh_adminreg_feature->enddate = $dh_adminreg_feature->startdate + 3600;
   $dh_adminreg_feature->save();
-  if (isset($form_state['values']['canopy_fraction'])) {
-    $values = array(
-      'featureid' => $dh_adminreg_feature->adminid,
-      'varid' => dh_varkey2varid('agchem_event_canopy_frac', TRUE),
-      'propname' => 'agchem_event_canopy_frac',
-      'propvalue' => $form_state['values']['canopy_fraction'],
-      'entity_type' => 'dh_adminreg_feature',
-    );
-    dh_update_properties($values, 'singular');
-  }
-  // handle all the attached stuff with the form plugin, using the data array
-  // load the plugin to handle this aggregate form
-  $class = ctools_plugin_load_class('om', 'om_components', 'ObjectModelAgmanSprayAppEvent', 'handler');
-  $src = new $class(array());
-  $src->dh_adminreg_feature = $dh_adminreg_feature;
-  // handle all the attached stuff using the SaveDataObjectsAsForm
-  //dpm("Building form for save");
-  $src->BuildForm($form, $form_state);
-  //dpm($src,"Saved src");
-  $src->SaveDataObjectsAsForm();
   return $dh_adminreg_feature;
 }
 
-function dh_app_plan_form_submit(&$form, &$form_state) {
-  dpm(t('This application is design to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.'), NULL, 'warning');
-  $dh_adminreg_feature = dh_app_plan_form_save($form, $form_state);
-  $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];
-  $parms = drupal_get_query_parameters();
-  if (isset($parms['finaldest'])) {
-    $url = $parms['finaldest'];
-    drupal_goto($url);
-    //dpm($url);
-    $form_state['redirect'] = $url;
-  } else {
-    $url = implode('/', array('ipm-facility-sprayplan', om_agman_get_block_farmid($blockid), $blockid));
-    drupal_goto($url);
-  }
-}
-
-
 function dh_app_plan_form_sprayquan(&$form, &$form_state) {
+  dpm(t('This application is design to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.'), NULL, 'warning');
   $blockid = $form_state['values']['dh_link_feature_submittal']['und'][0]['target_id'];
   $dh_adminreg_feature = dh_app_plan_form_save($form, $form_state);
   $url = implode('/', array('ipm-live-events', $blockid, 'sprayquan', $dh_adminreg_feature->adminid));

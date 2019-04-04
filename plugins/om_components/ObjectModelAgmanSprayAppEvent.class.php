@@ -685,6 +685,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#required' => TRUE,
     );
     */
+    //dpm($row,'row');
     // set up rate limits now so we can make a default guess if this is a new record
     $rate_limits = array();
     if ($row->rate_lo > 0) {
@@ -768,7 +769,8 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       );
     }
     // $scale is used here NOT canopy_frac since scale is canopy_frac adjusted in case of concentration based
-    $row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
+    // disabled to insure new work flow
+    //$row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Rate',
       '#required' => TRUE,
