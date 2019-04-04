@@ -386,7 +386,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['chem_rates']['#weight'] = 6;
     $form['chem_rates']['#prefix'] = '<div class="input-group input-group-lg">';
     $form['chem_rates']['#prefix'] .= '<span class="warning">';
-    $form['chem_rates']['#prefix'] .= t('Notice: This application is design to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.');
+    $form['chem_rates']['#prefix'] .= t('Notice: This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.');
     $form['chem_rates']['#prefix'] .= '</span>';
     $form['chem_rates']['#suffix'] = '</div">';
     $form['description']['#weight'] = 7;
@@ -746,28 +746,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       'pt/cgal' => 'pt',
       'qt/acre' => 'qt',
     );
-    # dynamically adjusting rate range scaler
-    for ($r = 5; $r <= 100; $r += 5) {
-      // create a set of conditionals
-      // @todo: this is keyed against selct list named 'event_settings[3][propvalue]' 
-      //        which is obviously risky and subject to change if we modify
-      //        Thus, we should chagne this to "addAttachedProperties" method in OM module 
-      $cf = $r/100.0;
-      $scale = $this->scaleFactor($cf, $rate_units);
-      $ra = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
-      $rs = empty($rate_limits) ? '---' : implode(' to ', $ra) . " $pretty_units ";
-      $rate_select_key = $r/100.0;
-      $rowform['rate_range']["rate_$r"] = array(
-        '#type' => 'item',
-        '#markup' => '&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy'
-          . '<br>&nbsp;&nbsp; = ' . $rs,
-        '#states' => array(
-          'visible' => array(
-            ':input[name="event_settings[3][propvalue]"]' => array('value' => "$rate_select_key"),
-          ),
-        ),
-      );
-    }
     // $scale is used here NOT canopy_frac since scale is canopy_frac adjusted in case of concentration based
     // disabled to insure new work flow
     //$row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
@@ -785,6 +763,29 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       //'#attributes' => array( 'size' => 16),
       '#default_value' => $row->rate_propvalue,
     );
+    # dynamically adjusting rate range scaler
+    for ($r = 5; $r <= 100; $r += 5) {
+      // create a set of conditionals
+      // @todo: this is keyed against selct list named 'event_settings[3][propvalue]' 
+      //        which is obviously risky and subject to change if we modify
+      //        Thus, we should change this to "addAttachedProperties" method in OM module 
+      //        so it can be keyed by propname, not numerical index.
+      $cf = $r/100.0;
+      $scale = $this->scaleFactor($cf, $rate_units);
+      $ra = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
+      $rs = empty($rate_limits) ? '---' : implode(' to ', $ra) . " $pretty_units ";
+      $rate_select_key = $r/100.0;
+      $rowform['rate_range']["rate_$r"] = array(
+        '#type' => 'item',
+        '#markup' => '&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy'
+          . '<br>&nbsp;&nbsp; = ' . $rs,
+        '#states' => array(
+          'visible' => array(
+            ':input[name="event_settings[3][propvalue]"]' => array('value' => "$rate_select_key"),
+          ),
+        ),
+      );
+    }
     
     // batch total
     // this can be refreshed in the form via javascript?

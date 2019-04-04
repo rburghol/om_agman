@@ -4,10 +4,13 @@
 
 function dh_sprayquan_form($form, &$form_state, $dh_adminreg_feature = null, $op = 'edit') {
   // load base form from
+  // What is this? Looks like some code not used...
+  /*
   ctools_include('plugins');
   $plugin = ctools_get_plugins('om', 'om_components', 'ObjectModelComponentsAgPlantVitisHandler');
   $class = ctools_plugin_get_class($plugin, 'handler');
-
+  */
+  
   ctools_include('plugins');
   $plugins = ctools_get_plugins('om', 'om_components');
   //dpm($plugins,'all plug');
@@ -78,7 +81,7 @@ function dh_sprayquan_form_submit_delete(&$form, &$form_state) {
 }
 
 function dh_sprayquan_form_save(&$form, &$form_state) {
-  dpm(t('This application is design to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.'), NULL, 'warning');
+  dpm(t('This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.'), NULL, 'warning');
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   ctools_include('plugins');
