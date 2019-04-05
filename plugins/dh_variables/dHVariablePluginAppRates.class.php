@@ -64,7 +64,7 @@ class dHVariablePluginAppRates extends dHVariablePluginDefault {
     return array(
       'floz' => 'fluid oz',
       'gals' => 'gals',
-      'qt/acre' => 'quarts',
+      'qt' => 'quarts',
       'pt' => 'pt',
       'oz' => 'oz',
       'lbs' => 'lbs',
