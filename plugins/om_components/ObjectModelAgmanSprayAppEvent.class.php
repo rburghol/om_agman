@@ -72,9 +72,13 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
   public function GetTotalArea() {
     $area = 0;
     foreach ($this->dh_block_feature as $block) {
-      $area += $block->dh_areasqkm['und'][0]['value'];
+      $ba = 0;
+      if ( isset($block->dh_properties['om_agman_area']) and is_object($block->dh_properties['om_agman_area'])) {
+        $ba = $block->dh_properties['om_agman_area']->propvalue;
+      }
+      $area += $ba;
     }
-    return $area * 247.1;
+    return $area;
   }
   
   public function LoadEventProperties(&$conf, $reload = FALSE) {
@@ -83,9 +87,10 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     // the conf['varid'] list will also be later used to order the variables
     $conf['varid'] = array(
       'agchem_total_spray_rate_galac', 
-      'agchem_batch_gal',
+      'agchem_batch_gal', 
       'agchem_event_canopy_frac', 
       'agchem_spray_vol_gal', 
+      'agchem_event_area', 
     );
     $criteria = array();    // load necessary properties for this event
     $vars = dh_vardef_varselect_options(array("varkey in ('" . implode("', '", array_values($conf['varid'])) . "')"));
@@ -162,6 +167,9 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     if (!$this->dh_block_feature) {
       drupal_set_message("Block load $blockid failed.");
       return FALSE;
+    }
+    foreach ($this->dh_block_feature as $block) {
+      $block->loadComponents();
     }
     //dpm($this->dh_block_feature,'block');
     // get the block area and set in a property
