@@ -5,6 +5,54 @@ module_load_include('module', 'dh');
 $plugin_def = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginAgmanAction');
 $class = ctools_plugin_get_class($plugin_def, 'handler');
 
+class dHAgmanAreaMultiDim extends dHVariablePluginDefault {
+  // Multi-dimensional area (procode)
+  public function getUnitList() {
+    return array(
+      'ac' => 'acres',
+      'ha' => 'hectares',
+      'sqmi' => 'mi^2',
+      'sqkm' => 'km^2',
+    );
+  }
+  
+  public function getFactors() {
+    $factors = array(
+      'ac' => array(
+        'ha' => 0.404686,
+        'sqmi' => 0.0015625,
+        'sqkm' => 0.00404686,
+      ),
+    );
+    return $factors;
+  }
+  
+  public function convertArea($area, $from, $to) {
+    $fact = $this->findFactor($from, $to);
+    //dsm(" $from, $to ($fact * $area)");
+    return ($fact * $area);
+  }
+  
+  public function findFactor($from, $to) {
+    $factors = $this->getFactors();
+    if (isset($factors[$from])) {
+      if (isset($factors[$from][$to])) {
+        return $factors[$from][$to];
+      }
+    } else {
+      if (isset($factors[$to])) {
+        // a reverse?
+        if (isset($factors[$to][$from])) {
+          return 1.0 / $factors[$to][$from];
+        }
+      }
+    }
+    return FALSE;
+
+  }
+  
+}
+
 class dHVariablePluginAppRates extends dHVariablePluginDefault {
   // @todo:
   
