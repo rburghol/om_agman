@@ -744,7 +744,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#type' => 'item',
       '#markup' => 
         "<strong>$row->name</strong>"
-        ."<br>&nbsp;&nbsp;($rate_range)",
+        ."<br>&nbsp;&nbsp;<i>Label Rate:</i> &nbsp;($rate_range)",
     );
     $vol_per_vols = array('oz/gal');
     // dont scale if it is a concentration based since volume is already scaled
@@ -787,7 +787,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $rowform['rate_range']["rate_$r"] = array(
         '#type' => 'item',
         '#markup' => '&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy'
-          . '<br>&nbsp;&nbsp; = ' . $rs,
+          . '<br>&nbsp;&nbsp; <i>Adjusted Rate</i> &nbsp;= ' . $rs,
         '#states' => array(
           'visible' => array(
             ':input[name="event_settings[3][propvalue]"]' => array('value' => "$rate_select_key"),

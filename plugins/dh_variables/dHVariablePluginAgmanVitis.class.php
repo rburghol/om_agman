@@ -79,6 +79,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
     $form['tscode']['#title'] = t('Row or Sub-Block');
     $form['tscode']['#weight'] = 0;
     $form['tscode']['#description'] = t('Alphanumeric code or description of sub-area for sampling.');
+    $form['tscode']['#title'] = t('Details');
   }
     
   public function pct_list($inc = 10) {
@@ -263,6 +264,7 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
       'vitis_training_tying'=>'Shoot Positioning/Tying',
       'vitis_deleaf_fruitzone'=>'Leaf Pulling in Fruit Zone',
       'vitis_pruning_hedging'=>'Hedging',
+      'vitis_crop_thinning'=>'Crop-Thinning',
     );
     return $actions;
   }
