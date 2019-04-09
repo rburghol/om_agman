@@ -711,6 +711,24 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $all_units = $plugin->rateUnits();
     $pretty_units = isset($all_units[$rate_units]) ? $all_units[$rate_units] : $rate_units;
     
+    // $scale is used here NOT canopy_frac since scale is canopy_frac adjusted in case of concentration based
+    // disabled to insure new work flow
+    //$row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
+    $rowform['rate_propvalue'] = array(
+      '#coltitle' => 'Chosen Rate',
+      '#title' => 'Rate for ' . $row->name,
+      '#required' => TRUE,
+      //'#prefix' => '<div class="input-group input-group-sm">',
+      //'#prefix' => '<div class="col-xs-12">',
+      '#suffix' => $pretty_units,
+      '#type' => 'textfield',
+      '#element_validate' => array('element_validate_number'),
+      '#size' => 8,
+      //'#attributes' => array('disabled' => 'disabled'),
+      '#attributes' => array( 'size' => 8),
+      '#default_value' => $row->rate_propvalue,
+    );
+    
     $scale = $this->scaleFactor($this->canopy_frac, $rate_units);
     //$rate_adjusted = array_map(function($el) { return $el * $this->canopy_frac; }, $rate_limits);
     $rate_adjusted = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
@@ -753,23 +771,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       'pt/gal' => 'pt',
       'pt/cgal' => 'pt',
       'qt/acre' => 'qt',
-    );
-    // $scale is used here NOT canopy_frac since scale is canopy_frac adjusted in case of concentration based
-    // disabled to insure new work flow
-    //$row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
-    $rowform['rate_propvalue'] = array(
-      '#coltitle' => 'Rate',
-      '#title' => 'Rate for ' . $row->name,
-      '#required' => TRUE,
-      //'#prefix' => '<div class="input-group input-group-sm">',
-      //'#prefix' => '<div class="col-xs-12">',
-      '#suffix' => $pretty_units,
-      '#type' => 'textfield',
-      '#element_validate' => array('element_validate_number'),
-      '#size' => 8,
-      //'#attributes' => array('disabled' => 'disabled'),
-      //'#attributes' => array( 'size' => 16),
-      '#default_value' => $row->rate_propvalue,
     );
     # dynamically adjusting rate range scaler
     for ($r = 5; $r <= 100; $r += 5) {
