@@ -884,7 +884,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     // rate_scale - f(canopy_frac, rate_units)
     //   if vol/vol or mass/vol rate then adjustment is 1.0 (none), if vol/area or mass/area then 
     //   scale = % canopy_frac
-    $volume = array('gal', 'gals', 'liter', 'liters', 'l', 'ml');
+    $volume = array('gal', 'gals', 'liter', 'liters', 'l', 'ml', 'cgal', 'cgals');
     list($num, $denom) = explode('/',$rate_units);
     if (in_array($denom, $volume)) {
       $rate_scale = 1.0;

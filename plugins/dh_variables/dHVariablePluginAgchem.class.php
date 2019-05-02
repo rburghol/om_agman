@@ -652,7 +652,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           '#type' => 'item',
           '#markup' => '<b>Pre-Harvest:</b> ' . "$feature->phi_date ($feature->phi_chem)",
         );
-        #$content['link'] = $link; 
+        $content['link'] = $link; 
         $entity->title = date('Y-m-d', $feature->startdate) . $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
       break;
