@@ -520,16 +520,17 @@ function om_agman_agchem_materials_select($hydroid, &$form, $fname, $viewname, $
     );
     //dpm($material->dh_properties, 'props');
     //dpm($material->prop_varkey_map, 'prop map');
+
     foreach ($valkeys as $label => $key) {
-      if (isset( $material->dh_properties[$material->prop_varkey_map[$key][0]])) { 
-        $opts[$id][$label] = $material->dh_properties[$material->prop_varkey_map[$key][0]]->propvalue;
+      if (isset($material->dh_properties[current($material->prop_varkey_map[$key])])) { 
+        $opts[$id][$label] = $material->dh_properties[current($material->prop_varkey_map[$key])]->propvalue;
       } else {
         $opts[$id][$label] = 'und';
       }
     }
     foreach ($codekeys as $label => $key) {
-      if (isset( $material->dh_properties[$material->prop_varkey_map[$key][0]])) { 
-        $opts[$id][$label] = $material->dh_properties[$material->prop_varkey_map[$key][0]]->propcode;
+      if (isset($material->dh_properties[current($material->prop_varkey_map[$key])])) { 
+        $opts[$id][$label] = $material->dh_properties[current($material->prop_varkey_map[$key])]->propcode;
       } else {
         $opts[$id][$label] = 'und';
       }

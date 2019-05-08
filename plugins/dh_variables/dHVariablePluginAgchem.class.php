@@ -73,6 +73,7 @@ class dHVariablePluginAgchemAI extends dHVariablePluginDefault {
   }
   
   public function save(&$entity) {
+    $entity->propname = $entity->propcode;
     parent::save();
   }
   
