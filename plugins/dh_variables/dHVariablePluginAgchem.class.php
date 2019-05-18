@@ -346,7 +346,53 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
 
 
 class dHAgchemApplicationEvent extends dHVariablePluginDefault {
+  public function editLink($entity) {
+    $feature = $this->getParentEntity($entity);    
+    $uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid&finaldest=$page";
+    $link = array(
+      '#type' => 'link',
+      '#prefix' => '&nbsp; ',
+      '#suffix' => '<br>',
+      '#title' => 'Go to ' . $uri,
+      '#href' => $uri,
+      'query' => array(
+        'finaldest' => $page,
+      ),
+      '#options' => array(
+        'attributes' => array(
+           'class' => array('editlink')
+         ),
+      ),
+    );
+    return $link;
+  }
+  
+  public function printLink($entity) {
+    $feature = $this->getParentEntity($entity);    
+    $uri = "dh_adminreg_feature/" . $feature->vineyard->hydroid . "/print/" . $feature->bundle;
+    $link = array(
+      '#type' => 'link',
+      '#prefix' => '&nbsp; ',
+      '#suffix' => '<br>',
+      '#title' => 'Go to ' . $uri,
+      '#href' => $uri,
+      'query' => array(
+        'finaldest' => $page,
+      ),
+      '#options' => array(
+        'attributes' => array(
+           'class' => array('print-page')
+         ),
+      ),
+    );
+    return $link;
     
+  }
+  
+  public function viewLink($entity) {
+    
+  }
+  
   public function dh_getValue($entity, $ts = FALSE, $propname = FALSE, $config = array()) {
     // Get and Render Chems & Rates
     $feature = $this->getParentEntity($entity);
@@ -620,7 +666,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // get list of blocks
     // get list of chems
     $uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid&finaldest=$page";
-    $link = array(
+    $edit_link = array(
       '#type' => 'link',
       '#prefix' => '&nbsp; ',
       '#suffix' => '<br>',
@@ -653,7 +699,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           '#type' => 'item',
           '#markup' => '<b>Pre-Harvest:</b> ' . "$feature->phi_date ($feature->phi_chem)",
         );
-        $content['link'] = $link; 
+        $content['link'] = $edit_link; 
         $entity->title = date('Y-m-d', $feature->startdate) . $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
       break;
@@ -677,7 +723,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'full':
       case 'plugin':
       default:   
-        $content['title'] = $link;
+        $content['title'] = $edit_link;
         $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',
@@ -698,6 +744,21 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
       break;
     }
+  }
+}
+
+
+class dHVariablePluginAgchemLicensee extends dHVariablePluginDefault {
+  
+  public function hiddenFields() {
+    return array('pid', 'varid', 'featureid', 'entity_type', 'bundle', 'dh_link_admin_pr_condition');
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    parent::formRowEdit($form, $entity);
+    $form['propcode']['#title'] = t('License #');
+    $form['propname']['#title'] = t('License Holder');
+    $form['propname']['#description'] = t('Full name of authorized pesticide applicator as it appears on license.');
   }
 }
 ?>
