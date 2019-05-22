@@ -40,10 +40,12 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
   }
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
+    $rowform['tstime']['#weight'] = 1;
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
+    $rowform['tsvalue']['#element_validate'] = array('element_validate_number');
     $this->loadProperties($row);
     // use special vineyard -> block selector
     $this->addLocationSelector($rowform, $row);
@@ -79,7 +81,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
     $form['tscode']['#title'] = t('Row or Sub-Block');
     $form['tscode']['#weight'] = 0;
     $form['tscode']['#description'] = t('Alphanumeric code or description of sub-area for sampling.');
-    $form['tscode']['#title'] = t('Details');
+    $form['tscode']['#title'] = t('Sub-Area');
   }
     
   public function pct_list($inc = 10) {
@@ -278,7 +280,6 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
       return FALSE;
     }
     $actions = $this->getActions();
-    $rowform['tstime']['#weight'] = 0;
     $rowform['tscode'] = array(
       '#title' => t('Activity'),
       '#type' => 'select',
@@ -346,6 +347,66 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
         $content['body'] = array(
           '#type' => 'item',
           '#markup' => "$activity @ $pct in " . $feature->name,
+        );
+      break;
+    }
+  }
+
+}
+
+
+class dHVariablePluginVitisShootLength extends dHVariablePluginAgmanAction {
+  // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
+  //        handle in views - maybe a setting in the filter or jumplists itself?
+  //  default: agchem_apply_fert_ee
+  //       fr: agchem_apply_fert_fr 
+  
+  public function __construct($conf = array()) {
+    parent::__construct($conf);
+    $hidden = array('tid', 'startdate', 'endtime', 'entity_type', 'bundle');
+    foreach ($hidden as $hide_this) {
+      $this->property_conf_default[$hide_this]['hidden'] = 1;
+    }
+  }
+  
+  public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row); // does hiding etc.
+    // apply custom settings here
+    $rowform['tsvalue']['#title'] = t('Median Shoot Length (in)');
+    $rowform['tsvalue']['#type'] = 'textfield';
+    $rowform['tsvalue']['#weight'] = 2;
+  }
+
+  public function buildContent(&$content, &$entity, $view_mode) {
+    parent::buildContent($content, $entity, $view_mode);
+    // special render handlers when using a content array
+    // get all FRAC Codes associated with this entity
+    $feature = $this->getParentEntity($entity);
+    if ($varinfo === FALSE) {
+      return;
+    }
+    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
+    foreach ($hidden as $col) {
+      $content[$col]['#type'] = 'hidden';
+    }
+    
+    switch($view_mode) {
+      default:
+        //$content['title'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "$varname @ $pct in " . $feature->name,
+        //);
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "Median Shoot Length @ $entity->tsvalue in. " . $feature->name,
+        );
+      break;
+      case 'ical_summary':
+        unset($content['title']['#type']);
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "Median Shoot Length @ $entity->tsvalue in. " . $feature->name,
         );
       break;
     }
