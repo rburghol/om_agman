@@ -1119,9 +1119,11 @@ class dHVariableReviewedPMG extends dHVariablePluginDefault {
     parent::formRowEdit($rowform, $row); // does hiding etc.
     $options = array(
       'User' => 'User',
-      'PMG' => 'PMG'
+      'PMG' => 'PMG',
+      '' => 'Unknown'
     );
     $rowform['propcode']['#type'] = 'select';
+    $rowform['propcode']['#default_value'] = '';
     $rowform['propcode']['#options'] = $options;
     $rowform['propcode']['#size'] = 1;
   }
