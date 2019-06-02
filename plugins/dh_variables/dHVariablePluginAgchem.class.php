@@ -761,4 +761,8 @@ class dHVariablePluginAgchemLicensee extends dHVariablePluginDefault {
     $form['propname']['#description'] = t('Full name of authorized pesticide applicator as it appears on license.');
   }
 }
+
+//$plugin_def = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginIPMIncident');
+//$class = ctools_plugin_get_class($plugin_def, 'handler');
+
 ?>

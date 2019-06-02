@@ -8,7 +8,7 @@ function dh_agchem_material_select($blockid, &$form, $fname, $viewname, $display
   foreach ($def as $selopt) {
     $deftable[$selopt] = 1;
   }
-  dpm($fname,'form');
+  //dpm($fname,'form');
   $form[$fname]['und']['#empty'] = t('No content available.');
   $form[$fname]['und']['#type'] = 'tableselect';
   $form[$fname]['und']['#default_value'] = $deftable;
@@ -38,6 +38,7 @@ function dh_agchem_material_select($blockid, &$form, $fname, $viewname, $display
       'REI'=>'agchem_rei', 
       'PHI' => 'agchem_phi', 
       'FRAC' => 'agchem_frac', 
+      'PMG' => 'ipm_vt_pmg_material', 
       'PM' => 'org_powdery_mildew', 
       'DM' => 'org_downy_mildew', 
       'Ph' => 'org_phomopsis', 
@@ -67,9 +68,14 @@ function dh_agchem_material_select($blockid, &$form, $fname, $viewname, $display
     // BEGIN - tableselect
     // is col is -  // field_link_to_registered_agchem_target_id
     //dpm($material, 'material');
+    $pmg = isset($material->dh_properties['ipm_vt_pmg_material']) ? $material->dh_properties['ipm_vt_pmg_material']->propcode : '';
+    //dpm($material->dh_properties['ipm_vt_pmg_material'],'pmg prop');
     $opts[$id] = array(
-      'label' => $material->name, 
+      'label' => "<sup>" . $pmg . "</sup>" . $material->name, 
     );
+    if ($pmg <> '') {
+      $opts[$id]['label'] = "<strong>" . $opts[$id]['label'] . "</strong>";
+    }
     foreach ($valkeys as $label => $key) {
       if (isset($material->dh_properties[current($material->prop_varkey_map[$key])])) { 
         $opts[$id][$label] = $material->dh_properties[current($material->prop_varkey_map[$key])]->propvalue;
