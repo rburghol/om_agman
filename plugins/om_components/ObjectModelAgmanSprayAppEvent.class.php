@@ -760,18 +760,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         
       }
     }
-    // final units
-    $ra_conv = array(
-      'oz/acre' => 'oz',
-      'oz/gal' => 'oz',
-      'floz/acre' => 'floz',
-      'lbs/acre' => 'lbs',
-      'gals/acre' => 'gals',
-      'pt/acre' => 'pt',
-      'pt/gal' => 'pt',
-      'pt/cgal' => 'pt',
-      'qt/acre' => 'qt',
-    );
     # dynamically adjusting rate range scaler
     for ($r = 5; $r <= 100; $r += 5) {
       // create a set of conditionals
@@ -806,17 +794,18 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     } else {
       $unitconv = 1.0;
     }
-    $unitconv = $this->rateFactor($this->event_area, $this->batch_amount, $rate_units);
+    $unitconv = $this->rateFactor($this->event_area, $this->total_amount, $rate_units);
+    // total applied
+    $total_val = $row->rate_propvalue * $unitconv;
+    $total_val = ($total_val > 10) ? round($total_val,1) : round($total_val,2);
     switch ($row->rate_units) {
       default:
-        // quantity per acre
-        $batch_val = $row->rate_propvalue * $unitconv * $this->batch_amount / $this->total_amount;
+        // quantity per batch 
+        $batch_val = $total_val * $this->batch_amount / $this->total_amount;
         $batch_val = ($batch_val > 10) ? round($batch_val,1) : round($batch_val,2);
-        $total_val = $row->rate_propvalue * $unitconv;
-        $total_val = ($total_val > 10) ? round($total_val,1) : round($total_val,2);
       break;
     }
-    $amount_units = empty($row->rate_units) ? '' : $ra_conv[$row->rate_units];
+    $amount_units = empty($row->rate_units) ? '' : $this->convertRateUnitsAmount($row->rate_units);
     $rowform['batch_total'] = array(
       '#coltitle' => 'Per Tank / Total',
       //'#markup' => $batch_val . " $amount_units",
@@ -878,6 +867,22 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     
     // need to spoof a form_state for the row to properly load attached fields
     
+  }
+  
+  public function convertRateUnitsAmount($rate_units) {
+    // final units
+    $ra_conv = array(
+      'oz/acre' => 'oz',
+      'oz/gal' => 'oz',
+      'floz/acre' => 'floz',
+      'lbs/acre' => 'lbs',
+      'gals/acre' => 'gals',
+      'pt/acre' => 'pt',
+      'pt/gal' => 'pt',
+      'pt/cgal' => 'pt',
+      'qt/acre' => 'qt',
+    );
+    return $ra_conv[$rate_units];
   }
   
   public function scaleFactor($canopy_frac, $rate_units) {
@@ -973,12 +978,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $unitconv = 1.0;
     }
     $unitconv = $this->rateFactor($this->event_area, $this->total_amount, $row['rate_units']);
-    $ra_conv = array(
-      'oz/acre' => 'oz',
-      'floz/acre' => 'floz',
-      'lbs/acre' => 'lbs',
-      'gals/acre' => 'gals',
-    );
     $total_val = $row['rate_propvalue'] * $unitconv;
     $total_val = ($total_val > 10) ? round($total_val,1) : round($total_val,2);
     $form_entity_map['amount'] = array(
@@ -1022,7 +1021,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         'propcode' => array (
           'fieldname'=> 'propcode',
           'value_src_type' => 'constant', 
-          'value_val_key' => $ra_conv[$row['rate_units']], 
+          'value_val_key' => $this->convertRateUnitsAmount($row['rate_units']), 
         ),
       ),
       'resultid' => 'pid_amount',
