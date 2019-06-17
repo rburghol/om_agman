@@ -73,8 +73,11 @@ function dh_agchem_material_select($blockid, &$form, $fname, $viewname, $display
     $opts[$id] = array(
       'label' => $material->name . "<sup>" . $pmg . "</sup>", 
     );
-    if ($pmg <> '') {
+    if ($pmg == 'PMG') {
       $opts[$id]['label'] = "<strong>" . $opts[$id]['label'] . "</strong>";
+    }
+    if ($pmg == 'User') {
+      $opts[$id]['label'] = "<i>" . $opts[$id]['label'] . "</i>";
     }
     foreach ($valkeys as $label => $key) {
       if (isset($material->dh_properties[current($material->prop_varkey_map[$key])])) { 
