@@ -1123,7 +1123,7 @@ class dHVariableReviewedPMG extends dHVariablePluginDefault {
       '' => 'Unknown'
     );
     $rowform['propcode']['#type'] = 'select';
-    $rowform['propcode']['#default_value'] = '';
+    $rowform['propcode']['#default_value'] = isset($row->propcode) ? $row->propcode : '';
     $rowform['propcode']['#options'] = $options;
     $rowform['propcode']['#size'] = 1;
   }
