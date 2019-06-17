@@ -71,7 +71,7 @@ function dh_agchem_material_select($blockid, &$form, $fname, $viewname, $display
     $pmg = isset($material->dh_properties['ipm_vt_pmg_material']) ? $material->dh_properties['ipm_vt_pmg_material']->propcode : '';
     //dpm($material->dh_properties['ipm_vt_pmg_material'],'pmg prop');
     $opts[$id] = array(
-      'label' => "<sup>" . $pmg . "</sup>" . $material->name, 
+      'label' => $material->name . "<sup>" . $pmg . "</sup>", 
     );
     if ($pmg <> '') {
       $opts[$id]['label'] = "<strong>" . $opts[$id]['label'] . "</strong>";
