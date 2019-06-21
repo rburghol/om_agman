@@ -283,7 +283,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#date_format' => $date_format,
       '#type' => 'date_select',
       '#date_year_range' => '-5:+5',
-      '#weight' => 2,
+      '#weight' => 0,
     );
     // should have code in here to guess based on the phase/or passed in from the URL
     $form['enddate'] = array(
