@@ -666,10 +666,40 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
   
 }
 class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
-  //var $attach_method = 'contained';
+  var $attach_method = 'contained';
+  var $component_defaults = FALSE; // will be initialized in getDefaults or other place.
   // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
   //        why aren't they converting location sharing to setting?
   //    Once debugged, un-comment $attach_method = 'contained'
+  
+  public function add_component_default($config) {
+    if ($this->component_defaults === FALSE) {
+      $this->component_defaults = array();
+    }
+    if (!isset($config['form_machine_name'])) {
+      $config['form_machine_name'] = $this->handleFormPropname($config['propname']);
+    }
+    if (!$this->validate_component_default($config)) {
+      return FALSE;
+    }
+    $this->component_defaults[$config['form_machine_name']] = $config;
+    return TRUE;
+  }
+  
+  public function validate_component_default($config) {
+    if (!isset($config['propname'])) {
+      return FALSE;
+    }
+    if (!$this->validate_alphanumeric_underscore($config['form_machine_name'])) {
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  public function validate_alphanumeric_underscore($str) {
+    return preg_match('/^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$/',$str);
+  }
+  
   
   public function convert_attributes_to_dh_props($entity) {
     // this will be called after a form submittal, the added form fields from attached props will be/
@@ -706,8 +736,8 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         $load_property = TRUE;
       }
       if ($load_property) {
-        //dsm("Loading property $thisvar[propname]");
-        $this->loadProperties($entity, FALSE, $thisvar['propname']);
+        dsm("Loading property $pn");
+        $this->loadProperties($entity, FALSE, $pn);
       }
       // now, apply the stashed value to the property
       if ($convert_value and is_object($entity->{$propname})) {
@@ -730,8 +760,24 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
       $props = array($propname => $props[$propname]);
     }
     foreach ($props as $thisvar) {
+	    // propname is arbitrary by definition
+      // also, propname can be non-compliant with form API, which requires underscores in place of spaces.
+      // user can also rename properties, but that shouldn't be allowed with these kinds of defined by DefaultSettings
+      // or at least, if the user renames the property then this plugin should create a new one.
+      // name should alternatively be read-only in these forms.
+      // if we create the name as form compliant, and create a field called "form_name", can we eliminate any guesswork?
+      // we still have to deal with user-named properties, which is definitely something available to users.
+      //   - actually, user defined would be handled in a separate fashion.  We need to handle this well, since the 
+      //     modeling framework will enable many user-defined props, and we WILL want to be able to edit them in a multi-form
+      //     type scenario. 
+      $pn = $this->handleFormPropname($propname);
       if (!isset($thisvar['embed']) or ($thisvar['embed'] === TRUE)) {
-        if ($overwrite or !property_exists($entity, $thisvar['propname']) or (property_exists($entity, $thisvar['propname']) and !is_object($entity->{$thisvar['propname']})) ) {
+        if ($overwrite 
+		    or !property_exists($entity, $pn) 
+        or (property_exists($entity, $pn) 
+          and !is_object($entity->{$pn})
+        ) 
+		  ) {
           $thisvar['featureid'] = $entity->{$this->row_map['id']};
           $prop = dh_properties_enforce_singularity($thisvar, 'name');
           if (!$prop) {
@@ -749,7 +795,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
             watchdog('om', 'Could not Add Properties in plugin loadProperties');
             return FALSE;
           }
-          //dpm($prop,'prop');
+          dpm($prop,'prop');
           // apply over-rides if given
           $prop->vardesc = isset($thisvar['vardesc']) ? $thisvar['vardesc'] : $prop->vardesc;
           $prop->varname = isset($thisvar['varname']) ? $thisvar['varname'] : $prop->varname;
@@ -805,21 +851,23 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
-      'ipm_tissue' => array(
+      'Location' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'leaves',
         'propvalue_default' => 0.0,
         'propname' => 'Location',
+        'form_machine_name' => 'Location',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_tissue',
         'varid' => dh_varkey2varid('ipm_tissue', TRUE),
       ),
-      'ipm_info_share' => array(
+      'Info Sharing' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'locality',
         'propvalue_default' => 0.0,
         'propname' => 'Info Sharing',
+        'form_machine_name' => $this->handleFormPropname('Info Sharing'),
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_info_share',
