@@ -826,7 +826,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
           if (!is_object($entity->{$thisvar['propname']})) {
             // this has been set by the form API as a value 
             // so we need to load/create a property then set the value
-            dsm("Creating object before saving " . $thisvar['propname']);
+            dpm($thisvar, "Creating object before saving ");
             $thisvar['featureid'] = $entity->{$this->row_map['id']};
             $thisvar['propvalue'] = $entity->{$thisvar['propname']};
             $prop = dh_update_properties($thisvar, 'name');
