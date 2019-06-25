@@ -830,6 +830,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
             $thisvar['featureid'] = $entity->{$this->row_map['id']};
             $thisvar['propvalue'] = $entity->{$thisvar['propname']};
             $prop = dh_update_properties($thisvar, 'name');
+            dpm($prop, "object after creation");
           } else {
             dsm("Saving preloaded object " . $thisvar['propname']);
             $prop = $entity->{$thisvar['propname']};
