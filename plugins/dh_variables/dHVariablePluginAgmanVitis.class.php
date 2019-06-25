@@ -813,7 +813,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   public function updateProperties(&$entity) {
     // @todo: move this to the base plugin class 
     $props = $this->getDefaults($entity);
-    //dpm($entity, "Calling updateProperties");
+    dpm($entity, "Calling updateProperties");
     foreach ($props as $thisvar) {
       if (!isset($thisvar['embed']) or ($thisvar['embed'] === TRUE)) {
         dsm("Saving " . $thisvar['propname']);
