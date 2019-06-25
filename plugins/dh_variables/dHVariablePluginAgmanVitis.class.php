@@ -664,6 +664,12 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     $rowform[$row->propname]['#size'] = 1;
   }
   
+  public function applyEntityAttribute($property, $value) {
+    // @todo: this needs to be more robust, as it assumes only one way to handle an attached property.
+    //        bvut for now this will work.
+    $property->propcode = $value;
+  }
+  
 }
 class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   var $attach_method = 'contained';
@@ -795,7 +801,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
             watchdog('om', 'Could not Add Properties in plugin loadProperties');
             return FALSE;
           }
-          dpm($prop,'prop');
+          //dpm($prop,'prop');
           // apply over-rides if given
           $prop->vardesc = isset($thisvar['vardesc']) ? $thisvar['vardesc'] : $prop->vardesc;
           $prop->varname = isset($thisvar['varname']) ? $thisvar['varname'] : $prop->varname;
@@ -810,7 +816,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     //dpm($entity, "Calling updateProperties");
     foreach ($props as $thisvar) {
       if (!isset($thisvar['embed']) or ($thisvar['embed'] === TRUE)) {
-        //dsm("Saving " . $thisvar['propname']);
+        dsm("Saving " . $thisvar['propname']);
         // load the property 
         // if a property with propname is set on $entity, send its value to the plugin 
         //   * plugin should be stored on the property object already
@@ -820,11 +826,12 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
           if (!is_object($entity->{$thisvar['propname']})) {
             // this has been set by the form API as a value 
             // so we need to load/create a property then set the value
-        //dsm("Saving manually " . $thisvar['propname']);
+            dsm("Creating object before saving " . $thisvar['propname']);
             $thisvar['featureid'] = $entity->{$this->row_map['id']};
             $thisvar['propvalue'] = $entity->{$thisvar['propname']};
             $prop = dh_update_properties($thisvar, 'name');
           } else {
+            dsm("Saving preloaded object " . $thisvar['propname']);
             $prop = $entity->{$thisvar['propname']};
             $prop->featureid = $entity->{$this->row_map['id']};
             entity_save('dh_properties', $prop);
