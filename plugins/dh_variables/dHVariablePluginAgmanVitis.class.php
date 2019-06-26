@@ -657,12 +657,13 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
   public function attachNamedForm(&$rowform, $row) {
     parent::attachNamedForm($rowform, $row);
     $opts = $this->getOptions();
-    $rowform[$row->propname]['#title'] = t('Share Event Info?');
-    $rowform[$row->propname]['#description'] = t('Controls how details of this event are shared with other users.');
-    $rowform[$row->propname]['#type'] = 'select';
-    $rowform[$row->propname]['#options'] = $opts;
-    $rowform[$row->propname]['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
-    $rowform[$row->propname]['#size'] = 1;
+    $mname = $this->handleFormPropname($row->propname);
+    $rowform[$mname]['#title'] = t('Share Event Info?');
+    $rowform[$mname]['#description'] = t('Controls how details of this event are shared with other users.');
+    $rowform[$mname]['#type'] = 'select';
+    $rowform[$mname]['#options'] = $opts;
+    $rowform[$mname]['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
+    $rowform[$mname]['#size'] = 1;
   }
   
   public function applyEntityAttribute($property, $value) {
@@ -674,17 +675,13 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
 }
 class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   var $attach_method = 'contained';
-  var $component_defaults = FALSE; // will be initialized in getDefaults or other place.
   // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
   //        why aren't they converting location sharing to setting?
   //    Once debugged, un-comment $attach_method = 'contained'
   
-  public function formRowSave(&$rowvalues, &$row) {
-    parent::formRowSave($rowvalues, $row);
-    dpm($rowvalues, 'submitted');
-    // special save handlers
-  }
-  
+  // @todo: should we have a method for adding these defaults, to insure proper formation?
+  //        the property $component_defaults and method add_component_default() are not currently used
+  var $component_defaults = FALSE; // will be initialized in getDefaults or other place.
   public function add_component_default($config) {
     if ($this->component_defaults === FALSE) {
       $this->component_defaults = array();
@@ -697,6 +694,12 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     }
     $this->component_defaults[$config['form_machine_name']] = $config;
     return TRUE;
+  }
+  
+  public function formRowSave(&$rowvalues, &$row) {
+    parent::formRowSave($rowvalues, $row);
+    //dpm($rowvalues, 'submitted');
+    // special save handlers
   }
   
   public function validate_component_default($config) {
@@ -718,13 +721,15 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     // this will be called after a form submittal, the added form fields from attached props will be/
     // added as plain fields on the entity, we then grab them by name and handle their contents.
     $props = $this->getDefaults($entity);
-    dpm($entity,'entity to convert_attributes_to_dh_props');
+    //dpm($entity,'entity to convert_attributes_to_dh_props');
     //dpm($props,'props to convert_attributes_to_dh_props');
     foreach ($props as $thisvar) {
       $convert_value = FALSE; // flag to see if we need to convert (in case we are called multiple times)
       $load_property = FALSE;
       $propvalue = NULL;
       $propname = $thisvar['propname'];
+      // form property name will be converted to a machine name by attachNamedForm() methods.
+      // so now we just get this name here so that we can keep things straight but allow users descriptive names
       $pn = $this->handleFormPropname($propname);
       // check for conversion from value to property
       // this could need to change as fully loaded objects could be stored as array  that are then loaded as object or handled more completely
@@ -750,7 +755,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         $load_property = TRUE;
       }
       if ($load_property) {
-        dsm("Loading property $pn");
+        //dsm("Loading property $pn");
         $this->loadProperties($entity, FALSE, $pn);
       }
       // now, apply the stashed value to the property
@@ -821,11 +826,11 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   public function updateProperties(&$entity) {
     // @todo: move this to the base plugin class 
     $props = $this->getDefaults($entity);
-    dpm($entity, "Calling updateProperties");
-    dpm($props, "Iterating over attached properties");
+    //dpm($entity, "Calling updateProperties");
+    //dpm($props, "Iterating over attached properties");
     foreach ($props as $thisvar) {
       if (!isset($thisvar['embed']) or ($thisvar['embed'] === TRUE)) {
-        dsm("Saving " . $thisvar['propname']);
+        //dsm("Saving " . $thisvar['propname']);
         // load the property 
         // if a property with propname is set on $entity, send its value to the plugin 
         //   * plugin should be stored on the property object already
@@ -835,20 +840,20 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
           if (!is_object($entity->{$thisvar['propname']})) {
             // this has been set by the form API as a value 
             // so we need to load/create a property then set the value
-            dpm($thisvar, "Creating object before saving ");
+            //dpm($thisvar, "Creating object before saving ");
             $thisvar['featureid'] = $entity->{$this->row_map['id']};
             //@todo: this needs to use the plugin handler for this instead of assuming propvalue instead of propcode
             //       why isn't this already an object after convert_attributes_to_dh_props is called?
             //     Location (the featureid loader property) is already loaded, but Location Sharing is NOT -- why????
             $prop = om_model_getSetProperty($thisvar, 'name');
-            dpm($prop, "object after creation");
+            //dpm($prop, "object after creation");
             // now, apply the stashed value to the property
             foreach ($prop->dh_variables_plugins as $plugin) {
               // the default method will guess location based on the value unless overridden by the plugin
               $plugin->applyEntityAttribute($prop, $entity->{$thisvar['propname']});
             }
-            dpm($prop, "object after plugins");
-            dsm("Saving preloaded object " . $thisvar['propname']);
+            //dpm($prop, "object after plugins");
+            //dsm("Saving preloaded object " . $thisvar['propname']);
             entity_save('dh_properties', $prop);
           }
         }
@@ -884,11 +889,11 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'varkey' => 'ipm_tissue',
         'varid' => dh_varkey2varid('ipm_tissue', TRUE),
       ),
-      'Sharing' => array(
+      'Info Sharing' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'locality',
         'propvalue_default' => 0.0,
-        'propname' => 'Sharing',
+        'propname' => 'Info Sharing',
         'form_machine_name' => $this->handleFormPropname('Sharing'),
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
