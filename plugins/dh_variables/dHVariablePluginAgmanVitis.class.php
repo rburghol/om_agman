@@ -461,7 +461,8 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
 }
 
 class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector {
-  
+  var $loval = 0.05;
+  var $lolabel = '<=5%';
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
@@ -517,7 +518,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     foreach ($hidden as $col) {
       $content[$col]['#type'] = 'hidden';
     }
-    $pct = ($entity->tsvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->tsvalue) . '%';
+    $pct = ($entity->tsvalue <= $this->loval) ? $this->lolabel : round(100.0 * $entity->tsvalue) . '%';
     $link = $this->getLink($entity);
     switch($view_mode) {
       case 'ical_summary':
@@ -675,6 +676,8 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
   
 }
 class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
+  var $loval = 0.01;
+  var $lolabel = "<=1%";
   var $attach_method = 'contained';
   // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
   //        why aren't they converting location sharing to setting?
