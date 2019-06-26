@@ -711,6 +711,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     // this will be called after a form submittal, the added form fields from attached props will be/
     // added as plain fields on the entity, we then grab them by name and handle their contents.
     $props = $this->getDefaults($entity);
+    dpm($entity,'entity to convert_attributes_to_dh_props');
     //dpm($props,'props to convert_attributes_to_dh_props');
     foreach ($props as $thisvar) {
       $convert_value = FALSE; // flag to see if we need to convert (in case we are called multiple times)
