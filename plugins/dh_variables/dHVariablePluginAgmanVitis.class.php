@@ -858,13 +858,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
           } else {
             $prop = $entity->{$thisvar['propname']};
             // already a loaded form object, so just let it rip.
-            dpm($prop, "object after creation");
-            // now, apply the stashed value to the property
-            foreach ($prop->dh_variables_plugins as $plugin) {
-              // the default method will guess location based on the value unless overridden by the plugin
-              $plugin->applyEntityAttribute($prop, $entity->{$thisvar['propname']});
-            }
-            dpm($prop, "object after plugins");
+            dpm($prop, "object from parent");
             //dsm("Saving preloaded object " . $thisvar['propname']);
             entity_save('dh_properties', $prop);
           }
