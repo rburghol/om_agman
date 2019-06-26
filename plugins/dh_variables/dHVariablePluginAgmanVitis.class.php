@@ -884,12 +884,12 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'varkey' => 'ipm_tissue',
         'varid' => dh_varkey2varid('ipm_tissue', TRUE),
       ),
-      'Info Sharing' => array(
+      'Sharing' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'locality',
         'propvalue_default' => 0.0,
         'propname' => 'Info Sharing',
-        'form_machine_name' => $this->handleFormPropname('Info Sharing'),
+        'form_machine_name' => $this->handleFormPropname('Sharing'),
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_info_share',
