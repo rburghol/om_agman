@@ -636,13 +636,18 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginAgmanAction {
 //class dHVariableOMInfoShare extends dHVariablePluginDefault {
 class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
   
-  public function formRowEdit(&$rowform, $row) {
-    parent::formRowEdit($rowform, $row); // does hiding etc.
+  public function getOptions() {  
     $opts = array(
-      'locality' => 'Share Locality',
+      'locality' => 'Share Locality Only',
       'geometry' => 'Share Exact Location',
       'none' => 'Do Not Share Location',
     );
+    return $opts;
+  }
+  
+  public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row); // does hiding etc.
+    $opts = $this->getOptions();
     $rowform['propcode']['#title'] = t('Share Event Info?');
     $rowform['propcode']['#type'] = 'select';
     $rowform['propcode']['#options'] = $opts;
@@ -651,11 +656,7 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
   }
   public function attachNamedForm(&$rowform, $row) {
     parent::attachNamedForm($rowform, $row);
-    $opts = array(
-      'locality' => 'Share Locality Only',
-      'geometry' => 'Share Exact Location',
-      'none' => 'Do Not Share Location',
-    );
+    $opts = $this->getOptions();
     $rowform[$row->propname]['#title'] = t('Share Event Info?');
     $rowform[$row->propname]['#description'] = t('Controls how details of this event are shared with other users.');
     $rowform[$row->propname]['#type'] = 'select';
@@ -677,6 +678,12 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
   //        why aren't they converting location sharing to setting?
   //    Once debugged, un-comment $attach_method = 'contained'
+  
+  public function formRowSave(&$rowvalues, &$row) {
+    parent::formRowSave($rowvalues, $row);
+    dpm($rowvalues, 'submitted');
+    // special save handlers
+  }
   
   public function add_component_default($config) {
     if ($this->component_defaults === FALSE) {
