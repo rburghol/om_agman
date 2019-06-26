@@ -660,7 +660,7 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     $opts = $this->getOptions();
     $mname = $this->handleFormPropname($row->propname);
     $rowform[$mname]['#title'] = t('Share Event Info?');
-    $rowform[$mname]['#description'] = t('Controls how details of this event are shared with other users.');
+    $rowform[$mname]['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users.');
     $rowform[$mname]['#type'] = 'select';
     $rowform[$mname]['#options'] = $opts;
     $rowform[$mname]['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
