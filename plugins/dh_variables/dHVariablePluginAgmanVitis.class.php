@@ -713,7 +713,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   
   public function formRowSave(&$rowvalues, &$row) {
     parent::formRowSave($rowvalues, $row);
-    dpm($rowvalues, 'submitted');
+    //dpm($rowvalues, 'submitted');
     // special save handlers
   }
   
