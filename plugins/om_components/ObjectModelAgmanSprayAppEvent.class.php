@@ -1,6 +1,5 @@
 <?php
 module_load_include('inc', 'dh', 'plugins/dh.display');
-
 class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler {
   // provides configuration screen for application event (submittal)
   // Gets default values from:
@@ -264,24 +263,30 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       return FALSE;
     }
     parent::buildForm($form, $form_state);
+    $form['name'] = array(
+      '#title' => t('Title'),
+      '#type' => 'textfield',
+      '#default_value' => ($this->dh_adminreg_feature->name <> '') ? $this->dh_adminreg_feature->name : 'Spray Event',
+      '#description' => t('Event Description'),
+      '#required' => TRUE,
+      '#size' => 30,
+      '#weight' => 1,
+    );
+    $date_format = 'Y-m-d H:i';
     // should have code in here to guess based on the phase/or passed in from the URL
     $form['startdate'] = array(
-    // added tags cause theme centers these for some reason - maybe bug in date widget?
-      '#prefix' => "<b>" . t('Application Start Date/Time') . "</b>",
-      '#title' => '',
+      '#title' => t('Application Start Date/Time'),
       '#description' => t('Planned date for this spray.'),
       '#required' => TRUE,
       '#default_value' => empty($this->dh_adminreg_feature->startdate) ? $this->dh_adminreg_feature->startdate : date($date_format,$this->dh_adminreg_feature->startdate),
       '#date_format' => $date_format,
       '#type' => 'date_select',
       '#date_year_range' => '-5:+5',
-      '#weight' => 1,
+      '#weight' => 0,
     );
     // should have code in here to guess based on the phase/or passed in from the URL
     $form['enddate'] = array(
-    // added tags cause theme centers these for some reason - maybe bug in date widget?
-      '#prefix' => "<b>" . t('End/Time') . "</b>",
-      '#title' => '',
+      '#title' => t('End Date/Time'),
       '#description' => t('This will be used to calculate re-entry and post-harvest intervals.'),
       '#required' => FALSE,
       '#default_value' => (empty($this->dh_adminreg_feature->enddate) or ($this->dh_adminreg_feature->enddate < $this->dh_adminreg_feature->startdate)) 
@@ -291,15 +296,6 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#type' => 'date_select',
       '#date_year_range' => '-5:+5',
       '#weight' => 2,
-    );
-    $form['name'] = array(
-      '#title' => t('Title'),
-      '#type' => 'textfield',
-      '#default_value' => ($this->dh_adminreg_feature->name <> '') ? $this->dh_adminreg_feature->name : 'Spray Event',
-      '#description' => t('Event Description'),
-      '#required' => TRUE,
-      '#size' => 30,
-      '#weight' => 3,
     );
     //dpm($this->dh_adminreg_feature,"event object");
     $form['show_agchem_event_area'] = array(
@@ -312,7 +308,9 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     );
     //dpm($this->dh_adminreg_feature,"event object");
     $form['agchem_event_area'] = array(
+      '#title' => t('Total Area to Spray'),
       '#type' => 'hidden',
+      '#suffix' => $this->dh_adminreg_feature->dh_properties['agchem_event_area']->varunits,
       '#default_value' => empty($this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue) ? 0 : $this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue,
       //'#description' => t('Event Description'),
       '#disabled' => FALSE,
@@ -467,7 +465,6 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     // to the block and erefed here to the agchem appplication event
   }
 }
-
 class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
   // @todo:
   // 1. query app event adminreg table joins entityreference to ag_chem adminreg feature 
