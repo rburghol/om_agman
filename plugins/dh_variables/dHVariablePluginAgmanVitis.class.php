@@ -894,7 +894,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'propcode_default' => 'locality',
         'propvalue_default' => 0.0,
         'propname' => 'Info Sharing',
-        'form_machine_name' => $this->handleFormPropname('Sharing'),
+        'form_machine_name' => $this->handleFormPropname('Info Sharing'),
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_info_share',
