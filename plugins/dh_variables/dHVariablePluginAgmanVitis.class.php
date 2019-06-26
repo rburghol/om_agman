@@ -888,7 +888,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'locality',
         'propvalue_default' => 0.0,
-        'propname' => 'Info Sharing',
+        'propname' => 'Sharing',
         'form_machine_name' => $this->handleFormPropname('Sharing'),
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
