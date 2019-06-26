@@ -680,6 +680,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   //    Once debugged, un-comment $attach_method = 'contained'
   
   // @todo: should we have a method for adding these defaults, to insure proper formation?
+  // **** BEGIN - Experimental un-used Component Adding Methods
   //        the property $component_defaults and method add_component_default() are not currently used
   var $component_defaults = FALSE; // will be initialized in getDefaults or other place.
   public function add_component_default($config) {
@@ -695,13 +696,6 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $this->component_defaults[$config['form_machine_name']] = $config;
     return TRUE;
   }
-  
-  public function formRowSave(&$rowvalues, &$row) {
-    parent::formRowSave($rowvalues, $row);
-    dpm($rowvalues, 'submitted');
-    // special save handlers
-  }
-  
   public function validate_component_default($config) {
     if (!isset($config['propname'])) {
       return FALSE;
@@ -711,9 +705,15 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     }
     return TRUE;
   }
-  
   public function validate_alphanumeric_underscore($str) {
     return preg_match('/^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$/',$str);
+  }
+  // **** END - Experimental un-used Component Adding Methods
+  
+  public function formRowSave(&$rowvalues, &$row) {
+    parent::formRowSave($rowvalues, $row);
+    dpm($rowvalues, 'submitted');
+    // special save handlers
   }
   
   
@@ -883,18 +883,16 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'propcode_default' => 'leaves',
         'propvalue_default' => 0.0,
         'propname' => 'Location',
-        'form_machine_name' => 'Location',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_tissue',
         'varid' => dh_varkey2varid('ipm_tissue', TRUE),
       ),
-      'Info Sharing' => array(
+      'Sharing' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'locality',
         'propvalue_default' => 0.0,
-        'propname' => 'Info Sharing',
-        'form_machine_name' => $this->handleFormPropname('Info Sharing'),
+        'propname' => 'Sharing',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_info_share',
