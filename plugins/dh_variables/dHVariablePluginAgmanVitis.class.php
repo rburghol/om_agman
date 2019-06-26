@@ -653,7 +653,7 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     $rowform['propcode']['#options'] = $opts;
     $rowform['propcode']['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
     $rowform['propcode']['#size'] = 1;
-    $rowform['propcode']['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users.');
+    $rowform['propcode']['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users of GrapeIPM.org.');
   }
   public function attachNamedForm(&$rowform, $row) {
     parent::attachNamedForm($rowform, $row);
