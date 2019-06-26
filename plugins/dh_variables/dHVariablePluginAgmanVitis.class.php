@@ -677,7 +677,7 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
 }
 class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   var $loval = 0.01;
-  var $lolabel = "<=1%";
+  var $lolabel = "<=1%"; 
   var $attach_method = 'contained';
   // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
   //        why aren't they converting location sharing to setting?
