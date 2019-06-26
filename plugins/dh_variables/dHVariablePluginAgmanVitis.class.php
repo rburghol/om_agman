@@ -638,9 +638,9 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
   
   public function getOptions() {  
     $opts = array(
-      'locality' => 'Share Locality Only',
-      'geometry' => 'Share Exact Location',
+      'locality' => 'Share County/City Only',
       'none' => 'Do Not Share Location',
+      'geometry' => 'Share Exact Location',
     );
     return $opts;
   }
@@ -653,6 +653,7 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     $rowform['propcode']['#options'] = $opts;
     $rowform['propcode']['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
     $rowform['propcode']['#size'] = 1;
+    $rowform['propcode']['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users.');
   }
   public function attachNamedForm(&$rowform, $row) {
     parent::attachNamedForm($rowform, $row);
