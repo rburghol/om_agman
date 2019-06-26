@@ -828,10 +828,16 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
             // so we need to load/create a property then set the value
             dpm($thisvar, "Creating object before saving ");
             $thisvar['featureid'] = $entity->{$this->row_map['id']};
-            $thisvar['propvalue'] = $entity->{$thisvar['propname']};
+            //@todo: this needs to use the plugin handler for this instead of assuming propvalue instead of propcode
+            //       why isn't this already an object after convert_attributes_to_dh_props is called?
+            //     Location (the featureid loader property) is already loaded, but Location Sharing is NOT -- why????
             $prop = dh_update_properties($thisvar, 'name');
+            // now, apply the stashed value to the property
+            foreach ($prop->dh_variables_plugins as $plugin) {
+              // the default method will guess location based on the value unless overridden by the plugin
+              $plugin->applyEntityAttribute($prop, $entity->{$thisvar['propname']});
+            }
             dpm($prop, "object after creation");
-          } else {
             dsm("Saving preloaded object " . $thisvar['propname']);
             $prop = $entity->{$thisvar['propname']};
             $prop->featureid = $entity->{$this->row_map['id']};
