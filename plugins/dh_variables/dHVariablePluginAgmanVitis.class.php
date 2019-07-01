@@ -926,6 +926,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $form['Advanced']['#weight'] = 2;
     $adv = $row->Advanced;
     dpm($adv,'row');
+    dpm($form,'form');
     //dpm($adv->propvalue,'propvalue');
     if ($adv->propvalue > 0) {
       // using advanced notation, so show as expanded
