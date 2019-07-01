@@ -929,7 +929,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     dpm($adv,'adv');
     dpm($form,'form');
     //dpm($adv->propvalue,'propvalue');
-    if ($adv->propvalue > 0) {
+    if (floatval($adv->propvalue) > 0) {
       // using advanced notation, so show as expanded
       $form['Advanced']['#collapsed'] = FALSE;
       $form['tsvalue']['#type'] = 'hidden';
