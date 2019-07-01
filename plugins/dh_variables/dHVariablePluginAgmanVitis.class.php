@@ -875,14 +875,6 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $options = dh_varkey_varselect_options(array("vocabulary = 'fungal_pathogens'"));
     asort($options);
     return $options;
-    return array(
-      'org_black_rot' => 'Black Rot',
-      'org_botrytis' => 'Botrytis',
-      'org_black_rot' => 'Downy Mildew',
-      'org_phomopsis' => 'Phomopsis',
-      'org_powdery_mildew' => 'Powdery Mildew',
-      'org_ripe_rot' => 'Ripe Rot',
-    );
   }
   
   public function getDefaults($entity, &$defaults = array()) {
@@ -933,9 +925,11 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $form['Advanced']['#collapsed'] = TRUE;
     $form['Advanced']['#weight'] = 2;
     $adv = $row->Advanced;
-    //dpm($adv,'row');
+    //dpm($row,'row');
+    //dpm($adv,'adv');
+    //dpm($form,'form');
     //dpm($adv->propvalue,'propvalue');
-    if ($adv->propvalue > 0) {
+    if (floatval($adv->propvalue) > 0) {
       // using advanced notation, so show as expanded
       $form['Advanced']['#collapsed'] = FALSE;
       $form['tsvalue']['#type'] = 'hidden';
