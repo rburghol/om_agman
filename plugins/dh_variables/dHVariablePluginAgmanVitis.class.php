@@ -934,6 +934,8 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
       $form['Advanced']['#collapsed'] = FALSE;
       $form['tsvalue']['#type'] = 'hidden';
       $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
+      $form['tsvalue']['#element_validate'] = array('element_validate_number');
+      unset( $form['tsvalue']['#options']);
     }
     // this moves to this grouped location.  
     // @todo: There may be a better way?  Or more automated, by using 
