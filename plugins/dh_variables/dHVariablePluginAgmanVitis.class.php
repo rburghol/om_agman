@@ -925,7 +925,8 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $form['Advanced']['#collapsed'] = TRUE;
     $form['Advanced']['#weight'] = 2;
     $adv = $row->Advanced;
-    dpm($adv,'row');
+    dpm($row,'row');
+    dpm($adv,'adv');
     dpm($form,'form');
     //dpm($adv->propvalue,'propvalue');
     if ($adv->propvalue > 0) {
