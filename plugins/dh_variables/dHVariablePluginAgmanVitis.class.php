@@ -1002,6 +1002,44 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       $entity->{"Berry Weight"} = round(floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']),3);
     }
   }
+  
+  
+  public function buildContent(&$content, &$entity, $view_mode) {
+    // special render handlers when using a content array
+    // get all FRAC Codes associated with this entity
+    $feature = $this->getParentEntity($entity);
+    $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
+    $varname = $varinfo->varname;
+    if ($varinfo === FALSE) {
+      return;
+    }
+    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
+    foreach ($hidden as $col) {
+      $content[$col]['#type'] = 'hidden';
+    }
+    $link = $this->getLink($entity);
+    switch($view_mode) {
+      case 'ical_summary':
+        unset($content['title']['#type']);
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$varname @ $entity->tsvalue brix in " . $feature->name,
+        );
+      break;
+      default:
+        //$content['title'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "$varname @ $pct in " . $feature->name,
+        //);
+        $content['title'] = $link;
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$varname @ $entity->tsvalue brix in " . $feature->name,
+        );
+      break;
+    }
+  }
 
 }
 
