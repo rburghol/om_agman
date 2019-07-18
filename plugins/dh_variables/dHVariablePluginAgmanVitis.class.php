@@ -999,7 +999,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     if (($rowvalues['Berry_Count'] > 0) and ($rowvalues['Sample_Weight'] > 0)) {
       // auto-calculate berry weight
       $rowvalues['Berry_Weight'] = round(floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']),3);
-      $entity->{"Berry Weight"} = round(floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']),3);
+      $entity->{"Berry_Weight"} = round(floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']),3);
     }
   }
   
