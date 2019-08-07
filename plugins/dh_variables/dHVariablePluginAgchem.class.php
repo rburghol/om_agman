@@ -532,6 +532,61 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $feature->loaded = TRUE;
   }
   
+  public function update(&$entity) {
+    parent::update($entity);
+    $feature = $this->getParentEntity($entity);
+    //dpm($feature,'feature');
+    $this->load_event_info($feature);
+    $this->setBlockPHI($feature);
+    $this->setBlockREI($feature);
+  }
+  
+  public function insert(&$entity) {
+    parent::insert($entity);
+    $feature = $this->getParentEntity($entity);
+    //dpm($feature,'feature');
+    $this->load_event_info($feature);
+    $this->setBlockPHI($feature);
+    $this->setBlockREI($feature);
+  }
+  
+  public function setBlockREI(&$feature) {
+    // @todo: add this 
+  }
+  
+  public function setBlockPHI(&$feature) {
+    // adds a single record, by year 
+    if ( ($feature->ftype == 'post_harvest') or empty($feature->phi_date) ) {
+      return;
+    }
+    // @todo: make this southern hemisphere compatible so year goes from June to May 
+    $event_year = date('Y', dh_handletimestamp($feature->enddate));
+    $stime = dh_handletimestamp("$event_year-01-01");
+    $etime = dh_handletimestamp("$event_year-12-31");
+    foreach ($feature->block_entities as $fe) {
+      $phi_info = array(
+        'featureid' => $fe->hydroid,
+        'entity_type' => 'dh_feature',
+        'varkey' => 'agchem_phi',
+        'tstime' => $stime,
+        'tsendtime' => $etime,
+      );
+      // make only a single record for each block, per growing year 
+      $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange');
+      if (!$phi_rec) {
+        $phi_rec = entity_create('dh_timeseries', $phi_info);
+      }
+      // now update to the actual phi date if it is less than the new PHI 
+      if (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tstime)) {
+        $phi_rec->tstime = dh_handletimestamp($feature->phi_date);
+        $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
+        $phi_rec->save();
+      }
+    }
+    
+  }
+  
+  
   public function getPHIDate(&$feature) {
     //@todo: put this in agchem PHI plugin
     $phi_ts = new DateTime();
