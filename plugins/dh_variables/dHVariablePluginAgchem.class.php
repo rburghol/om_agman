@@ -572,7 +572,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         'tsendtime' => $etime,
       );
       // make only a single record for each block, per growing year 
-      $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange', FALSE);
+      $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange_singular', FALSE);
       
       if (!$phi_rec) {
         $phi_info['tstime'] = dh_handletimestamp($feature->phi_date);
