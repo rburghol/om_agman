@@ -581,8 +581,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         // need to reload the rec, since dh_timeseries_enforce_singularity overwrites tstime/tsendtime
         // this is kind of a bug in dh_timeseries_enforce_singularity, but the behavior is as it is.
       // now update to the actual phi date if it is less than the new PHI 
-      dsm("event phi: " . dh_handletimestamp($feature->phi_date) . ", tstime: $phi_rec->tstime ");
-      dsm("as Date event phi: " . $feature->phi_date . ", tstime: " . date('Y-m-d',$phi_rec->tstime));
+      //dsm("event phi: " . dh_handletimestamp($feature->phi_date) . ", tstime: $phi_rec->tstime ");
+      //dsm("as Date event phi: " . $feature->phi_date . ", tstime: " . date('Y-m-d',$phi_rec->tstime));
       if (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tstime)) {
         $phi_rec->tstime = dh_handletimestamp($feature->phi_date);
         $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
