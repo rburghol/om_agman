@@ -588,6 +588,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $phi_rec->tstime = dh_handletimestamp($feature->phi_date);
           $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
           //dpm($phi_rec,'phi rec');
+          dsm("PHI Updated to $feature->phi_date on $fe->name");
           $phi_rec->save();
         }
       }
