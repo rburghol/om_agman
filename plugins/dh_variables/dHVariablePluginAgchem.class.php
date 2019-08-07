@@ -572,6 +572,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       // now update to the actual phi date
       $phi_rec->tstime = dh_handletimestamp($feature->enddate);
       $phi_rec->save();
+      dpm($phi_rec,'updating block phi');
     }
     
   }
