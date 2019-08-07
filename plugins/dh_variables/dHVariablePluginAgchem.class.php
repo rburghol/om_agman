@@ -577,11 +577,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $phi_rec = entity_create('dh_timeseries', $phi_info);
       }
       // now update to the actual phi date if it is less than the new PHI 
-      if (dh_handletimestamp($feature->enddate) > dh_handletimestamp($phi_rec->tstime)) {
-      dpm($feature,'feature > phi rec, updating');
-        $phi_rec->tstime = dh_handletimestamp($feature->enddate);
-        $phi_rec->tsendtime = dh_handletimestamp($feature->enddate);
-      dpm($phi_rec,'phi rec');
+      if (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tstime)) {
+        $phi_rec->tstime = dh_handletimestamp($feature->phi_date);
+        $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
         $phi_rec->save();
       }
     }
