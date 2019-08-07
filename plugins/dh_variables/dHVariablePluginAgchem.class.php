@@ -558,11 +558,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     if ( ($feature->ftype == 'post_harvest') or empty($feature->phi_date) ) {
       return;
     }
-    return;
     // @todo: make this southern hemisphere compatible so year goes from June to May 
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
     $stime = dh_handletimestamp("$event_year-01-01");
     $etime = dh_handletimestamp("$event_year-12-31");
+    return;
     foreach ($feature->block_entities as $fe) {
       $phi_info = array(
         'featureid' => $fe->hydroid,
