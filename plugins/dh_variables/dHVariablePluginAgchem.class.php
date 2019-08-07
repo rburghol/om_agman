@@ -573,10 +573,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       );
       // make only a single record for each block, per growing year 
       $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange', FALSE);
-      /*
+      
       if (!$phi_rec) {
-        $phi_rec['tstime'] = dh_handletimestamp($feature->phi_date);
-        $phi_rec['tsendtime'] = dh_handletimestamp($feature->phi_date);
+        $phi_info['tstime'] = dh_handletimestamp($feature->phi_date);
+        $phi_info['tsendtime'] = dh_handletimestamp($feature->phi_date);
         $phi_rec = entity_create('dh_timeseries', $phi_info);
       } else {
         // need to reload the rec, since dh_timeseries_enforce_singularity overwrites tstime/tsendtime
@@ -587,9 +587,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       if (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tstime)) {
         $phi_rec->tstime = dh_handletimestamp($feature->phi_date);
         $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
+        dpm($phi_rec,'phi rec');
         $phi_rec->save();
       }
-      */
+      
     }
     
   }
