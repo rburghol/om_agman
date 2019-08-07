@@ -562,7 +562,6 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
     $stime = dh_handletimestamp("$event_year-01-01");
     $etime = dh_handletimestamp("$event_year-12-31");
-    return;
     foreach ($feature->block_entities as $fe) {
       $phi_info = array(
         'featureid' => $fe->hydroid,
@@ -573,6 +572,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       );
       // make only a single record for each block, per growing year 
       $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange');
+      if (!$phi_rec) {
+        $phi_rec = entity_create('dh_timeseries', $phi_info);
+      }
       // now update to the actual phi date
       $phi_rec->tstime = dh_handletimestamp($feature->enddate);
       $phi_rec->save();
