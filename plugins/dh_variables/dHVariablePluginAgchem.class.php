@@ -572,15 +572,25 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         'tsendtime' => $etime,
       );
       // make only a single record for each block, per growing year 
-      $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange');
+      $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange', FALSE);
+      
       if (!$phi_rec) {
+        $phi_info['tstime'] = dh_handletimestamp($feature->phi_date);
+        $phi_info['tsendtime'] = dh_handletimestamp($feature->phi_date);
         $phi_rec = entity_create('dh_timeseries', $phi_info);
-      }
-      // now update to the actual phi date if it is less than the new PHI 
-      if (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tstime)) {
-        $phi_rec->tstime = dh_handletimestamp($feature->phi_date);
-        $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
-        $phi_rec->save();
+      } else {
+          // need to reload the rec, since dh_timeseries_enforce_singularity overwrites tstime/tsendtime
+          // this is kind of a bug in dh_timeseries_enforce_singularity, but the behavior is as it is.
+        // now update to the actual phi date if it is less than the new PHI 
+        //dsm("event phi: " . dh_handletimestamp($feature->phi_date) . ", tstime: $phi_rec->tstime ");
+        //dsm("as Date event phi: " . $feature->phi_date . ", tstime: " . date('Y-m-d',$phi_rec->tstime));
+        if (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tstime)) {
+          $phi_rec->tstime = dh_handletimestamp($feature->phi_date);
+          $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
+          //dpm($phi_rec,'phi rec');
+          dsm("PHI Updated to $feature->phi_date on $fe->name");
+          $phi_rec->save();
+        }
       }
     }
     
