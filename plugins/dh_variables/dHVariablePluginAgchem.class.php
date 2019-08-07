@@ -538,15 +538,16 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     //dpm($feature,'feature');
     $this->load_event_info($feature);
     $this->setBlockPHI($feature);
-    //$this->setBlockREI($feature);
+    $this->setBlockREI($feature);
   }
   
   public function insert(&$entity) {
     parent::insert($entity);
-    //$feature = $this->getParentEntity($entity);
-    //$this->load_event_info($feature);
-    //$this->setBlockPHI($feature);
-    //$this->setBlockREI($feature);
+    $feature = $this->getParentEntity($entity);
+    //dpm($feature,'feature');
+    $this->load_event_info($feature);
+    $this->setBlockPHI($feature);
+    $this->setBlockREI($feature);
   }
   
   public function setBlockREI(&$feature) {
@@ -577,8 +578,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       }
       // now update to the actual phi date
       $phi_rec->tstime = dh_handletimestamp($feature->enddate);
+      $phi_rec->tsendtime = dh_handletimestamp($feature->enddate);
       $phi_rec->save();
-      dpm($phi_rec,'updating block phi');
     }
     
   }
