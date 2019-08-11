@@ -602,6 +602,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   
   public function insert(&$entity) {
     parent::insert($entity); 
+    $this->load_event_info($feature);
+    $this->setBlockPHI($feature);
     $this->setBlockREI($feature);
   }
   
