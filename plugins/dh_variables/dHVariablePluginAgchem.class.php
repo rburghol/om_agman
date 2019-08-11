@@ -635,6 +635,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       if (!$phi_rec) {
         $phi_info['tstime'] = dh_handletimestamp($feature->phi_date);
         $phi_info['tsendtime'] = dh_handletimestamp($feature->phi_date);
+        $phi_info['tsvalue'] = $feature->adminid;
+        $phi_info['tscode'] = substr(implode(', ', $feature->phi_chems), 0, 254);
         $phi_rec = entity_create('dh_timeseries', $phi_info);
       } else {
           // need to reload the rec, since dh_timeseries_enforce_singularity overwrites tstime/tsendtime
