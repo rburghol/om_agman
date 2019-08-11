@@ -656,7 +656,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   }
   
   
-  public function  (&$feature) {
+  public function getPHIDate(&$feature) {
     //@todo: put this in agchem PHI plugin
     $phi_ts = new DateTime();
     $phi_ts->setTimestamp($feature->phi_ts);
