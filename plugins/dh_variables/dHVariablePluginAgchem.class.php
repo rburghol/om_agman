@@ -626,7 +626,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         'tstime' => $stime,
         'tsendtime' => $etime,
       );
-      dpm($phi_info,'searching phi recs');
+      //dpm($phi_info,'searching phi recs');
       // make only a single record for each block, per growing year 
       $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange_singular', FALSE);
       //@todo: need to check if this event is already the PHI event,
@@ -637,7 +637,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $phi_info['tsendtime'] = dh_handletimestamp($feature->phi_date);
         $phi_info['tsvalue'] = $feature->adminid;
         $phi_info['tscode'] = substr(implode(', ', $feature->phi_chems), 0, 254);
-        dpm($phi_info,'creating phi rec');
+        //dpm($phi_info,'creating phi rec');
         $phi_rec = entity_create('dh_timeseries', $phi_info);
         $phi_rec->save();
       } else {
@@ -652,7 +652,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $phi_rec->tsvalue = $feature->adminid;
           $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
           //dpm($phi_rec,'phi rec');
-          dsm("PHI Updated to $feature->phi_date on $fe->name");
+          //dsm("PHI Updated to $feature->phi_date on $fe->name");
           $phi_rec->save();
         }
       }
