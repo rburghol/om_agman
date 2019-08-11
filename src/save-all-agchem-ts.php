@@ -15,7 +15,7 @@
     // get events
     // Load some entity.
     $dh_ts = entity_load_single('dh_timeseries', $record->tid);
-    $dh_ts->save();
+    entity_save($dh_ts);
     echo "saved $record->tid \n";
   }
   
