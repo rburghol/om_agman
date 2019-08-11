@@ -6,23 +6,16 @@
   $update_props = TRUE;
   // sql to get records with redundant erefs
   $q = "  select tid from dh_timeseries ";
-  $q .= " where varid in (select hydroid from dh_variabledefinition where varkey = 'event_dh_link_submittal_feature') ";
+  $q .= " where varid in (select hydroid from dh_variabledefinition where varkey = 'agchem_application_event') ";
 
   $result = db_query($q);
-  // If we want to do a single one uncomment these lines:
-  /* 
-  $result = array(
-    0 => new STDClass,
-  );
-  $result[0]->adminid = 299;
-  */
   echo $q;
   
   foreach ($result as $record) {
     // get events
     // Load some entity.
     $dh_ts = entity_load_single('dh_timeseries', $record->tid);
-    $dh_ts->save();
+    $dh_ts->update();
     echo "saved $record->tid \n";
   }
   

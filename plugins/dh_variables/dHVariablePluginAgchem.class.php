@@ -85,6 +85,65 @@ class dHVariablePluginAgchemPHI extends dHVariablePluginDefault {
     $form['propcode']['#type'] = 'hidden';
     $form['propvalue']['#suffix'] = ' days';
   }
+  
+  public function findPHIEvent($entity, $startdate, $enddate) {
+    // @todo: Is this function needed? 
+    /*
+    // load the block feature that the ts is attached to 
+    // Find all spray events on this block
+    // load the spray event, check it's phi date
+    // update this PHI date if > $phi_ts->tstime 
+    // @todo: handle next generation which will be a timeseries event for every block including application amounts, etc.
+    $entity_type = $entity->entityType();
+    $entity_id = $entity->identifier();
+    // get all events dh_adminreg_feature of agchem_app_plan with links to blockid joined to ts value of adminreg feature 
+    $q = "  select tid from dh_timeseries ";
+    $q .= " where featureid = $entity_id ";
+    $q .= "   and entity_type = $entity_type ";
+    $q .= "   and tstime >= " . dh_handletimestamp($startdate);
+    $q .= "   and tsendtime <= " . dh_handletimestamp($enddate);
+    $q .= "   and varid in (select hydroid from dh_variabledefinition where varkey = 'event_dh_link_submittal_feature') ";
+    $result = db_query($q);
+    
+    foreach ($result as $record) {
+      // get events
+      // Load some entity.
+      $dh_ts = entity_load_single('dh_timeseries', $record->tid);
+      // load agchem timeseries associate with this event because that is what calculates the PHI / REI 
+      $values = array(
+        'entity_type' => 'dh_adminreg_feature',
+        'featureid' = $dh_ts->tsvalue,
+        'varkey' => 'agchem_application_event',
+        'tstime' => dh_handletimestamp($startdate),
+        'tsendtime' => dh_handletimestamp($enddate),
+      );
+      $phi_ts = NULL;
+      $efq_result = dh_get_timeseries($values, 'trange');
+      $data = entity_load('dh_timeseries', array_keys($efq_result['dh_timeseries']));
+      foreach ($data as $app_ts) {
+        // load the app plugin,
+        $plugin = array_shift($app_ts->dh_variables_plugins);
+        // if the plugin has the proper methods to load the feature and calculate PHI, then we can check it 
+        // check PHI date against the latest PHI found yet 
+        // @todo: Finish the commented out block
+        if (($phi_ts === NULL) or ($app_ts->tstime > $phi_ts->tstime) ) {
+          $phi_ts = array(
+            'entity_type' => $entity_type,
+            'featureid' => $entity_id,
+            'varkey' => ???
+            'tstime' => $phitime,
+            'tsendtime' => $event_endtime,
+          );
+        }
+      }
+      if (!($phi_ts === NULL)) {
+        // if we have found any events with a valid PHI setting, we will have a 
+      }
+      echo "saved $record->tid \n";
+    }
+    */
+    // END - findPHIEvent
+  }
 }
 
 class dHVariablePluginAgchemREI extends dHVariablePluginDefault {
@@ -542,11 +601,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   }
   
   public function insert(&$entity) {
-    parent::insert($entity);
-    $feature = $this->getParentEntity($entity);
-    //dpm($feature,'feature');
-    $this->load_event_info($feature);
-    $this->setBlockPHI($feature);
+    parent::insert($entity); 
     $this->setBlockREI($feature);
   }
   
@@ -573,7 +628,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       );
       // make only a single record for each block, per growing year 
       $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange_singular', FALSE);
-      
+      //@todo: need to check if this event is already the PHI event,
+      //       because if so, and the PHI interval decreases, we need to search all events in the year
+      //       to see if there is another event that has become the limiter
       if (!$phi_rec) {
         $phi_info['tstime'] = dh_handletimestamp($feature->phi_date);
         $phi_info['tsendtime'] = dh_handletimestamp($feature->phi_date);
@@ -599,7 +656,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   }
   
   
-  public function getPHIDate(&$feature) {
+  public function  (&$feature) {
     //@todo: put this in agchem PHI plugin
     $phi_ts = new DateTime();
     $phi_ts->setTimestamp($feature->phi_ts);
