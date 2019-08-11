@@ -626,6 +626,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         'tstime' => $stime,
         'tsendtime' => $etime,
       );
+      dpm($phi_info,'searching phi recs');
       // make only a single record for each block, per growing year 
       $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange_singular', FALSE);
       //@todo: need to check if this event is already the PHI event,
