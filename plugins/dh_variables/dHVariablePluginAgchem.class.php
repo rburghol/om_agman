@@ -592,14 +592,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   }
   
   public function save(&$entity) {
-    error_log("Called save() on $entity->tid ");
     parent::save($entity);
   }
   public function update(&$entity) {
     parent::update($entity);
     $feature = $this->getParentEntity($entity);
     //dpm($feature,'feature');
-    error_log("Called update() on $entity->tid for $feature->name");
     $this->load_event_info($feature);
     $this->setBlockPHI($feature);
     $this->setBlockREI($feature);
