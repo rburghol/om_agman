@@ -19,6 +19,7 @@
     // Load some entity.
     $dh_ts = entity_load_single('dh_timeseries', $record->tid);
     entity_save($dh_ts);
+    error_log("rec: " . print_r((array)$dh_ts,1);
     echo "saved $record->tid \n";
   }
   
