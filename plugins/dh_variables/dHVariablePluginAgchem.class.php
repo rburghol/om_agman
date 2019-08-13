@@ -591,7 +591,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $feature->loaded = TRUE;
   }
   
-  public function save(&$entity) 
+  public function save(&$entity) {
     error_log("Called save() on $entity->tid ");
     parent::save($entity);
   }
