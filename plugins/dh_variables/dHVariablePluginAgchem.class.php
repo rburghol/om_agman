@@ -638,7 +638,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       //       because if so, and the PHI interval decreases, we need to search all events in the year
       //       to see if there is another event that has become the limiter
       if (!$phi_rec) {
-        $phi_info['tstime'] = dh_handletimestamp($feature->phi_date);
+        $phi_info['tstime'] = dh_handletimestamp($feature->enddate);
         $phi_info['tsendtime'] = dh_handletimestamp($feature->phi_date);
         $phi_info['tsvalue'] = $feature->adminid;
         $phi_info['tscode'] = substr(implode(', ', $feature->phi_chems), 0, 254);
@@ -652,8 +652,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         //dsm("event phi: " . dh_handletimestamp($feature->phi_date) . ", tstime: $phi_rec->tstime ");
         //dsm("as Date event phi: " . $feature->phi_date . ", tstime: " . date('Y-m-d',$phi_rec->tstime));
         if (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tstime)) {
-          $phi_rec->tstime = dh_handletimestamp($feature->phi_date);
-          $phi_rec->tsendtime = dh_handletimestamp($feature->enddate);
+          $phi_rec->tstime = dh_handletimestamp($feature->enddate);
+          $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
           $phi_rec->tsvalue = $feature->adminid;
           $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
           //dpm($phi_rec,'phi rec');
