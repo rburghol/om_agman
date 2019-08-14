@@ -39,6 +39,7 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
   public function save(&$entity) {
     $abbrevs = $this->effAbbrev();
     $entity->propcode = $abbrevs[$entity->propvalue];
+    return parent::save($entity);
   }
   
 }
@@ -74,7 +75,7 @@ class dHVariablePluginAgchemAI extends dHVariablePluginDefault {
   
   public function save(&$entity) {
     $entity->propname = $entity->propcode;
-    parent::save();
+    return parent::save($entity);
   }
   
 }
@@ -167,7 +168,7 @@ class dHVariablePluginAgchemREI extends dHVariablePluginDefault {
   }
   
   public function save(&$entity) {
-    parent::save();
+    return parent::save($entity);
   }
 }
 
@@ -233,7 +234,7 @@ class dHVariablePluginFRAC extends dHVariablePluginDefault {
   }
   
   public function save(&$entity) {
-    
+    return parent::save($entity);
   }
   
 }
