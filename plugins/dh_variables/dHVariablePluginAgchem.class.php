@@ -646,6 +646,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $phi_info['tscode'] = substr(implode(', ', $feature->phi_chems), 0, 254);
         //dpm($phi_info,'creating phi rec');
         $phi_rec = entity_create('dh_timeseries', $phi_info);
+        dsm("PHI Updated to $feature->phi_date on $fe->name");
         $phi_rec->save();
       } else {
           // need to reload the rec, since dh_timeseries_enforce_singularity overwrites tstime/tsendtime
@@ -659,7 +660,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $phi_rec->tsvalue = $feature->adminid;
           $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
           //dpm($phi_rec,'phi rec');
-          //dsm("PHI Updated to $feature->phi_date on $fe->name");
+          dsm("PHI Updated to $feature->phi_date on $fe->name");
           $phi_rec->save();
         }
       }
