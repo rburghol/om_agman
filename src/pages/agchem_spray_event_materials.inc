@@ -169,6 +169,7 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   $dh_adminreg_feature->enddate = $dh_adminreg_feature->startdate + 3600;
   dpm($dh_adminreg_feature,'feature before object class save()');
   $dh_adminreg_feature->save();
+  dpm($dh_adminreg_feature,'feature after object class save()');
   return $dh_adminreg_feature;
 }
 
