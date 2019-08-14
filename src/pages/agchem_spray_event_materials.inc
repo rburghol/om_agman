@@ -82,7 +82,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
     '#type' => 'hidden',
     '#default_value' => !empty($dh_adminreg_feature->bundle) ? $dh_adminreg_feature->bundle : 'agchem_app',
     '#maxlength' => 32,
-    '#attributes' => array('disabled' => 'disabled'),
+    //'#attributes' => array('disabled' => 'disabled'),
     '#machine_name' => array(
       'exists' => 'dh_adminreg_feature_get_types',
       'source' => array('label'),
