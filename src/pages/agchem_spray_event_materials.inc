@@ -60,6 +60,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
       'planned' => t('Planned'),
       'completed' => t('Completed'),
       'cancelled' => t('Cancelled'),
+      'post_harvest' => t('Post-Harvest'),
     ),
     '#default_value' => empty($dh_adminreg_feature->fstatus) ? 'planned' : $dh_adminreg_feature->fstatus,
     '#required' => TRUE,
@@ -79,9 +80,9 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   // Machine-readable type name.
   $form['bundle'] = array(
     '#type' => 'hidden',
-    '#default_value' => isset($dh_adminreg_feature->bundle) ? $dh_adminreg_feature->bundle : '',
+    '#default_value' => !empty($dh_adminreg_feature->bundle) ? $dh_adminreg_feature->bundle : 'agchem_app',
     '#maxlength' => 32,
-    '#attributes' => array('disabled' => 'disabled'),
+    //'#attributes' => array('disabled' => 'disabled'),
     '#machine_name' => array(
       'exists' => 'dh_adminreg_feature_get_types',
       'source' => array('label'),
@@ -165,8 +166,10 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   // load the object
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
   //@todo: 1 houtr per acre
-  $dh_adminreg_feature->enddate = $dh_adminreg_feature->startdate + 3600;
+  $dh_adminreg_feature->enddate = dh_handletimestamp($dh_adminreg_feature->startdate) + 3600;
+  dpm($dh_adminreg_feature,'feature before object class save()');
   $dh_adminreg_feature->save();
+  dpm($dh_adminreg_feature,'feature after object class save()');
   return $dh_adminreg_feature;
 }
 
@@ -180,6 +183,8 @@ function dh_app_plan_form_sprayquan(&$form, &$form_state) {
   if (isset($parms['finaldest'])) {
     $extras['query']['finaldest'] = $parms['finaldest'];
   }
+  dpm($form_state,'fs');
+  dpm($dh_adminreg_feature,'feature final before going to quantity screen');
   drupal_goto($url, $extras);
   //$form_state['redirect'] = $url;
 }

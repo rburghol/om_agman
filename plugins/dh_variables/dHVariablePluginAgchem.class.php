@@ -39,6 +39,7 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
   public function save(&$entity) {
     $abbrevs = $this->effAbbrev();
     $entity->propcode = $abbrevs[$entity->propvalue];
+    return parent::save($entity);
   }
   
 }
@@ -74,7 +75,7 @@ class dHVariablePluginAgchemAI extends dHVariablePluginDefault {
   
   public function save(&$entity) {
     $entity->propname = $entity->propcode;
-    parent::save();
+    return parent::save($entity);
   }
   
 }
@@ -167,7 +168,7 @@ class dHVariablePluginAgchemREI extends dHVariablePluginDefault {
   }
   
   public function save(&$entity) {
-    parent::save();
+    return parent::save($entity);
   }
 }
 
@@ -233,7 +234,7 @@ class dHVariablePluginFRAC extends dHVariablePluginDefault {
   }
   
   public function save(&$entity) {
-    
+    return parent::save($entity);
   }
   
 }
@@ -605,9 +606,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   
   public function insert(&$entity) {
     parent::insert($entity); 
-    $this->load_event_info($feature);
-    $this->setBlockPHI($feature);
-    $this->setBlockREI($feature);
+    //dpm($entity,'entity');
+    //$this->load_event_info($feature);
+    //$this->setBlockPHI($feature);
+    //$this->setBlockREI($feature);
   }
   
   public function setBlockREI(&$feature) {
@@ -616,7 +618,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   
   public function setBlockPHI(&$feature) {
     // adds a single record, by year 
-    if ( ($feature->ftype == 'post_harvest') or empty($feature->phi_date) ) {
+    if ( ($feature->fstatus == 'post_harvest') or empty($feature->phi_date) ) {
       return;
     }
     // @todo: make this southern hemisphere compatible so year goes from June to May 
@@ -644,6 +646,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $phi_info['tscode'] = substr(implode(', ', $feature->phi_chems), 0, 254);
         //dpm($phi_info,'creating phi rec');
         $phi_rec = entity_create('dh_timeseries', $phi_info);
+        dsm("PHI Updated to $feature->phi_date on $fe->name");
         $phi_rec->save();
       } else {
           // need to reload the rec, since dh_timeseries_enforce_singularity overwrites tstime/tsendtime
@@ -657,7 +660,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $phi_rec->tsvalue = $feature->adminid;
           $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
           //dpm($phi_rec,'phi rec');
-          //dsm("PHI Updated to $feature->phi_date on $fe->name");
+          dsm("PHI Updated to $feature->phi_date on $fe->name");
           $phi_rec->save();
         }
       }
