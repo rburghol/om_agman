@@ -616,7 +616,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   
   public function setBlockPHI(&$feature) {
     // adds a single record, by year 
-    if ( ($feature->ftype == 'post_harvest') or empty($feature->phi_date) ) {
+    if ( ($feature->fstatus == 'post_harvest') or empty($feature->phi_date) ) {
       return;
     }
     // @todo: make this southern hemisphere compatible so year goes from June to May 

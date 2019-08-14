@@ -332,6 +332,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
         'planned' => t('Planned'),
         'completed' => t('Complete'),
         'cancelled' => t('Cancelled'),
+        'post_harvest' => t('Post-Harvest'),
       ),
     );
     // Machine-readable type name.

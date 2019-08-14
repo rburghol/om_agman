@@ -60,6 +60,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
       'planned' => t('Planned'),
       'completed' => t('Completed'),
       'cancelled' => t('Cancelled'),
+      'post_harvest' => t('Post-Harvest'),
     ),
     '#default_value' => empty($dh_adminreg_feature->fstatus) ? 'planned' : $dh_adminreg_feature->fstatus,
     '#required' => TRUE,
