@@ -597,15 +597,16 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   }
   public function update(&$entity) {
     parent::update($entity);
-    //$feature = $this->getParentEntity($entity);
+    $feature = $this->getParentEntity($entity);
     //dpm($feature,'feature');
-    //$this->load_event_info($feature);
-    //$this->setBlockPHI($feature);
-    //$this->setBlockREI($feature);
+    $this->load_event_info($feature);
+    $this->setBlockPHI($feature);
+    $this->setBlockREI($feature);
   }
   
   public function insert(&$entity) {
     parent::insert($entity); 
+    //dpm($entity,'entity');
     //$this->load_event_info($feature);
     //$this->setBlockPHI($feature);
     //$this->setBlockREI($feature);
