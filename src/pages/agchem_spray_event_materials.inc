@@ -164,7 +164,9 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   // load the object
+  dpm($form_state,'fs');
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
+  dpm($dh_adminreg_feature,'feat');
   //@todo: 1 houtr per acre
   $dh_adminreg_feature->enddate = $dh_adminreg_feature->startdate + 3600;
   $dh_adminreg_feature->save();
