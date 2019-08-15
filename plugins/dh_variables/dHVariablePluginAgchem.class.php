@@ -672,14 +672,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $phi_rec->tsvalue = $feature->adminid;
           $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
           //dpm($phi_rec,'phi rec');
-          dsm("PHI Updated to $feature->phi_date on $fe->name");
           $phi_rec->save();
         } else {
-          dpm($phi_rec,"Checking for Stale PHI date $feature->phi_date on $fe->name");
-          dpm($feature,"Feature");
           // check for special case where this USED to be the PHI event, but is no longer because the PHI date for this event is now less 
           // than the previous.  Therefore we need to check all phi events
           if ($phi_rec->tsvalue == $feature->adminid) { 
+            dsm("Stale PHI rec for $feature->phi_date on $fe->name");
             // Check for if the phi_date and tsendtime are equal, then we are editing an event that WAS the phi event
             // In this case we save all events to see if another event should be the PHI event.  
             // If this is still the PHI event, it should be OK 
