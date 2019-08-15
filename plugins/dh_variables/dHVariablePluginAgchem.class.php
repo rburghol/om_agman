@@ -638,7 +638,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       //dpm($phi_info,'searching phi recs');
       // make only a single record for each block, per growing year 
       $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange_singular', FALSE);
-      //@todo: need to check if this event is already the PHI event,
+      //@todo: need to check if this event IS already the PHI event,
       //       because if so, and the PHI interval decreases, we need to search all events in the year
       //       to see if there is another event that has become the limiter
       if (!$phi_rec) {
@@ -651,12 +651,19 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         dsm("PHI Updated to $feature->phi_date on $fe->name");
         $phi_rec->save();
       } else {
-          // need to reload the rec, since dh_timeseries_enforce_singularity overwrites tstime/tsendtime
-          // this is kind of a bug in dh_timeseries_enforce_singularity, but the behavior is as it is.
+        // need to reload the rec, since dh_timeseries_enforce_singularity overwrites tstime/tsendtime
+        // this is kind of a bug in dh_timeseries_enforce_singularity, but the behavior is as it is.
         // now update to the actual phi date if it is less than the new PHI 
         //dsm("event phi: " . dh_handletimestamp($feature->phi_date) . ", tstime: $phi_rec->tstime ");
         //dsm("as Date event phi: " . $feature->phi_date . ", tstime: " . date('Y-m-d',$phi_rec->tstime));
-        if (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tsendtime)) {
+        if (
+          (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tsendtime)) 
+          or (
+            // if this IS the phi event but date has not changed, we still update in case limiting chem has changed.
+            (dh_handletimestamp($feature->phi_date) == dh_handletimestamp($phi_rec->tsendtime)) 
+              and ($phi_rec->tsvalue == $feature->adminid)
+            )
+          ) {
           $phi_rec->tstime = dh_handletimestamp($feature->enddate);
           $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
           $phi_rec->tsvalue = $feature->adminid;
@@ -664,6 +671,14 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           //dpm($phi_rec,'phi rec');
           dsm("PHI Updated to $feature->phi_date on $fe->name");
           $phi_rec->save();
+        } else {
+          // check for special case where this USED to be the PHI event, but is no longer because the PHI date for this event is now less 
+          // than the previous.  Therefore we need to check all phi events
+          if ($phi_rec->tsvalue == $feature->adminid) { 
+            // Check for if the phi_date and tsendtime are equal, then we are editing an event that IS the phi event
+            // and we can just go ahead and save it.
+            om_agman_update_all('dh_adminreg_feature', $fe->hydroid, 'agchem_application_event', $stime, $etime, TRUE);
+          }
         }
       }
     }

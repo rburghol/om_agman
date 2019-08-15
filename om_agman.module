@@ -360,6 +360,37 @@ function _om_agman_make_link($link_text = '') {
   return '<div id="magical-modal-link">' . l($link_text, 'om_agman/nojs', array('attributes' => array('class' => 'ctools-use-modal'))) . '</div>';
 }
 
+function om_agman_update_all($entity_type, $entity_id, $varkey, $startdate = FALSE, $enddate = FALSE, $debug = FALSE) {
+  // ex: agchem_application_event
+  // sql to get records with redundant erefs
+  $varid = dh_varkey2varid($varkey, TRUE);
+  $q = "  select tid from {dh_timeseries} ";
+  $q .= " where varid = $varid ";
+  $q .= " and featureid = $entity_id ";
+  $q .= " and entity_type = '$entity_type' ";
+  if (!($startdate === FALSE)) {
+    $q .= " and tstime >= " . dh_handletimestamp($startdate);
+  }
+  if (!($enddate === FALSE)) {
+    $q .= " and tstime >= " . dh_handletimestamp($enddate);
+  }
+
+  $result = db_query($q);
+  echo $q;
+  
+  foreach ($result as $record) {
+    // get events
+    // Load some entity.
+    $dh_ts = entity_load_single('dh_timeseries', $record->tid);
+    //entity_save($dh_ts);
+    $dh_ts->save();
+    //error_log("rec: " . print_r((array)$dh_ts,1));
+    if ($debug) {
+      error_log("saved $record->tid");
+    }
+  }
+}
+
 /**
  * An example page.
  */
