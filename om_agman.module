@@ -376,7 +376,9 @@ function om_agman_update_all($entity_type, $entity_id, $varkey, $startdate = FAL
   }
 
   $result = db_query($q);
-  echo $q;
+  if ($debug) {
+    dsm($q);
+  }
   
   foreach ($result as $record) {
     // get events
