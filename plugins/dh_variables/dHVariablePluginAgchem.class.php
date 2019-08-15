@@ -683,7 +683,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             // Check for if the phi_date and tsendtime are equal, then we are editing an event that WAS the phi event
             // In this case we save all events to see if another event should be the PHI event.  
             // If this is still the PHI event, it should be OK 
-            om_agman_update_all('dh_adminreg_feature', $fe->hydroid, 'agchem_application_event', $stime, $etime, TRUE);
+            om_agman_update_all($phi_rec->entity_type, $phi_rec->featureid, 'agchem_application_event', $stime, $etime, TRUE);
           }
         }
       }

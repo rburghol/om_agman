@@ -372,7 +372,7 @@ function om_agman_update_all($entity_type, $entity_id, $varkey, $startdate = FAL
     $q .= " and tstime >= " . dh_handletimestamp($startdate);
   }
   if (!($enddate === FALSE)) {
-    $q .= " and tstime <= " . dh_handletimestamp($enddate);
+    $q .= " and tsendtime <= " . dh_handletimestamp($enddate);
   }
 
   $result = db_query($q);
