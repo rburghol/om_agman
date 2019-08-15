@@ -659,7 +659,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         if (
           (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tsendtime)) 
           or (
-            // if this IS the phi event but date has not changed, we still update in case limiting chem has changed.
+            // - If this IS the phi event but date has not changed, we still update in case limiting chem has changed.
+            // - This also prevents an infinite loop in case PHI date changes, but PHI event is still the same. 
+            //   The initial event will be edited, then the next time this is called there will be a match on this condition
+            //   and we will then save and return
             (dh_handletimestamp($feature->phi_date) == dh_handletimestamp($phi_rec->tsendtime)) 
               and ($phi_rec->tsvalue == $feature->adminid)
             )
@@ -672,11 +675,14 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           dsm("PHI Updated to $feature->phi_date on $fe->name");
           $phi_rec->save();
         } else {
+          dpm($phi_rec,"Checking for Stale PHI date $feature->phi_date on $fe->name");
+          dpm($feature,"Feature");
           // check for special case where this USED to be the PHI event, but is no longer because the PHI date for this event is now less 
           // than the previous.  Therefore we need to check all phi events
           if ($phi_rec->tsvalue == $feature->adminid) { 
-            // Check for if the phi_date and tsendtime are equal, then we are editing an event that IS the phi event
-            // and we can just go ahead and save it.
+            // Check for if the phi_date and tsendtime are equal, then we are editing an event that WAS the phi event
+            // In this case we save all events to see if another event should be the PHI event.  
+            // If this is still the PHI event, it should be OK 
             om_agman_update_all('dh_adminreg_feature', $fe->hydroid, 'agchem_application_event', $stime, $etime, TRUE);
           }
         }
