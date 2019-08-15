@@ -593,9 +593,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   }
   
   public function save(&$entity) {
+    error_log("$entity->varname save() called");
     parent::save($entity);
   }
   public function update(&$entity) {
+    error_log("$entity->varname update() called");
     parent::update($entity);
     $feature = $this->getParentEntity($entity);
     //dpm($feature,'feature');
