@@ -370,7 +370,7 @@ function om_agman_update_all($blockid, $varkey, $startdate = FALSE, $enddate = F
   $varid = dh_varkey2varid($varkey, TRUE);
   $q = "  select tid from {dh_timeseries} ";
   $q .= " where varid = $varid ";
-  $q .= " and featureid in (select entity_id from field_data_dh_link_feature_submittal where dh_link_feature_submittal_target_id = $entity_id ) ";
+  $q .= " and featureid in (select entity_id from field_data_dh_link_feature_submittal where dh_link_feature_submittal_target_id = $blockid ) ";
   $q .= " and entity_type = 'dh_adminreg_feature' ";
   if (!($startdate === FALSE)) {
     $q .= " and tstime >= " . dh_handletimestamp($startdate);
