@@ -656,7 +656,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     return $phi_prop;
   }
   
-  function getBlockTSPHI($fe, $sstime, $etime) {
+  function getBlockTSPHI($fe, $sstime, $setime) {
     $block_phi_info = array(
       'featureid' => $fe->hydroid,
       'entity_type' => 'dh_feature',
