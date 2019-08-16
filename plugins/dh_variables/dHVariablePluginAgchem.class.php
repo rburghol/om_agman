@@ -688,6 +688,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       // retrieve the app event related to this block with highest PHI 
       $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, TRUE);
       dpm($block_phi_event, "max phi event: ");
+      
       return;
       $max_phi_props = $block_phi_event->dh_properties['agchem_phi'];
       dpm($max_phi_props, "max phi event prop: ");
