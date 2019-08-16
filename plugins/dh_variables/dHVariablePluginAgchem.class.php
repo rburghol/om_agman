@@ -629,13 +629,14 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $phi_prop_info = array(
       'featureid' => $entity->tid,
       'entity_type' => 'dh_timeseries',
+      'propname' => 'agchem_phi',
       'varkey' => 'agchem_phi',
       'startdate' => $appdate,
       'enddate' => $phidate,
       'propcode' => $chems,
     );
     error_log("Saving phi " . print_r($phi_prop_info,1));
-    $phi_prop = dh_properties_enforce_singularity($phi_prop_info, 'singular', FALSE);
+    $phi_prop = dh_properties_enforce_singularity($phi_prop_info, 'singular', TRUE);
     if ( ($feature->fstatus == 'post_harvest') or empty($feature->phi_date) ) {
       if ($phi_prop) {
         // this used to have a PHI prop, but is no longer a pre-harvest event 
