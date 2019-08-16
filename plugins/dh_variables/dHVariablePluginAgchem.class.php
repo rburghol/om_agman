@@ -659,7 +659,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     foreach ($feature->block_entities as $fe) {
       // Retrieve PHI record for this year and insure only a single record for each block, per growing year 
       $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, TRUE);
-      error_log("phi event: " . print_r($block_phi_event,1));
+      error_log("phi event: " . print_r((array)$block_phi_event,1));
       /*
       $phi_info = array(
         'featureid' => $fe->hydroid,
