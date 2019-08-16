@@ -619,7 +619,6 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // @todo: add this 
   }
   
-  
   public function setEventPHI(&$entity, &$feature) {
     // Every pre-harvest application event TS record should have a PHI property attached to it.
     // these records can then be used to rapdily determine the single PHI for this Block
@@ -688,11 +687,13 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       // retrieve the app event related to this block with highest PHI 
       error_log( "calling om_agman_get_block_phi");
       $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, TRUE);
-      error_log( "Retrieved max phi event: ");
-      dpm($block_phi_event, "max phi event: ");
-      
-      return;
-      $max_phi_props = $block_phi_event->dh_properties['agchem_phi'];
+      // get agchem_phi_prop from this event 
+      $max_phi_prop_info = array(
+        'featureid' => $entity->tid,
+        'entity_type' => 'dh_timeseries',
+        'varkey' => 'agchem_phi',
+      );
+      $max_phi_props = dh_properties_enforce_singularity($max_phi_prop_info, 'singular', TRUE);
       dpm($max_phi_props, "max phi event prop: ");
       // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
       $block_phi_ts = $this->getBlockTSPHI($fe, $sstime, $setime);
