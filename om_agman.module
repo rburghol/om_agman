@@ -382,6 +382,7 @@ function om_agman_update_all($blockid, $varkey, $startdate = FALSE, $enddate = F
   $result = db_query($q);
   if ($debug) {
     dsm($q);
+    error_log("$q");
   }
   
   foreach ($result as $record) {

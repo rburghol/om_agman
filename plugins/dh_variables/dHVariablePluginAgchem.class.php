@@ -679,7 +679,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           if ($phi_rec->tsvalue == $feature->adminid) { 
             dsm("Stale PHI rec for $feature->phi_date on $fe->name");
             // Check for if the phi_date and tsendtime are equal, then we are editing an event that WAS the phi event
-            // In this case we save all events to see if another event should be the PHI event.  
+            // In this case we delete PHI rec and save all events to see if another event should be the PHI event.  
+            entity_delete($phi_rec);
             // If this is still the PHI event, it should be OK 
             om_agman_update_all($phi_rec->featureid, 'agchem_application_event', $stime, $etime, TRUE);
           }
