@@ -651,8 +651,6 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       }
       $phi_prop->save();
     }
-    // 
-    return;
     // now that this event has updated PHI info, we re up the PHI for all blocks
     // @todo: make this southern hemisphere compatible so year goes from June to May 
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
@@ -660,6 +658,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $setime = dh_handletimestamp("$event_year-12-31");
     foreach ($feature->block_entities as $fe) {
       // Retrieve PHI record for this year and insure only a single record for each block, per growing year 
+      $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, TRUE);
+      error_log("phi event: " . print_r($block_phi_event,1));
+      /*
       $phi_info = array(
         'featureid' => $fe->hydroid,
         'entity_type' => 'dh_feature',
@@ -687,6 +688,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
         //dpm($phi_rec,'phi rec');
         $phi_rec->save();
+        */
+      }
     }
     
   }
