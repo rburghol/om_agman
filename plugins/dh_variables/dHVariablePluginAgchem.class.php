@@ -406,6 +406,7 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
 
 
 class dHAgchemApplicationEvent extends dHVariablePluginDefault {
+  // a timeseries attached to the adminreg feature spray event to hold summary info and easy access for calendars etc.
   public function editLink($entity) {
     $feature = $this->getParentEntity($entity);    
     $uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/sprayquan/$feature->adminid&finaldest=$page";
@@ -602,8 +603,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $feature = $this->getParentEntity($entity);
     //dpm($feature,'feature');
     $this->load_event_info($feature);
-    $this->setBlockPHI($feature);
-    $this->setBlockREI($feature);
+    $this->setBlockPHI($entity, $feature);
+    $this->setBlockREI($entity, $feature);
   }
   
   public function insert(&$entity) {
@@ -618,29 +619,41 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // @todo: add this 
   }
   
-  public function setBlockPHI(&$feature) {
+  public function setBlockPHI(&$entity, &$feature) {
+    // Every pre-harvest application event TS record should have a PHI property attached to it.
+    // these records can then be used to rapdily determine the single PHI for this Block
     // adds a single record, by year 
+    $appdate = dh_handletimestamp($feature->enddate);
+    $phidate = dh_handletimestamp($feature->phi_date);
+    $phi_prop_info = array(
+      'featureid' => $entity->tid,
+      'entity_type' => 'dh_timeseries',
+      'varkey' => 'agchem_phi',
+      'startdate' => $appdate,
+      'enddate' => $phidate,
+      'propcode' => $chems,
+    );
+    $phi_prop = dh_properties_enforce_singularity($phi_prop_info, 'singular', FALSE);
     if ( ($feature->fstatus == 'post_harvest') or empty($feature->phi_date) ) {
       return;
     }
     // @todo: make this southern hemisphere compatible so year goes from June to May 
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
-    $stime = dh_handletimestamp("$event_year-01-01");
-    $etime = dh_handletimestamp("$event_year-12-31");
+    $sstime = dh_handletimestamp("$event_year-01-01");
+    $setime = dh_handletimestamp("$event_year-12-31");
+    $chems = substr(implode(', ', $feature->phi_chems), 0, 254);
+    $phi_prop->save();
     foreach ($feature->block_entities as $fe) {
+      // Retrieve PHI record for this year and insure only a single record for each block, per growing year 
       $phi_info = array(
         'featureid' => $fe->hydroid,
         'entity_type' => 'dh_feature',
         'varkey' => 'agchem_phi',
-        'tstime' => $stime,
-        'tsendtime' => $etime,
+        'tstime' => $sstime,
+        'tsendtime' => $setime,
       );
-      dpm($phi_info,'searching phi recs');
-      // make only a single record for each block, per growing year 
       $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange_singular', FALSE);
-      //@todo: need to check if this event IS already the PHI event,
-      //       because if so, and the PHI interval decreases, we need to search all events in the year
-      //       to see if there is another event that has become the limiter
+      // if there is no phi rec for this block this is easy just save this info and return 
       if (!$phi_rec) {
         $phi_info['tstime'] = dh_handletimestamp($feature->enddate);
         $phi_info['tsendtime'] = dh_handletimestamp($feature->phi_date);
@@ -650,42 +663,15 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $phi_rec = entity_create('dh_timeseries', $phi_info);
         dsm("PHI Updated to $feature->phi_date on $fe->name");
         $phi_rec->save();
-      } else {
-        // need to reload the rec, since dh_timeseries_enforce_singularity overwrites tstime/tsendtime
-        // this is kind of a bug in dh_timeseries_enforce_singularity, but the behavior is as it is.
-        // now update to the actual phi date if it is less than the new PHI 
-        //dsm("event phi: " . dh_handletimestamp($feature->phi_date) . ", tstime: $phi_rec->tstime ");
-        //dsm("as Date event phi: " . $feature->phi_date . ", tstime: " . date('Y-m-d',$phi_rec->tstime));
-        if (
-          (dh_handletimestamp($feature->phi_date) > dh_handletimestamp($phi_rec->tsendtime)) 
-          or (
-            // - If this IS the phi event but date has not changed, we still update in case limiting chem has changed.
-            // - This also prevents an infinite loop in case PHI date changes, but PHI event is still the same. 
-            //   The initial event will be edited, then the next time this is called there will be a match on this condition
-            //   and we will then save and return
-            (dh_handletimestamp($feature->phi_date) == dh_handletimestamp($phi_rec->tsendtime)) 
-              and ($phi_rec->tsvalue == $feature->adminid)
-            )
-          ) {
-          $phi_rec->tstime = dh_handletimestamp($feature->enddate);
-          $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
-          $phi_rec->tsvalue = $feature->adminid;
-          $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
-          //dpm($phi_rec,'phi rec');
-          $phi_rec->save();
-        } else {
-          // check for special case where this USED to be the PHI event, but is no longer because the PHI date for this event is now less 
-          // than the previous.  Therefore we need to check all phi events
-          if ($phi_rec->tsvalue == $feature->adminid) { 
-            dsm("Stale PHI rec for $feature->phi_date on $fe->name");
-            // Check for if the phi_date and tsendtime are equal, then we are editing an event that WAS the phi event
-            // In this case we delete PHI rec and save all events to see if another event should be the PHI event.  
-            entity_delete($phi_rec);
-            // If this is still the PHI event, it should be OK 
-            om_agman_update_all($phi_rec->featureid, 'agchem_application_event', $stime, $etime, TRUE);
-          }
-        }
+        return;
       }
+      // get highest PHI date and chems for this block from all app events 
+        $phi_rec->tstime = dh_handletimestamp($feature->enddate);
+        $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
+        $phi_rec->tsvalue = $feature->adminid;
+        $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
+        //dpm($phi_rec,'phi rec');
+        $phi_rec->save();
     }
     
   }

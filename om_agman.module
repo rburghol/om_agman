@@ -360,42 +360,47 @@ function _om_agman_make_link($link_text = '') {
   return '<div id="magical-modal-link">' . l($link_text, 'om_agman/nojs', array('attributes' => array('class' => 'ctools-use-modal'))) . '</div>';
 }
 
-function om_agman_update_all($blockid, $varkey, $startdate = FALSE, $enddate = FALSE, $debug = FALSE) {
+function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug = FALSE) {
   // ex: agchem_application_event
-  // sql to get records with redundant erefs
-  // application events associated with a feature will be linked via the 
-  // efq for dh_adminreg_feature with
-  //  dh_link_feature_submittal_target_id = entity_id 
-  //  and startdate, enddate in selected range 
+  // find the event whose attached phi date prop is the highest 
+  // grab all ts events and their PHI props linked to this block and join to the max enddate of the same list, sort by tsendtime and take the earliest one 
   $varid = dh_varkey2varid($varkey, TRUE);
-  $q = "  select tid from {dh_timeseries} ";
+  $q = "  select tid from {dh_timeseries} as ts ";
+  $q .= " left outer join {dh_properties} as phprop ";
+  $q .= " on ( ";
+  $q .= "   phprop.entity_type = 'dh_adminreg_feature' ";
+  $q .= "   and ts.tid = phprop.featureid ";
+  $q .= " ) ";
+  $q .= " left outer join ( ";
+  $q = "    select max(phprop.enddate) as phi_date from {dh_timeseries} as ts ";
+  $q .= "   left outer join {dh_properties} as phprop ";
+  $q .= "   on ( ";
+  $q .= "     phprop.entity_type = 'dh_adminreg_feature' ";
+  $q .= "     and ts.tid = phprop.featureid ";
+  $q .= "   ) ";  
+  $q .= "   where ts.varid = $varid ";
+  $q .= "   and ts.featureid in (select entity_id from field_data_dh_link_feature_submittal where dh_link_feature_submittal_target_id = $blockid ) ";
+  $q .= "   and ts.entity_type = 'dh_adminreg_feature' ";
+  $q .= "   and ts.tstime >= " . dh_handletimestamp($startdate);
+  $q .= "   and ts.tstime <= " . dh_handletimestamp($enddate);
+  $q .= " ) as max_phi ";
   $q .= " where varid = $varid ";
   $q .= " and featureid in (select entity_id from field_data_dh_link_feature_submittal where dh_link_feature_submittal_target_id = $blockid ) ";
   $q .= " and entity_type = 'dh_adminreg_feature' ";
-  if (!($startdate === FALSE)) {
-    $q .= " and tstime >= " . dh_handletimestamp($startdate);
-  }
-  if (!($enddate === FALSE)) {
-    $q .= " and tstime <= " . dh_handletimestamp($enddate);
-  }
-
+  $q .= " and tstime >= " . dh_handletimestamp($startdate);
+  $q .= " and tstime <= " . dh_handletimestamp($enddate);
+  $q .= " and tstime <= " . dh_handletimestamp($enddate);
+  $q .= " and phprop.enddate = max_phi.phi_date ";
+ 
   $result = db_query($q);
   if ($debug) {
     dsm($q);
     error_log("$q");
   }
-  
-  foreach ($result as $record) {
-    // get events
-    // Load some entity.
-    $dh_ts = entity_load_single('dh_timeseries', $record->tid);
-    //entity_save($dh_ts);
-    $dh_ts->save();
-    //error_log("rec: " . print_r((array)$dh_ts,1));
-    if ($debug) {
-      error_log("saved $record->tid");
-    }
-  }
+  $record = array_shift($result);
+  // Load some entity.
+  $dh_ts = entity_load_single('dh_timeseries', $record->tid);
+  return $dh_ts;
 }
 
 /**
