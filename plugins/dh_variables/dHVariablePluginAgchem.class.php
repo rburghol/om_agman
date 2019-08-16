@@ -594,11 +594,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   }
   
   public function save(&$entity) {
-    error_log("$entity->varname save() called");
+    //error_log("$entity->varname save() called");
     parent::save($entity);
   }
   public function update(&$entity) {
-    error_log("$entity->varname update() called");
+    //error_log("$entity->varname update() called");
     parent::update($entity);
     $feature = $this->getParentEntity($entity);
     //dpm($feature,'feature');
@@ -685,8 +685,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $setime = dh_handletimestamp("$event_year-12-31");
     foreach ($feature->block_entities as $fe) {
       // retrieve the app event related to this block with highest PHI 
-      error_log( "calling om_agman_get_block_phi");
-      $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, TRUE);
+      //error_log( "calling om_agman_get_block_phi");
+      $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, FALSE);
       // get agchem_phi_prop from this event 
       $max_phi_prop_info = array(
         'featureid' => $entity->tid,
@@ -694,20 +694,21 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         'varkey' => 'agchem_phi',
       );
       $max_phi_props = dh_properties_enforce_singularity($max_phi_prop_info, 'singular', TRUE);
-      dpm($max_phi_props, "max phi event prop: ");
-      // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
-      $block_phi_ts = $this->getBlockTSPHI($fe, $sstime, $setime);
-      dpm($block_phi_ts, "before phi event ");
-      // now update this blocks PHI ts  
-      $block_phi_ts->tstime = $max_phi_props->startdate;
-      $block_phi_ts->tsendtime = $max_phi_props->enddate;
-      $block_phi_ts->tscode = $max_phi_props->propcode; // chems 
-      $block_phi_ts->tsvalue = $block_phi_event->featureid; // this is the adminid of the limiting event 
-      dpm($block_phi_ts, "phi event: ");
-      // update the phi event for this block with the values from the returned function 
-      $block_phi_ts->save();
+      if (is_object($max_phi_props)) {
+        //dpm($max_phi_props, "max phi event prop: ");
+        // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
+        $block_phi_ts = $this->getBlockTSPHI($fe, $sstime, $setime);
+        //dpm($block_phi_ts, "before phi event ");
+        // now update this blocks PHI ts  
+        $block_phi_ts->tstime = $max_phi_props->startdate;
+        $block_phi_ts->tsendtime = $max_phi_props->enddate;
+        $block_phi_ts->tscode = $max_phi_props->propcode; // chems 
+        $block_phi_ts->tsvalue = $block_phi_event->featureid; // this is the adminid of the limiting event 
+        //dpm($block_phi_ts, "phi event: ");
+        // update the phi event for this block with the values from the returned function 
+        $block_phi_ts->save();
+      }
     }
-    
   }
   
   
