@@ -679,7 +679,6 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $chems = $event_phi_prop->propcode;
     $appdate = $event_phi_prop->startdate;
     $phidate = $event_phi_prop->enddate;
-    return;
     // now that this event has updated PHI info, we re up the PHI for all blocks
     // @todo: make this southern hemisphere compatible so year goes from June to May 
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
@@ -689,6 +688,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       // retrieve the app event related to this block with highest PHI 
       $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, TRUE);
       dpm($block_phi_event, "max phi event: ");
+      return;
       $max_phi_props = $block_phi_event->dh_properties['agchem_phi'];
       dpm($max_phi_props, "max phi event prop: ");
       // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
