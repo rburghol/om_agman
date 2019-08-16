@@ -398,9 +398,13 @@ function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug 
     error_log("$q");
   } 
   $result = db_query($q);
-  $record = array_shift($result);
-  // Load some entity.
-  $dh_ts = entity_load_single('dh_timeseries', $record->tid);
+  if (isset($result['dh_properties'])) {
+    $record = array_shift($result['dh_properties']);
+    // Load some entity.
+    $dh_ts = entity_load_single('dh_timeseries', $record->tid);
+  } else {
+    $dh_ts = FALSE;
+  }
   return $dh_ts;
 }
 
