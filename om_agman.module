@@ -372,7 +372,7 @@ function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug 
   $q .= "   and ts.tid = phprop.featureid ";
   $q .= " ) ";
   $q .= " left outer join ( ";
-  $q = "    select max(phprop.enddate) as phi_date from {dh_timeseries} as ts ";
+  $q .= "    select max(phprop.enddate) as phi_date from {dh_timeseries} as ts ";
   $q .= "   left outer join {dh_properties} as phprop ";
   $q .= "   on ( ";
   $q .= "     phprop.entity_type = 'dh_adminreg_feature' ";
