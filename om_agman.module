@@ -385,8 +385,8 @@ function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug 
   $q .= "   and ts.tstime >= " . dh_handletimestamp($startdate);
   $q .= "   and ts.tstime <= " . dh_handletimestamp($enddate);
   $q .= " ) as max_phi ";
-  $q .= " where varid = $varid ";
   $q .= " on (1 = 1) ";
+  $q .= " where varid = $varid ";
   $q .= " and featureid in (select entity_id from field_data_dh_link_feature_submittal where dh_link_feature_submittal_target_id = $blockid ) ";
   $q .= " and entity_type = 'dh_adminreg_feature' ";
   $q .= " and tstime >= " . dh_handletimestamp($startdate);
