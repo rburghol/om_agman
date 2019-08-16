@@ -634,6 +634,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       'enddate' => $phidate,
       'propcode' => $chems,
     );
+    error_log("Saving phi " . print_r($phi_prop_info,1));
     $phi_prop = dh_properties_enforce_singularity($phi_prop_info, 'singular', FALSE);
     if ( ($feature->fstatus == 'post_harvest') or empty($feature->phi_date) ) {
       if ($phi_prop) {
