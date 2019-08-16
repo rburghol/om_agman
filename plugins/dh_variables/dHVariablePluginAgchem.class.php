@@ -679,6 +679,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $chems = $event_phi_prop->propcode;
     $appdate = $event_phi_prop->startdate;
     $phidate = $event_phi_prop->enddate;
+    return;
     // now that this event has updated PHI info, we re up the PHI for all blocks
     // @todo: make this southern hemisphere compatible so year goes from June to May 
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
