@@ -674,7 +674,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // Every pre-harvest application event TS record should have a PHI property attached to it.
     // set this events PHI prop now 
     $event_phi_prop = $this->setEventPHI($entity, $feature);
-      dpm($event_phi_prop, "event PHI ");
+    //dpm($event_phi_prop, "event PHI ");
     $chems = $event_phi_prop->propcode;
     $appdate = $event_phi_prop->startdate;
     $phidate = $event_phi_prop->enddate;
