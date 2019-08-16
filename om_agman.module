@@ -398,14 +398,12 @@ function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug 
     error_log("$q");
   } 
   $result = db_query($q);
-  if (isset($result['dh_properties'])) {
-    $record = array_shift($result['dh_properties']);
-    // Load some entity.
+  foreach ($result as $record) {
+    // For whatever reason we need to use this instead of shifting a single result since $result is not an array but works with foreach?
     $dh_ts = entity_load_single('dh_timeseries', $record->tid);
-  } else {
-    $dh_ts = FALSE;
+    return $dh_ts;
   }
-  return $dh_ts;
+  return FALSE;
 }
 
 /**
