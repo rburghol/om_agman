@@ -688,8 +688,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
         //dpm($phi_rec,'phi rec');
         $phi_rec->save();
-        */
+        
       }
+      */
     }
     
   }
