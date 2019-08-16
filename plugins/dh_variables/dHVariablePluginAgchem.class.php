@@ -664,8 +664,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       'tstime' => $sstime,
       'tsendtime' => $setime,
     );
-    $phi_rec = dh_timeseries_enforce_singularity($block_phi_info, 'trange_singular', FALSE);
-    if (!$phi_rec) {
+    $block_phi_ts = dh_timeseries_enforce_singularity($block_phi_info, 'trange_singular', FALSE);
+    if (!$block_phi_ts) {
       $block_phi_ts = entity_create('dh_timeseries', $block_phi_info);
     }
     return $block_phi_ts; 
