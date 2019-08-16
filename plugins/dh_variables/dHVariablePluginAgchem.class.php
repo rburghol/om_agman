@@ -622,7 +622,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   public function setBlockPHI(&$entity, &$feature) {
     // Every pre-harvest application event TS record should have a PHI property attached to it.
     // these records can then be used to rapdily determine the single PHI for this Block
-    // adds a single record, by year 
+    // adds a single record, by year
+    $chems = substr(implode(', ', $feature->phi_chems), 0, 254);
     $appdate = dh_handletimestamp($feature->enddate);
     $phidate = dh_handletimestamp($feature->phi_date);
     $phi_prop_info = array(
@@ -655,7 +656,6 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
     $sstime = dh_handletimestamp("$event_year-01-01");
     $setime = dh_handletimestamp("$event_year-12-31");
-    $chems = substr(implode(', ', $feature->phi_chems), 0, 254);
     foreach ($feature->block_entities as $fe) {
       // Retrieve PHI record for this year and insure only a single record for each block, per growing year 
       $phi_info = array(
