@@ -635,14 +635,27 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     );
     $phi_prop = dh_properties_enforce_singularity($phi_prop_info, 'singular', FALSE);
     if ( ($feature->fstatus == 'post_harvest') or empty($feature->phi_date) ) {
-      return;
+      if ($phi_prop) {
+        // this used to have a PHI prop, but is no longer a pre-harvest event 
+        // so delete this property 
+        entity_delete($phi_prop);
+      }
+    } else {
+      if (!$phi_prop) {
+        // this used to have a PHI prop, but is no longer a pre-harvest event 
+        // so delete this property 
+        $phi_prop = entity_create('dh_properties', $phi_prop_info);
+      }
+      $phi_prop->save();
     }
+    // 
+    return;
+    // now that this event has updated PHI info, we re up the PHI for all blocks
     // @todo: make this southern hemisphere compatible so year goes from June to May 
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
     $sstime = dh_handletimestamp("$event_year-01-01");
     $setime = dh_handletimestamp("$event_year-12-31");
     $chems = substr(implode(', ', $feature->phi_chems), 0, 254);
-    $phi_prop->save();
     foreach ($feature->block_entities as $fe) {
       // Retrieve PHI record for this year and insure only a single record for each block, per growing year 
       $phi_info = array(
