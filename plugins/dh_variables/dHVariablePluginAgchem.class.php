@@ -666,9 +666,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     );
     $phi_rec = dh_timeseries_enforce_singularity($block_phi_info, 'trange_singular', FALSE);
     if (!$phi_rec) {
-      $block_phi_rec = entity_create('dh_timeseries', $block_phi_info);
+      $block_phi_ts = entity_create('dh_timeseries', $block_phi_info);
     }
-    return $block_phi_rec; 
+    return $block_phi_ts; 
   }
   
   public function setBlockPHI(&$entity, &$feature) {
@@ -688,7 +688,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, TRUE);
       $max_phi_props = $block_phi_event->dh_properties['agchem_phi'];
       // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
-      $block_phi_ts = getBlockTSPHI($fe, $sstime, $setime);
+      $block_phi_ts = $this->getBlockTSPHI($fe, $sstime, $setime);
       // now update this blocks PHI ts  
       $block_phi_ts->tstime = $max_phi_props->startdate;
       $block_phi_ts->tsendtime = $max_phi_props->enddate;
