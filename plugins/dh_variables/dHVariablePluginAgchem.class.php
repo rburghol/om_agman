@@ -619,13 +619,15 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // @todo: add this 
   }
   
-  public function setBlockPHI(&$entity, &$feature) {
+  
+  public function setEventPHI(&$entity, &$feature) {
     // Every pre-harvest application event TS record should have a PHI property attached to it.
     // these records can then be used to rapdily determine the single PHI for this Block
     // adds a single record, by year
     $chems = substr(implode(', ', $feature->phi_chems), 0, 254);
     $appdate = dh_handletimestamp($feature->enddate);
     $phidate = dh_handletimestamp($feature->phi_date);
+    // this is the PHI property for this application event ts record for the admin feature
     $phi_prop_info = array(
       'featureid' => $entity->tid,
       'entity_type' => 'dh_timeseries',
@@ -651,46 +653,50 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       }
       $phi_prop->save();
     }
+    return $phi_prop;
+  }
+  
+  function getBlockTSPHI($fe, $sstime, $etime) {
+    $block_phi_info = array(
+      'featureid' => $fe->hydroid,
+      'entity_type' => 'dh_feature',
+      'varkey' => 'agchem_phi',
+      'tstime' => $sstime,
+      'tsendtime' => $setime,
+    );
+    $phi_rec = dh_timeseries_enforce_singularity($block_phi_info, 'trange_singular', FALSE);
+    if (!$phi_rec) {
+      $block_phi_rec = entity_create('dh_timeseries', $block_phi_info);
+    }
+    return $block_phi_rec; 
+  }
+  
+  public function setBlockPHI(&$entity, &$feature) {
+    // Every pre-harvest application event TS record should have a PHI property attached to it.
+    // set this events PHI prop now 
+    $event_phi_prop = $this->setEventPHI($entity, $feature);
+    $chems = $event_phi_prop->propcode;
+    $appdate = $event_phi_prop->startdate;
+    $phidate = $event_phi_prop->enddate;
     // now that this event has updated PHI info, we re up the PHI for all blocks
     // @todo: make this southern hemisphere compatible so year goes from June to May 
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
     $sstime = dh_handletimestamp("$event_year-01-01");
     $setime = dh_handletimestamp("$event_year-12-31");
     foreach ($feature->block_entities as $fe) {
-      // Retrieve PHI record for this year and insure only a single record for each block, per growing year 
+      // retrieve the app event related to this block with highest PHI 
       $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, TRUE);
-      error_log("phi event: " . print_r((array)$block_phi_event,1));
-      /*
-      $phi_info = array(
-        'featureid' => $fe->hydroid,
-        'entity_type' => 'dh_feature',
-        'varkey' => 'agchem_phi',
-        'tstime' => $sstime,
-        'tsendtime' => $setime,
-      );
-      $phi_rec = dh_timeseries_enforce_singularity($phi_info, 'trange_singular', FALSE);
-      // if there is no phi rec for this block this is easy just save this info and return 
-      if (!$phi_rec) {
-        $phi_info['tstime'] = dh_handletimestamp($feature->enddate);
-        $phi_info['tsendtime'] = dh_handletimestamp($feature->phi_date);
-        $phi_info['tsvalue'] = $feature->adminid;
-        $phi_info['tscode'] = substr(implode(', ', $feature->phi_chems), 0, 254);
-        //dpm($phi_info,'creating phi rec');
-        $phi_rec = entity_create('dh_timeseries', $phi_info);
-        dsm("PHI Updated to $feature->phi_date on $fe->name");
-        $phi_rec->save();
-        return;
-      }
-      // get highest PHI date and chems for this block from all app events 
-        $phi_rec->tstime = dh_handletimestamp($feature->enddate);
-        $phi_rec->tsendtime = dh_handletimestamp($feature->phi_date);
-        $phi_rec->tsvalue = $feature->adminid;
-        $phi_rec->tscode = substr(implode(', ', $feature->phi_chems), 0, 254);
-        //dpm($phi_rec,'phi rec');
-        $phi_rec->save();
-        
-      }
-      */
+      $max_phi_props = $block_phi_event->dh_properties['agchem_phi'];
+      // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
+      $block_phi_ts = getBlockTSPHI($fe, $sstime, $etime);
+      // now update this blocks PHI ts  
+      $block_phi_ts->tstime = $max_phi_props->startdate;
+      $block_phi_ts->tsendtime = $max_phi_props->enddate;
+      $block_phi_ts->tscode = $max_phi_props->propcode; // chems 
+      $block_phi_ts->tsvalue = $block_phi_event->featureid; // this is the adminid of the limiting event 
+      dpm($block_phi_ts, "phi event: ");
+      // update the phi event for this block with the values from the returned function 
+      $block_phi_ts->save();
     }
     
   }

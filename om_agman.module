@@ -401,6 +401,7 @@ function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug 
   foreach ($result as $record) {
     // For whatever reason we need to use this instead of shifting a single result since $result is not an array but works with foreach?
     $dh_ts = entity_load_single('dh_timeseries', $record->tid);
+    $dh_ts->loadComponents(array('varid' => $pvarid));
     return $dh_ts;
   }
   return FALSE;
