@@ -688,7 +688,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, TRUE);
       $max_phi_props = $block_phi_event->dh_properties['agchem_phi'];
       // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
-      $block_phi_ts = getBlockTSPHI($fe, $sstime, $etime);
+      $block_phi_ts = getBlockTSPHI($fe, $sstime, $setime);
       // now update this blocks PHI ts  
       $block_phi_ts->tstime = $max_phi_props->startdate;
       $block_phi_ts->tsendtime = $max_phi_props->enddate;
