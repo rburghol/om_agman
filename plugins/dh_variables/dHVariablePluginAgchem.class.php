@@ -707,7 +707,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $block_phi_ts->save();
         } else {
           // compare the blocks saved PHI ts with this event to see if we should update 
-          if (dh_handletimestamp($phidate) > dh_handletimestamp($block_phi_ts->tstime)) ) {
+          if (dh_handletimestamp($phidate) > dh_handletimestamp($block_phi_ts->tstime)) {
             //dpm($max_phi_props, "max phi event prop: ");
             //dpm($block_phi_ts, "before phi event ");
             // now update this blocks PHI ts  
