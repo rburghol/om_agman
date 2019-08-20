@@ -737,6 +737,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
               );
               $phi_prop = dh_get_properties($info, 'all');
               // and set the 
+              dpm($entity,'ustabe');
+              dpm($block_phi_ts, 'now');
               $block_phi_ts->tstime = $phi_prop->startdate;
               $block_phi_ts->tsendtime = $phi_prop->enddate;
               $block_phi_ts->tscode = $phi_prop->propcode; 
