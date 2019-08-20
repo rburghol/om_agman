@@ -360,6 +360,52 @@ function _om_agman_make_link($link_text = '') {
   return '<div id="magical-modal-link">' . l($link_text, 'om_agman/nojs', array('attributes' => array('class' => 'ctools-use-modal'))) . '</div>';
 }
 
+function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug = FALSE) {
+  // ex: agchem_application_event
+  // find the event whose attached phi date prop is the highest 
+  // grab all ts events and their PHI props linked to this block and join to the max enddate of the same list, sort by tsendtime and take the earliest one 
+  $varid = dh_varkey2varid($varkey, TRUE);
+  $pvarid = dh_varkey2varid('agchem_phi', TRUE);
+  $q = "  select tid from {dh_timeseries} as ts ";
+  $q .= " left outer join {dh_properties} as phprop ";
+  $q .= " on ( ";
+  $q .= "   phprop.entity_type = 'dh_timeseries' ";
+  $q .= "   and ts.tid = phprop.featureid ";
+  $q .= " ) ";
+  $q .= " left outer join ( ";
+  $q .= "    select max(phprop.enddate) as phi_date from {dh_timeseries} as ts ";
+  $q .= "   left outer join {dh_properties} as phprop ";
+  $q .= "   on ( ";
+  $q .= "     phprop.entity_type = 'dh_timeseries' ";
+  $q .= "     and ts.tid = phprop.featureid ";
+  $q .= "   ) ";  
+  $q .= "   where ts.varid = $varid ";
+  $q .= "   and ts.featureid in (select entity_id from field_data_dh_link_feature_submittal where dh_link_feature_submittal_target_id = $blockid ) ";
+  $q .= "   and ts.entity_type = 'dh_adminreg_feature' ";
+  $q .= "   and ts.tstime >= " . dh_handletimestamp($startdate);
+  $q .= "   and ts.tstime <= " . dh_handletimestamp($enddate);
+  $q .= " ) as max_phi ";
+  $q .= " on (1 = 1) ";
+  $q .= " where ts.varid = $varid ";
+  $q .= " and ts.featureid in (select entity_id from field_data_dh_link_feature_submittal where dh_link_feature_submittal_target_id = $blockid ) ";
+  $q .= " and ts.entity_type = 'dh_adminreg_feature' ";
+  $q .= " and tstime >= " . dh_handletimestamp($startdate);
+  $q .= " and tstime <= " . dh_handletimestamp($enddate);
+  $q .= " and tstime <= " . dh_handletimestamp($enddate);
+  $q .= " and phprop.enddate = max_phi.phi_date ";
+  if ($debug) {
+    dsm($q);
+    error_log("$q");
+  } 
+  $result = db_query($q);
+  foreach ($result as $record) {
+    // For whatever reason we need to use this instead of shifting a single result since $result is not an array but works with foreach?
+    $dh_ts = entity_load_single('dh_timeseries', $record->tid);
+    return $dh_ts;
+  }
+  return FALSE;
+}
+
 /**
  * An example page.
  */
