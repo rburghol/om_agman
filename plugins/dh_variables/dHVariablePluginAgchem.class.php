@@ -698,6 +698,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         // $max_phi_props has the PHI chem and date for the current event ` 
         // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
         $block_phi_ts = $this->getBlockTSPHI($fe, $sstime, $setime);
+        dpm($block_phi_event,'biggest phi ');
+        dpm($event_phi_prop, 'this one');
         // $block_phi_ts has the actual timeseries record to annotate the previous PHI for this block.
         //   This is what gets updated if the current event has a greater PHI than the previous PHI
         if (!is_object($block_phi_ts)) {
