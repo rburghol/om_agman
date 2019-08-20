@@ -667,6 +667,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     return $block_phi_ts; 
   }
   
+  public function delete($entity) {
+    // @todo: figure out how to handle deleted events
+  }
+  
   public function setBlockPHI(&$entity, &$feature) {
     // Every pre-harvest application event TS record should have a PHI property attached to it.
     // set this events PHI prop now 
@@ -681,10 +685,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $sstime = dh_handletimestamp("$event_year-01-01");
     $setime = dh_handletimestamp("$event_year-12-31");
     if (is_object($event_phi_prop)) {
-      // if there is a PHI associated wit hthis event we check each block 
+      // if there is a PHI associated with this event we check each block 
       // to see if this PHI is greater than the previous max PHI 
       foreach ($feature->block_entities as $fe) {
         // retrieve the app event related to this block with highest PHI 
+        // this will be up to date since all events should be saved, even the currently edited event
+        // this allows us to handle the special case where this event USED to be the PHI, but is no longer 
         //error_log( "calling om_agman_get_block_phi");
         $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, FALSE);
         // store a property for this event 
@@ -707,7 +713,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $block_phi_ts->save();
         } else {
           // compare the blocks saved PHI ts with this event to see if we should update 
-          if (dh_handletimestamp($phidate) > dh_handletimestamp($block_phi_ts->tstime)) {
+          if (dh_handletimestamp($phidate) >= dh_handletimestamp($block_phi_ts->tstime)) {
             //dpm($max_phi_props, "max phi event prop: ");
             //dpm($block_phi_ts, "before phi event ");
             // now update this blocks PHI ts  
@@ -719,6 +725,17 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             //dpm($block_phi_ts, "phi event: ");
             $block_phi_ts->save();
             // update the phi event for this block with the values from the returned function 
+          } else {
+            // check special case where we are editing the saved PHI event
+            // but this is no longer the pHI event 
+            if ($block_phi_ts->tsvalue == $feature->adminid) {
+              // load the PHI info associated with $block_phi_event
+              // and set the 
+              $block_phi_ts->tstime = $appdate;
+              $block_phi_ts->tsendtime = $phidate;
+              $block_phi_ts->tscode = $chems; 
+              $block_phi_ts->tsvalue = $feature->adminid;
+            }
           }
         }
       }
