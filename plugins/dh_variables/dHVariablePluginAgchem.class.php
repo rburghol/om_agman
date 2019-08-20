@@ -724,7 +724,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             $block_phi_ts->tsendtime = $phidate;
             $block_phi_ts->tscode = $chems; 
             $block_phi_ts->tsvalue = $feature->adminid; // this is the adminid of the limiting event 
-            //dpm($block_phi_ts, "phi event: ");
+            dpm($block_phi_ts, "this is new phi event: ");
             $block_phi_ts->save();
             // update the phi event for this block with the values from the returned function 
           } else {
