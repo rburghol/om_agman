@@ -729,12 +729,19 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             // check special case where we are editing the saved PHI event
             // but this is no longer the pHI event 
             if ($block_phi_ts->tsvalue == $feature->adminid) {
-              // load the PHI info associated with $block_phi_event
+              // load the PHI info associated with $block_phi_event 
+              $info = array(
+                'featureid' => $block_phi_event->tid,
+                'entity_type' => 'dh_feature',
+                'varkey' => 'agchem_phi',
+              );
+              $phi_prop = dh_get_properties($info, 'all');
               // and set the 
-              $block_phi_ts->tstime = $appdate;
-              $block_phi_ts->tsendtime = $phidate;
-              $block_phi_ts->tscode = $chems; 
-              $block_phi_ts->tsvalue = $feature->adminid;
+              $block_phi_ts->tstime = $phi_prop->startdate;
+              $block_phi_ts->tsendtime = $phi_prop->enddate;
+              $block_phi_ts->tscode = $phi_prop->propcode; 
+              $block_phi_ts->tsvalue = $block_phi_event->featureid;
+              $block_phi_ts->save();
             }
           }
         }
