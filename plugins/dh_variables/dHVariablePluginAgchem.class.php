@@ -711,6 +711,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             'varkey' => 'agchem_phi',
             'tstime' => $appdate,
             'tsendtime' => $phi_date,
+            'tscode' => $chems,
+            'tsvalue' => $feature->adminid,
           );
           $block_phi_ts = entity_create('dh_timeseries', $block_phi_info);
           $block_phi_ts->save();
