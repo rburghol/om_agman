@@ -708,7 +708,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $block_phi_info = array(
             'featureid' => $fe->hydroid,
             'entity_type' => 'dh_feature',
-            'varkey' => 'agchem_phi',
+            'varid' => dh_varkey2varid('agchem_phi'),
             'tstime' => $appdate,
             'tsendtime' => $phi_date,
             'tscode' => $chems,
