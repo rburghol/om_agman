@@ -698,9 +698,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         // $max_phi_props has the PHI chem and date for the current event ` 
         // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
         $block_phi_ts = $this->getBlockTSPHI($fe, $sstime, $setime);
-        dpm($block_phi_event,'biggest phi ' . date('Y-m-d', $block_phi_event->tsendtime));
-        dpm($block_phi_ts, 'this block phi ' . date('Y-m-d', $block_phi_ts->tsendtime));
-        dpm($event_phi_prop, 'this event' . date('Y-m-d', $event_phi_prop->enddate));
+        //dpm($block_phi_event,'biggest phi ' . date('Y-m-d', $block_phi_event->tsendtime));
+        //dpm($block_phi_ts, 'this block phi ' . date('Y-m-d', $block_phi_ts->tsendtime));
+        //dpm($event_phi_prop, 'this event' . date('Y-m-d', $event_phi_prop->enddate));
         // $block_phi_ts has the actual timeseries record to annotate the previous PHI for this block.
         //   This is what gets updated if the current event has a greater PHI than the previous PHI
         if (!is_object($block_phi_ts)) {
@@ -728,7 +728,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             $block_phi_ts->tsendtime = $phi_date;
             $block_phi_ts->tscode = $chems; 
             $block_phi_ts->tsvalue = $feature->adminid; // this is the adminid of the limiting event 
-            dpm($block_phi_ts, "this is new phi event: ");
+            //dpm($block_phi_ts, "this is new phi event: ");
             dsm("Updating PHI record for block $fe->name on $phi_date ");
             $block_phi_ts->save();
             // update the phi event for this block with the values from the returned function 
@@ -744,8 +744,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
               );
               $phi_prop = dh_get_properties($info, 'all');
               // and set the 
-              dpm($entity,'ustabe');
-              dpm($block_phi_ts, 'now');
+              //dpm($entity,'ustabe');
+              //dpm($block_phi_ts, 'now');
               $block_phi_ts->tstime = $phi_prop->startdate;
               $block_phi_ts->tsendtime = $phi_prop->enddate;
               $block_phi_ts->tscode = $phi_prop->propcode; 
