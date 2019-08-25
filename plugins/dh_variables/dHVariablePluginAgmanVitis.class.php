@@ -965,6 +965,16 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'varkey' => 'total_anthocyanin_mgg',
         'varid' => dh_varkey2varid('total_anthocyanin_mgg', TRUE),
       ),
+      'total_sugar_mgb' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
+        'propname' => 'TSL',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'total_sugar_mgb',
+        'varid' => dh_varkey2varid('total_sugar_mgb', TRUE),
+      ),
     );
     return $defaults;
   }
@@ -998,8 +1008,13 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     $entity->tsvalue = $rowvalues['Brix']; 
     if (($rowvalues['Berry_Count'] > 0) and ($rowvalues['Sample_Weight'] > 0)) {
       // auto-calculate berry weight
-      $rowvalues['Berry_Weight'] = round(floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']),3);
-      $entity->{"Berry Weight"} = round(floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']),3);
+      $bw = floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['Berry_Count']);
+      $rowvalues['Berry_Weight'] = round($bw,3);
+      $entity->{"Berry Weight"} = round($bw,3);
+      if (($rowvalues['Brix'] > 0)) {
+        // tS g/b = S g-S/100g-Berry * Berry-weight g * 1000.0 mg/g = Brix * 10 * Berry_Weight 
+        $entity->{"TSL"} = floatval($rowvalues['Brix']) * 10.0 * $bw;
+      }
     }
   }
   
