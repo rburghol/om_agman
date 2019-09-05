@@ -929,7 +929,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
-        'propname' => 'T. Acidity',
+        'propname' => 'Total Acidity',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'total_acidity_gpl',
