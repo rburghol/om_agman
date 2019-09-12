@@ -42,6 +42,7 @@ $efficacy = array(
   2=> 'Good',
   3=> 'Good/Fair',
   4=> 'Fair',
+  4.5=> 'Labelled',
   5=> 'Poor',
   6=> 'None',
 );
@@ -51,6 +52,7 @@ $efficacy_sym = array(
   2=> '+',
   3=> '+',
   4=> '-',
+  4.5=> 'L',
   5=> '--',
   6=> '∅',
 );
@@ -60,6 +62,7 @@ $efficacy_color = array(
   2=> '#33b233',
   3=> '#66cc66',
   4=> '#993599',
+  4.5=> '#993599',
   5=> '#ccffcc',
   6=> '#ffffff',
 );
