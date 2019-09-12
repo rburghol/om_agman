@@ -10,7 +10,7 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
       2 => 'G',
       3 => 'G_F',
       4 => 'F',
-      '4L' => 'Lab',
+      4.1 => 'Lab',
       5 => 'P',
       6 => 'N',
     );
@@ -23,7 +23,7 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
       2 => 'Good',
       3 => 'Good/Fair',
       4 => 'Fair',
-      '4L' => 'Labelled',
+      4.1 => 'Labelled',
       5 => 'Poor',
       6 => 'None',
     );
