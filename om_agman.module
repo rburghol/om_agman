@@ -379,7 +379,10 @@ function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug 
   $q .= "     phprop.entity_type = 'dh_timeseries' ";
   $q .= "     and ts.tid = phprop.featureid ";
   $q .= "   ) ";  
+  $q .= "   left outer join dh_adminreg_feature as arf ";
+  $q .= "   on (ts.featureid = arf.adminid) ";
   $q .= "   where ts.varid = $varid ";
+  $q .= "   and arf.fstatus <> 'post_harvest' ";
   $q .= "   and ts.featureid in (select entity_id from field_data_dh_link_feature_submittal where dh_link_feature_submittal_target_id = $blockid ) ";
   $q .= "   and ts.entity_type = 'dh_adminreg_feature' ";
   $q .= "   and ts.tstime >= " . dh_handletimestamp($startdate);
@@ -393,7 +396,6 @@ function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug 
   $q .= " and ts.entity_type = 'dh_adminreg_feature' ";
   $q .= " and arf.fstatus <> 'post_harvest' ";
   $q .= " and tstime >= " . dh_handletimestamp($startdate);
-  $q .= " and tstime <= " . dh_handletimestamp($enddate);
   $q .= " and tstime <= " . dh_handletimestamp($enddate);
   $q .= " and phprop.enddate = max_phi.phi_date ";
   if ($debug) {
