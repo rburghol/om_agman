@@ -700,7 +700,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             'tscode' => $block_phi_event->tscode,
             'tsvalue' => $block_phi_event->featureid,
           );
-          dsm("Adding a new PHI record for block $fe->name on " . date('Y-m-d',$block_phi_event->tsendtime));
+          dsm("Adding a new PHI record for block $fe->name on " . date('Y-m-d',$block_phi_event->tstime));
           $block_phi_ts = entity_create('dh_timeseries', $block_phi_info);
           $block_phi_ts->save();
         }
@@ -709,7 +709,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $block_phi_ts->tscode = $chems; 
         $block_phi_ts->tsvalue = $feature->adminid; // this is the adminid of the limiting event 
         $block_phi_ts->save();
-        dsm("Replacing PHI event for block $fe->name on " . date('Y-m-d',$block_phi_event->tsendtime));
+        dsm("Replacing PHI event for block $fe->name on " . date('Y-m-d',$block_phi_event->tstime));
       } else {
         // @todo: block does NOT have a phi event for this season.  
         // delete the PHI event if one exists.
