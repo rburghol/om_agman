@@ -683,7 +683,13 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     foreach ($feature->block_entities as $fe) {
       // retrieve the app event related to this block with highest PHI 
       $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, FALSE);
-      if (is_object($block_phi_event)) {
+      $values = array(
+        'entity_type' => 'dh_timeseries',
+        'featureid' => $block_phi_event->tid,
+        'propname' => 'agchem_phi'
+      );
+      $phi_event_prop = om_model_getSetProperty($values, 'name', FALSE);
+      if (is_object($phi_event_prop)) {
         $phi_feature = entity_load_single('dh_adminreg_feature', $block_phi_event->featureid);
         $chems = substr(implode(', ', $phi_feature->phi_chems), 0, 254);
         // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
@@ -695,12 +701,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             'featureid' => $fe->hydroid,
             'entity_type' => 'dh_feature',
             'varid' => dh_varkey2varid('agchem_phi'),
-            'tstime' => $block_phi_event->tstime,
-            'tsendtime' => $block_phi_event->tsendtime,
-            'tscode' => $block_phi_event->tscode,
-            'tsvalue' => $block_phi_event->featureid,
+            'tstime' => $phi_event_prop->startdate,
+            'tsendtime' => $phi_event_prop->enddate,
+            'tscode' => $phi_event_prop->propcode,
+            'tsvalue' => $phi_event_prop->featureid,
           );
-          dsm("Adding a new PHI record for block $fe->name on " . date('Y-m-d',$block_phi_event->tstime));
+          dsm("Adding a new PHI record for block $fe->name on " . date('Y-m-d',$phi_event_prop->enddate));
           $block_phi_ts = entity_create('dh_timeseries', $block_phi_info);
           $block_phi_ts->save();
         }
@@ -709,7 +715,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $block_phi_ts->tscode = $chems; 
         $block_phi_ts->tsvalue = $feature->adminid; // this is the adminid of the limiting event 
         $block_phi_ts->save();
-        dsm("Replacing PHI event for block $fe->name on " . date('Y-m-d',$block_phi_event->tstime));
+        dsm("Replacing PHI event for block $fe->name on " . date('Y-m-d',$phi_event_prop->enddate));
       } else {
         // @todo: block does NOT have a phi event for this season.  
         // delete the PHI event if one exists.
