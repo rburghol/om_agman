@@ -704,18 +704,17 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             'entity_type' => 'dh_feature',
             'varid' => dh_varkey2varid('agchem_phi', TRUE),
           );
-          dsm("Adding a new PHI record for block $fe->name on " . date('Y-m-d',$phi_event_prop->enddate));
-          dpm($block_phi_info,'to entity_create');
+          //dsm("Adding a new PHI record for block $fe->name on " . date('Y-m-d',$phi_event_prop->enddate));
+          //dpm($block_phi_info,'to entity_create');
           $block_phi_ts = entity_create('dh_timeseries', $block_phi_info);
-          dpm($block_phi_ts,'ts');
+          //dpm($block_phi_ts,'ts');
         }
         $block_phi_ts->tstime = $phi_event_prop->startdate;
         $block_phi_ts->tsendtime = $phi_event_prop->enddate;
         $block_phi_ts->tscode = $phi_event_prop->propcode; 
         $block_phi_ts->tsvalue = $phi_event_prop->featureid; // this is the adminid of the limiting event 
         $block_phi_ts->save();
-        dpm($block_phi_ts,'ts');
-        dsm("Saving PHI event for block $fe->name on " . date('Y-m-d',$block_phi_ts->tsendtime));
+        dsm("Recording PHI event for block $fe->name on " . date('Y-m-d',$block_phi_ts->tsendtime));
       } else {
         // @todo: Somewhere later in the routine, look for blocks that have been removed from this event.
         //        and update their PHIs
