@@ -708,13 +708,14 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           );
           dsm("Adding a new PHI record for block $fe->name on " . date('Y-m-d',$phi_event_prop->enddate));
           $block_phi_ts = entity_create('dh_timeseries', $block_phi_info);
-          $block_phi_ts->save();
+          dpm($block_phi_ts,'ts');
         }
         $block_phi_ts->tstime = $appdate;
         $block_phi_ts->tsendtime = $phi_date;
         $block_phi_ts->tscode = $chems; 
         $block_phi_ts->tsvalue = $feature->adminid; // this is the adminid of the limiting event 
         $block_phi_ts->save();
+        dpm($block_phi_ts,'ts');
         dsm("Replacing PHI event for block $fe->name on " . date('Y-m-d',$phi_event_prop->enddate));
       } else {
         // @todo: block does NOT have a phi event for this season.  
