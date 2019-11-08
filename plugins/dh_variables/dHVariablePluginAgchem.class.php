@@ -677,90 +677,52 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // Every pre-harvest application event TS record should have a PHI property attached to it.
     // set this events PHI prop now 
     $event_phi_prop = $this->setEventPHI($entity, $feature);
-    //dpm($event_phi_prop, "event PHI ");
-    $chems = $event_phi_prop->propcode;
-    $appdate = $event_phi_prop->startdate;
-    $phi_date = $event_phi_prop->enddate;
-    // now that this event has updated PHI info, we re up the PHI for all blocks
-    // @todo: make this southern hemisphere compatible so year goes from June to May 
     $event_year = date('Y', dh_handletimestamp($feature->enddate));
     $sstime = dh_handletimestamp("$event_year-01-01");
     $setime = dh_handletimestamp("$event_year-12-31");
-    if (is_object($event_phi_prop)) {
-      // if there is a PHI associated with this event we check each block 
-      // to see if this PHI is greater than the previous max PHI 
-      foreach ($feature->block_entities as $fe) {
-        // retrieve the app event related to this block with highest PHI 
-        // this will be up to date since all events should be saved, even the currently edited event
-        // this allows us to handle the special case where this event USED to be the PHI, but is no longer 
-        //error_log( "calling om_agman_get_block_phi");
-        $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, FALSE);
-        // store a property for this event 
-        // $block_phi_event has both the adminid of the previous max event, and the limiting chems for that event 
-        // $max_phi_props has the PHI chem and date for the current event ` 
-        // Retrieve existing PHI timeseries record for this block/year and insure only a single record for each block, per growing year
-        $block_phi_ts = $this->getBlockTSPHI($fe, $sstime, $setime);
-        //dpm($block_phi_event,'biggest phi ' . date('Y-m-d', $block_phi_event->tsendtime));
-        //dpm($block_phi_ts, 'this block phi ' . date('Y-m-d', $block_phi_ts->tsendtime));
-        //dpm($event_phi_prop, 'this event' . date('Y-m-d', $event_phi_prop->enddate));
-        // $block_phi_ts has the actual timeseries record to annotate the previous PHI for this block.
-        //   This is what gets updated if the current event has a greater PHI than the previous PHI
+    foreach ($feature->block_entities as $fe) {
+      // retrieve the app event related to this block with highest PHI 
+      $block_phi_event = om_agman_get_block_phi($fe->hydroid, 'agchem_application_event', $sstime, $setime, FALSE);
+      $values = array(
+        'entity_type' => 'dh_timeseries',
+        'featureid' => $block_phi_event->tid,
+        'propname' => 'agchem_phi'
+      );
+      // retrieve the event PHI prop from the limiting event for this block
+      $phi_event_prop = om_model_getSetProperty($values, 'name', FALSE);
+      // Retrieve existing PHI timeseries record for this block/year 
+      // and insure only a single record for each block, per growing year
+      $block_phi_ts = $this->getBlockTSPHI($fe, $sstime, $setime);
+      //dpm($block_phi_event,'biggest phi ' . date('Y-m-d', $block_phi_event->tsendtime));
+      if (is_object($phi_event_prop)) {
+        $phi_feature = entity_load_single('dh_adminreg_feature', $block_phi_event->featureid);
+        $chems = substr(implode(', ', $phi_feature->phi_chems), 0, 254);
         if (!is_object($block_phi_ts)) {
           // if this block doe not already have a saved PHI event for this seasonk we create one
           $block_phi_info = array(
             'featureid' => $fe->hydroid,
             'entity_type' => 'dh_feature',
-            'varid' => dh_varkey2varid('agchem_phi'),
-            'tstime' => $appdate,
-            'tsendtime' => $phi_date,
-            'tscode' => $chems,
-            'tsvalue' => $feature->adminid,
+            'varid' => dh_varkey2varid('agchem_phi', TRUE),
           );
-          dsm("Adding a new PHI record for block $fe->name on $phi_date ");
+          //dsm("Adding a new PHI record for block $fe->name on " . date('Y-m-d',$phi_event_prop->enddate));
+          //dpm($block_phi_info,'to entity_create');
           $block_phi_ts = entity_create('dh_timeseries', $block_phi_info);
-          $block_phi_ts->save();
-        } else {
-          // compare the blocks saved PHI ts with this event to see if we should update 
-          if (dh_handletimestamp($phi_date) >= dh_handletimestamp($block_phi_ts->tstime)) {
-            //dpm($max_phi_props, "max phi event prop: ");
-            //dpm($block_phi_ts, "before phi event ");
-            // now update this blocks PHI ts  
-            // message if this is changing
-            $block_phi_ts->tstime = $appdate;
-            $block_phi_ts->tsendtime = $phi_date;
-            $block_phi_ts->tscode = $chems; 
-            $block_phi_ts->tsvalue = $feature->adminid; // this is the adminid of the limiting event 
-            //dpm($block_phi_ts, "this is new phi event: ");
-            dsm("Updating PHI record for block $fe->name on $phi_date ");
-            $block_phi_ts->save();
-            // update the phi event for this block with the values from the returned function 
-          } else {
-            // check special case where we are editing the saved PHI event
-            // but this is no longer the pHI event 
-            if ($block_phi_ts->tsvalue == $feature->adminid) {
-              // load the PHI info associated with $block_phi_event 
-              $info = array(
-                'featureid' => $block_phi_event->tid,
-                'entity_type' => 'dh_feature',
-                'varkey' => 'agchem_phi',
-              );
-              $phi_prop = dh_get_properties($info, 'all');
-              // and set the 
-              //dpm($entity,'ustabe');
-              //dpm($block_phi_ts, 'now');
-              $block_phi_ts->tstime = $phi_prop->startdate;
-              $block_phi_ts->tsendtime = $phi_prop->enddate;
-              $block_phi_ts->tscode = $phi_prop->propcode; 
-              $block_phi_ts->tsvalue = $block_phi_event->featureid;
-              $block_phi_ts->save();
-              dsm("Replacing PHI event for block $fe->name on $phi_prop->enddate ");
-            }
-          }
+          //dpm($block_phi_ts,'ts');
+        }
+        $block_phi_ts->tstime = $phi_event_prop->startdate;
+        $block_phi_ts->tsendtime = $phi_event_prop->enddate;
+        $block_phi_ts->tscode = $phi_event_prop->propcode; 
+        $block_phi_ts->tsvalue = $phi_event_prop->featureid; // this is the adminid of the limiting event 
+        $block_phi_ts->save();
+        dsm("Recording PHI event for block $fe->name on " . date('Y-m-d',$block_phi_ts->tsendtime));
+      } else {
+        // @todo: Somewhere later in the routine, look for blocks that have been removed from this event.
+        //        and update their PHIs
+        // delete the PHI event if one exists.
+        if (is_object($block_phi_ts) and !$block_phi_ts->is_new) {
+          entity_delete($block_phi_ts);
         }
       }
-    } else {
-      // if the event linked to this Block has no PHI prop it means it has no chem with a non-null PHI
-      // so we just return
     }
   }
   
