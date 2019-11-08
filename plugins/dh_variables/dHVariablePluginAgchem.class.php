@@ -705,6 +705,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
             'varid' => dh_varkey2varid('agchem_phi', TRUE),
           );
           dsm("Adding a new PHI record for block $fe->name on " . date('Y-m-d',$phi_event_prop->enddate));
+          dpm($block_phi_info,'to entity_create');
           $block_phi_ts = entity_create('dh_timeseries', $block_phi_info);
           dpm($block_phi_ts,'ts');
         }
