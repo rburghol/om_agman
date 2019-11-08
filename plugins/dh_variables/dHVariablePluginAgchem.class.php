@@ -719,7 +719,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         // @todo: Somewhere later in the routine, look for blocks that have been removed from this event.
         //        and update their PHIs
         // delete the PHI event if one exists.
-        if (is_object($block_phi_ts) and !$block_phi_ts->is_new)) {
+        if (is_object($block_phi_ts) and !$block_phi_ts->is_new) {
           entity_delete($block_phi_ts);
         }
       }
