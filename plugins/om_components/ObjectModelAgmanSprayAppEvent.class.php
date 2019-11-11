@@ -189,6 +189,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       return FALSE;
     }
     dpm($this,'LoadFarmProperties entity');
+    reset($this->dh_block_feature); // insure the pointer is at first item
     $oneblock = current($this->dh_block_feature);
     if (is_object($oneblock)) {
       $farmid = isset($oneblock->dh_link_facility_mps['und']) ? $oneblock->dh_link_facility_mps['und'][0]['target_id'] : FALSE;
