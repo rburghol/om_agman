@@ -49,7 +49,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $this->setEventDefault($conf, 'agchem_event_area', round($this->GetTotalArea(),2), TRUE);
     // canopy frac default is 1.0 - later, if we use a growth model we can adjust based on date or other
     $this->setEventDefault($conf, 'agchem_event_canopy_frac', 1.0);
-    if ($this->dh_farm_feature) {
+    if (is_object($this->dh_farm_feature)) {
       $this->setEventDefault($conf, 'agchem_batch_gal', $this->dh_farm_feature->dh_properties['agchem_sprayer_vol']->propvalue);
       // this one we over-write since it is calculated, and should be done at load AND save
       $this->setEventDefault($conf, 'agchem_total_spray_rate_galac', $this->dh_farm_feature->dh_properties['agman_sprayrate_default_galac']->propvalue);
@@ -191,7 +191,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $oneblock = current($this->dh_block_feature);
     if (is_object($oneblock)) {
       $farmid = isset($oneblock->dh_link_facility_mps['und']) ? $oneblock->dh_link_facility_mps['und'][0]['target_id'] : FALSE;
-      //dpm($farmid,"farm id");
+      dpm($farmid,"farm id");
       if (!$farmid) {
         return FALSE;
       }
