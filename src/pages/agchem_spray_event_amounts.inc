@@ -20,7 +20,7 @@ function dh_sprayquan_form($form, &$form_state, $dh_adminreg_feature = null, $op
   $config = array();
   if ($class) {
     $src = new $class($config);
-    //dpm($src,'app plugin object');
+    dpm($src,'app plugin object');
     $src->dh_adminreg_feature = $dh_adminreg_feature;
     $src->buildForm($form, $form_state);
   }
