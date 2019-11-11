@@ -712,7 +712,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $block_phi_ts->tstime = $phi_event_prop->startdate;
         $block_phi_ts->tsendtime = $phi_event_prop->enddate;
         $block_phi_ts->tscode = $phi_event_prop->propcode; 
-        $block_phi_ts->tsvalue = $phi_event_prop->featureid; // this is the adminid of the limiting event 
+        $block_phi_ts->tsvalue = $block_phi_event->featureid; // this is the adminid of the limiting event 
         $block_phi_ts->save();
         dsm("Recording PHI event for block $fe->name on " . date('Y-m-d',$block_phi_ts->tsendtime));
       } else {
