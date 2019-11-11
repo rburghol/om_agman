@@ -188,6 +188,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     if (!$this->dh_block_feature) {
       return FALSE;
     }
+    dpm($this,'LoadFarmProperties entity');
     $oneblock = current($this->dh_block_feature);
     if (is_object($oneblock)) {
       $farmid = isset($oneblock->dh_link_facility_mps['und']) ? $oneblock->dh_link_facility_mps['und'][0]['target_id'] : FALSE;
