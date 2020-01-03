@@ -1,15 +1,57 @@
 <?php
+global $user;
+// add this as a validation step on any page and it will automatically redirect to a formatted URL
+// this should require no cache access code in Views args -- which is nice
+$red = FALSE;
 $a = arg();
+// if we just switched vineyards, blocks must be set to 'all'
+/*
+if (isset($a[1])) {
+  if ($_SESSION['om_agman']['facility'] <> $a[1]) {
+    $a[2] = 'all';
+  }
+}
+*/
+
 if (!isset($a[1])) {
-  $vineyard_id = isset($_SESSION['om_agman']['facility']) ? $_SESSION['om_agman']['facility'] : 'all';
-} else {
-  $vineyard_id = $a[1];
+  $a[1] = isset($_SESSION['om_agman']['facility']) ? $_SESSION['om_agman']['facility'] : 'all';
+  $red = TRUE;
 }
 if (!isset($a[2])) {
-  $block_id = isset($_SESSION['om_agman']['landunit']) ? $_SESSION['om_agman']['landunit'] : 'all';
-} else {
-  $block_id = $a[2];
+  $a[2] = isset($_SESSION['om_agman']['landunit']) ? $_SESSION['om_agman']['landunit'] : 'all';
+  $red = TRUE;
 }
+//dpm($a,'args');
+// check to see if user has only 1 farm, if so, default to that.
+$farms = dh_get_user_mgr_features($user->uid, 'facility', 'vineyard');
+if ( (count($farms) == 1) and ($a[1] =='all')) {
+  $a[1] = array_shift($farms);
+}
+// make sure that we don't pick up any junk
+if (!( (intval($a[2]) > 0) or ($a[2] == 'all'))) {
+  $a[2] = 'all';
+  $red = TRUE;
+} 
+
+// Finally, redirect to the location management page if we have no blocks
+if ( ($a[2] == 'all') and ($a[1] <> 'all')) {
+  $blockids = dh_get_facility_mps($a[1], 'landunit');
+  if (empty($blockids) and ($a[0] <> 'ipm-facility-info')) {
+    drupal_set_message("You must create at least 1 block on your farm to access these features.");
+    $a[0] = 'ipm-facility-info';
+    $red = TRUE;
+  }
+}
+
+if ($red) {
+  //dpm($a,'final args');
+  drupal_goto(implode('/',$a));
+}
+
+$vineyard_id = $a[1];
+$block_id = $a[2];
+
+// now assermble this list to use for this function
 $args = array();
 $args[] = $vineyard_id;
 $args[] = $block_id;
@@ -114,4 +156,5 @@ $form = drupal_get_form('ctools_jump_menu', $options, $settings);
 //dpm($form);
 $content = drupal_render($form);
 echo $content;
+watchdog('ipm','completed jump list');
 ?>
