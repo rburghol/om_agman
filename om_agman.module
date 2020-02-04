@@ -934,9 +934,10 @@ function om_agman_form_alter(&$form, &$form_state, $form_id) {
       // element is keyed by whatever property property we included 
       $prop_form['propcode']['#type'] = 'select'; 
       $prop_form['propcode']['#options'] = array('a'=>'A', 'b'=>'B', 'c'=>'C');
-      //$form['dh_properties'][$pid] = $prop_form;
-      //dpm($form['dh_properties'][$pid],'after editing');
+      $form['dh_properties'][$pid] = $prop_form;
+      dpm($form['dh_properties'][$pid],'after editing');
     }
+    dpm($form, "After altering Form for form_id = $form_id");
   }
   // Example code shows how to target a specific for by ID
   // editableform names
