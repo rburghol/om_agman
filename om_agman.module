@@ -932,10 +932,17 @@ function om_agman_form_alter(&$form, &$form_state, $form_id) {
       $prop = $prop_form['#entity'];
       $plugin = dh_variables_getPlugins($prop);
       // element is keyed by whatever property property we included 
-      $prop_form['propcode']['#type'] = 'select'; 
-      $prop_form['propcode']['#options'] = array('a'=>'A', 'b'=>'B', 'c'=>'C');
-      $form['dh_properties'][$pid] = $prop_form;
-      dpm($form['dh_properties'][$pid],'after editing');
+      // if the item is not displayed, two things can be true:
+      //   1) there is no property attached (i.e., null property)
+      //   2) this is a multi-page editable form, which means we have to be creative
+      // For now, we just do nothing if it is not set, otherwise we create a byunch of extra 
+      //   check boxes at the end of the form for next page items which is not good
+      if (isset($prop_form['propcode'])) {
+        $prop_form['propcode']['#type'] = 'select'; 
+        $prop_form['propcode']['#options'] = array('a'=>'A', 'b'=>'B', 'c'=>'C');
+        $form['dh_properties'][$pid] = $prop_form;
+        //dpm($form['dh_properties'][$pid],'after editing');
+      }
     }
     dpm($form, "After altering Form for form_id = $form_id");
   }
