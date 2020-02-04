@@ -931,7 +931,7 @@ function om_agman_form_alter(&$form, &$form_state, $form_id) {
     foreach ($form['dh_properties'] as $pid => $prop_form) {
       $prop = $prop_form['#entity'];
       $plugin = dh_variables_getPlugins($prop);
-      $prop_element = &$prop['propcode']; // element is keyed by whatever property property we included 
+      $prop_element = &$prop_form['propcode']; // element is keyed by whatever property property we included 
       $prop_element['#type'] = 'select';
       $prop_element['#options'] = array('a'=>'A', 'b'=>'B', 'c'=>'C');
     }
