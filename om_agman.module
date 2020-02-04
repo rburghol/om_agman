@@ -925,8 +925,28 @@ function om_agman_views_pre_render(&$views) {
  * Implements hook_form_alter()
  */
 function om_agman_form_alter(&$form, &$form_state, $form_id) {
-  dpm($form, "Form for form_id = $form_id");
+  if ($form['#view_name'] == 'ipm_manage_farm_material_2') {
+    dpm($form, "Form for form_id = $form_id");
+    // property form is stored as $form['dh_properties'][pid][prop field (propname, propcode, ...]]
+    foreach ($form['dh_properties'] as $pid => $prop_form) {
+      $prop = $prop_form['#entity'];
+      $plugin = dh_variables_getPlugins($prop);
+      $prop_element = &$prop['propcode']; // element is keyed by whatever property property we included 
+      $prop_element['#type'] = 'select';
+      $prop_element['#options'] = array('a'=>'A', 'b'=>'B', 'c'=>'C');
+    }
+  }
   // Example code shows how to target a specific for by ID
+  // editableform names
+  // - form name editableviews_entity_form_[view machine_name], i.e. editableviews_entity_form_ipm_manage_farm_material_2
+  //   - view machine name is stored as $form['#view_name'] = 'ipm_manage_farm_material_2'
+  // - items as edit-dh-properties-[pid]-[fieldname] , i.e., edit-dh-properties-290-propcode 
+  // - dH could store attached properties as:
+  //   - Base Form modifier for a view:
+  //     - entity_type = views_view (will be custom to a single display) or views_view (will be master)
+  //     - featureid = vid 
+  //     - propname = default (if master) or views_display id (if on a single display) 
+  //     - varid = multiple   
   if (isset($form['type']) && $form['type']['#value'] . '_node_settings' == $form_id) {
   }
 }
