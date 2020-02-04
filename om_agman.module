@@ -935,7 +935,7 @@ function om_agman_form_alter(&$form, &$form_state, $form_id) {
       $prop_form['propcode']['#type'] = 'select'; 
       $prop_form['propcode']['#options'] = array('a'=>'A', 'b'=>'B', 'c'=>'C');
       $form['dh_properties'][$pid] = $prop_form;
-      dpm($form['dh_properties'][$pid],'after editing');
+      //dpm($form['dh_properties'][$pid],'after editing');
     }
   }
   // Example code shows how to target a specific for by ID
