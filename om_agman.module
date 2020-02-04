@@ -905,6 +905,7 @@ function om_agman_application_materials_form () {
   return $form;
   */
 }
+
 /**
  * Implements hook_views_pre_render()
  */
@@ -917,6 +918,16 @@ function om_agman_views_pre_render(&$views) {
       // Add CTools' javascript to the page.
       ctools_modal_add_js();
 
+  }
+}
+
+/**
+ * Implements hook_form_alter()
+ */
+function om_agman_form_alter(&$form, &$form_state, $form_id) {
+  dpm($form, "Form for form_id = $form_id");
+  // Example code shows how to target a specific for by ID
+  if (isset($form['type']) && $form['type']['#value'] . '_node_settings' == $form_id) {
   }
 }
 ?>
