@@ -932,11 +932,12 @@ function om_agman_form_alter(&$form, &$form_state, $form_id) {
       $prop = $prop_form['#entity'];
       $plugin = dh_variables_getPlugins($prop);
       // element is keyed by whatever property property we included 
-      // if the item is not displayed, two things can be true:
-      //   1) there is no property attached (i.e., null property)
-      //   2) this is a multi-page editable form, which means we have to be creative
-      // For now, we just do nothing if it is not set, otherwise we create a byunch of extra 
-      //   check boxes at the end of the form for next page items which is not good
+      // if the item is not displayed, there is null property, options:
+      //   1) create new property by default, but ONLY if the property config has been set to tell us featureid & entity_type 
+      // ALL properties in the view appear in this, so we have to determine how to discern which ones are out field 
+      //   - IT appears that "mapping" info for the view fields is:
+      //     Views relationship name : $form['#results_coordinates'][entity_type][entity_id][0]
+      //     Table Column name: $form['#results_coordinates'][entity_type][entity_id][1]
       if (isset($prop_form['propcode'])) {
         $prop_form['propcode']['#type'] = 'select'; 
         $prop_form['propcode']['#options'] = array('a'=>'A', 'b'=>'B', 'c'=>'C');
@@ -951,12 +952,17 @@ function om_agman_form_alter(&$form, &$form_state, $form_id) {
   // - form name editableviews_entity_form_[view machine_name], i.e. editableviews_entity_form_ipm_manage_farm_material_2
   //   - view machine name is stored as $form['#view_name'] = 'ipm_manage_farm_material_2'
   // - items as edit-dh-properties-[pid]-[fieldname] , i.e., edit-dh-properties-290-propcode 
-  // - dH could store attached properties as:
-  //   - Base Form modifier for a view:
+  // - dH could store attached properties options:
+  //   - Attached to View:
   //     - entity_type = views_view (will be custom to a single display) or views_view (will be master)
   //     - featureid = vid 
   //     - propname = default (if master) or views_display id (if on a single display) 
   //     - varid = multiple   
+  //    - Attached to form - this way, we can simply check for propname = form_id in dh_properties, and if so, process
+  //     - entity_type = form (will be custom to a single display) or views_view (will be master)
+  //     - featureid = ??? (maybe -1 is appropriate here? )
+  //     - propname = form_name??
+  //     - varid = multiple 
   if (isset($form['type']) && $form['type']['#value'] . '_node_settings' == $form_id) {
   }
 }
