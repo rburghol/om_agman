@@ -925,6 +925,7 @@ function om_agman_views_pre_render(&$views) {
  * Implements hook_form_alter()
  */
 function om_agman_form_alter(&$form, &$form_state, $form_id) {
+  dsm("Form ID: $form_id");
   if ($form['#view_name'] == 'ipm_manage_farm_material_2') {
     dpm($form, "Form for form_id = $form_id");
     // property form is stored as $form['dh_properties'][pid][prop field (propname, propcode, ...]]
