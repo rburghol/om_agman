@@ -924,7 +924,7 @@ function om_agman_views_pre_render(&$views) {
 /**
  * Implements hook_form_alter()
  */
-function om_agman_form_submit(&$form, &$form_state) {
+function om_agman_propform_submit(&$form, &$form_state) {
   dpm($form_state,'submitted to om_agman_form_submit()');
 }
 
@@ -932,7 +932,7 @@ function om_agman_form_alter(&$form, &$form_state, $form_id) {
   dsm("Form ID: $form_id");
   if ($form['#view_name'] == 'ipm_manage_farm_material_2') {
     dpm($form, "Form for form_id = $form_id");
-    $form['#submit'][] = 'om_agman_form_submit';
+    $form['#submit'][] = 'om_agman_propform_submit';
     // property form is stored as $form['dh_properties'][pid][prop field (propname, propcode, ...]]
     foreach ($form['dh_properties'] as $pid => $prop_form) {
       $prop = $prop_form['#entity'];
