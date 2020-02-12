@@ -881,7 +881,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       '#type' => 'link',
       '#prefix' => '&nbsp; ',
       '#suffix' => '<br>',
-      '#title' => 'Go to ' . $uri,
+      '#title' => 'Go to ' . $copy_uri,
       '#href' => $uri,
       'query' => array(
         'finaldest' => $page,
