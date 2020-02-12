@@ -876,6 +876,22 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
          ),
       ),
     );
+    $copy_uri = "ipm-copy-events/" . $feature->vineyard->hydroid . "/all/$feature->adminid&finaldest=$page";
+    $copy_link = array(
+      '#type' => 'link',
+      '#prefix' => '&nbsp; ',
+      '#suffix' => '<br>',
+      '#title' => 'Go to ' . $uri,
+      '#href' => $uri,
+      'query' => array(
+        'finaldest' => $page,
+      ),
+      '#options' => array(
+        'attributes' => array(
+           'class' => array('copylink')
+         ),
+      ),
+    );
     switch ($view_mode) {
       case 'teaser':
         $content['title'] = array(
@@ -918,7 +934,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'full':
       case 'plugin':
       default:   
-        $content['title'] = $edit_link;
+        $content['title'] = $edit_link . ' ' . $copy_link;
         $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',
