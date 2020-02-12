@@ -880,7 +880,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $copy_link = array(
       '#type' => 'link',
       '#prefix' => '&nbsp; ',
-      '#suffix' => '<br>',
+     # '#suffix' => '<br>',
       '#title' => 'Go to ' . $copy_uri,
       '#href' => $uri,
       'query' => array(
@@ -934,6 +934,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'full':
       case 'plugin':
       default:   
+      dsm("Add link");
         $content['title'] = $edit_link . ' ' . $copy_link;
         $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
         $content['body'] = array(
