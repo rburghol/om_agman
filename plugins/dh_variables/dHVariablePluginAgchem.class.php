@@ -879,10 +879,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $copy_uri = "ipm-copy-events/" . $feature->vineyard->hydroid . "/all/$feature->adminid&finaldest=$page";
     $copy_link = array(
       '#type' => 'link',
-      '#prefix' => '&nbsp; ',
+      '#prefix' => '&nbsp; copy',
      # '#suffix' => '<br>',
       '#title' => 'Go to ' . $copy_uri,
-      '#href' => $uri,
+      '#href' => $copy_uri,
       'query' => array(
         'finaldest' => $page,
       ),
