@@ -905,6 +905,7 @@ function om_agman_application_materials_form () {
   return $form;
   */
 }
+
 /**
  * Implements hook_views_pre_render()
  */
@@ -917,6 +918,80 @@ function om_agman_views_pre_render(&$views) {
       // Add CTools' javascript to the page.
       ctools_modal_add_js();
 
+  }
+}
+
+/**
+ * Implements hook_form_alter()
+ */
+function om_agman_propform_submit(&$form, &$form_state) {
+  dpm($form_state,'submitted to om_agman_form_submit()');
+}
+
+function om_agman_form_alter(&$form, &$form_state, $form_id) {
+  dsm("Form ID: $form_id");
+  if ($form['#view_name'] == 'ipm_manage_farm_material_2') {
+    dpm($form, "Form for form_id = $form_id");
+    $form['#submit'][] = 'om_agman_propform_submit';
+    // property form is stored as $form['dh_properties'][pid][prop field (propname, propcode, ...]]
+    foreach ($form['dh_properties'] as $pid => $prop_form) {
+      $prop = $prop_form['#entity'];
+      $plugin = dh_variables_getPlugins($prop);
+      // element is keyed by whatever property property we included 
+      // if the item is not displayed, there is null property, options:
+      //   1) create new property by default, but ONLY if the property config has been set to tell us featureid & entity_type 
+      // ALL properties in the view appear in this, so we have to determine how to discern which ones are out field 
+      //   - IT appears that "mapping" info for the view fields is:
+      //     Views relationship name : $form['#results_coordinates'][entity_type][entity_id][0]
+      //     Table Column name: $form['#results_coordinates'][entity_type][entity_id][1]
+      if (isset($prop_form['propcode'])) {
+        $prop_form['propcode']['#type'] = 'select'; 
+        $prop_form['propcode']['#options'] = array('a'=>'A', 'b'=>'B', 'c'=>'C');
+        $form['dh_properties'][$pid] = $prop_form;
+        //dpm($form['dh_properties'][$pid],'after editing');
+      }
+    }
+    dpm($form, "After altering Form for form_id = $form_id");
+  }
+  // *****************
+  // Attaching Subm it Handlers to Forms 
+  // *****************
+  // Use a special property, varkey = form_action,
+  // $form['#submit'][] = 'om_agman_propform_submit';
+
+  // *****************
+  // Attaching Validation to Forms 
+  // *****************
+  // Use a special property, varkey = form_action,
+  // i.e. $form['#validate'][] = 'mymodule_custom_validation';
+
+  
+  // *****************
+  // Finding Forms and ID'ing fields
+  // *****************
+  // Example code shows how to target a specific for by ID
+  // editableform names
+  // - form name editableviews_entity_form_[view machine_name], i.e. editableviews_entity_form_ipm_manage_farm_material_2
+  //   - view machine name is stored as $form['#view_name'] = 'ipm_manage_farm_material_2'
+  // - items as edit-dh-properties-[pid]-[fieldname] , i.e., edit-dh-properties-290-propcode 
+  // Webform form names: 
+  // - webform_client_form_[nid] - ex: webform_client_form_27
+  // *****************
+  // Attaching properties
+  // *****************
+  // dH could store attached properties options:
+  // - Attached to View:
+  //   - entity_type = views_view (will be custom to a single display) or views_view (will be master)
+  //   - featureid = vid 
+  //   - propname = default (if master) or views_display id (if on a single display) 
+  //   - varid = multiple   
+  //   - propcode = Table Column Name 
+  //  - Attached to form - this way, we can simply check for propname = form_id in dh_properties, and if so, process
+  //   - entity_type = form (will be custom to a single display) or views_view (will be master)
+  //   - featureid = ??? (maybe -1 is appropriate here? )
+  //   - propname = form_name??
+  //   - varid = multiple 
+  if (isset($form['type']) && $form['type']['#value'] . '_node_settings' == $form_id) {
   }
 }
 ?>
