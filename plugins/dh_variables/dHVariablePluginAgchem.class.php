@@ -935,8 +935,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'plugin':
       default:   
       dsm("Add link");
-        #$content['title'] = $edit_link . ' ' . $copy_link;
-        $content['title'] = $edit_link;
+        //$content['title'] = $edit_link . ' ' . $copy_link;
+        //$content['title'] = $edit_link;
+        $content['title'] = $copy_link;
         $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',
