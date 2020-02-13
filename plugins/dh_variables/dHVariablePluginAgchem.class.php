@@ -892,6 +892,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
          ),
       ),
     );
+    $copy_link = l("&nbsp; ", $copy_uri, array('attributes' => array('class' => 'copylink')));
     switch ($view_mode) {
       case 'teaser':
         $content['title'] = array(
@@ -934,10 +935,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'full':
       case 'plugin':
       default:   
-      dsm("Add link");
-        //$content['title'] = $edit_link . ' ' . $copy_link;
+        $content['title'] = $edit_link . ' ' . $copy_link;
         //$content['title'] = $edit_link;
-        $content['title'] = $copy_link;
+        //$content['title'] = $copy_link;
         $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',
