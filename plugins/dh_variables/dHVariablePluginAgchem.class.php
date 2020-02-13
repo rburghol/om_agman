@@ -925,7 +925,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'full':
       case 'plugin':
       default: 
-        $content['title']['#markup'] = $edit_l . '  &nbsp;' $delete_l . '  &nbsp;' . $copy_l;
+        $content['title']['#markup'] = $edit_l . '  &nbsp;' . $delete_l . '  &nbsp;' . $copy_l;
         $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',
