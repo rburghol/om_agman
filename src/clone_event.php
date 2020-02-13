@@ -24,15 +24,6 @@
   }
   $dest_entity = entity_create($entity->entityType(), $values);
   dpm($dest_entity, 'clone');
-  // - must add a clone() method on the object
-  // clone event props.  Easy enough with 
-  // load subComponents 
-  /*
-  $propnames = dh_get_dh_propnames('dh_properties', $entity->identifier());
-  foreach ($propnames as $propname) {
-    om_copy_properties($entity, $dest_entity, $propname, TRUE, TRUE, TRUE);    
-  }
-  */
 
   // clone entity reference 
   // for each eref field   
@@ -52,6 +43,7 @@
   list(, , $bundle) = entity_extract_ids($entity_type, $entity);
   $finfo_all = field_info_instances($entity_type, $bundle);
   dpm($finfo_all,'all fields');
+  $ref_props = array();
   foreach ($finfo_all as $key => $finfo) {
     if (isset($finfo['settings']['target_type'])) {
       $ttype = $finfo['settings']['target_type'];
@@ -63,6 +55,7 @@
     }
     //dpm($finfo,'finfo');
     if (!empty($ttype)) {
+      $ref_props[$key] = array();
       $dest_entity->{$key} = $entity->{$key};
       $refs = &$dest_entity->{$key};
       if (isset($refs['und'])) {
@@ -70,6 +63,14 @@
           //dpm($ref, 'ref');
           //$tid = $ref['target_id'];
           //dh_perms_contact_perms($uid, $tid, $ttype, $entity_id_cache, $user_perm_cache, $max_depth);
+          // add an entity link property to record this entityreference linktype = 3 (remote),
+          // 
+          $target_id = $refs['und'][$k]['target_id'];
+          $refprops[$key][$target_id] = array(
+            'entity_type' => $key,
+            'propvalue' => $target_id,
+            'featureid' => $refs['und'][$k]['erefid'],
+          );
           if (isset($refs['und'][$k]['erefid'])) {
             unset($refs['und'][$k]['erefid']);
           }
@@ -79,5 +80,45 @@
   }
   $dest_entity->save();
   dpm($dest_entity,'after adjusting erefs');
-  
+  // Now clone properties 
+  // - must add a clone() method on the object
+  // clone event props and entity reference props
+  $propnames = dh_get_dh_propnames($dest_entity->entityType(), $entity->identifier());
+  foreach ($propnames as $propname) {
+    om_copy_properties($entity, $dest_entity, $propname, TRUE, TRUE, TRUE);    
+  }
+  /*
+  // clone entity reference properties 
+  // also, stash these as property based model links, to facilitate future replacement of entity references
+  foreach ($finfo_all as $key => $finfo) {
+    if (isset($finfo['settings']['target_type'])) {
+      $ttype = $finfo['settings']['target_type'];
+    } else {
+      // @todo: should this be default, that is, should we never check the instance first?
+      // not on the instance, so try field_info_field(field_info_field
+      $finfo = field_info_field("$key");
+      $ttype = $finfo['settings']['target_type'];
+    }
+    //dpm($finfo,'finfo');
+    if (!empty($ttype)) {
+      $refs = &$dest_entity->{$key};
+      if (isset($refs['und'])) {
+        foreach ($refs['und'] as $k => $ref) {
+          //dpm($ref, 'ref');
+          //$tid = $ref['target_id'];
+          //dh_perms_contact_perms($uid, $tid, $ttype, $entity_id_cache, $user_perm_cache, $max_depth);
+          // add an entity link property to record this entityreference linktype = 3 (remote),
+          // 
+          $refprop_info = array(
+            'entity_type' => $dest_entity->entityType(),
+            'propvalue' => $refs['und'][$k]['target_id'],
+            'old_refid' => $refs['und'][$k]['erefid'],
+          );
+          if (isset($refs['und'][$k]['erefid'])) {
+            unset($refs['und'][$k]['erefid']);
+          }
+        }
+      } 
+    }
+  */
 ?>
