@@ -893,7 +893,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       ),
     );
     $edit_l = l(date('Y-m-d', $feature->startdate) . $title, $uri, array('attributes' => array('class' => 'editlink')));
-    $copy_l = l(" ", $copy_uri, array('attributes' => array('class' => 'copylink')));
+    $copy_l = l(" ", $copy_uri, array('attributes' => array('class' => 'copylink', 'title' => 'Copy this event')));
     switch ($view_mode) {
       case 'teaser':
         $content['title'] = array(
