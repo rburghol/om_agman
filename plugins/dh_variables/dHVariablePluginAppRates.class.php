@@ -55,7 +55,6 @@ class dHAgmanAreaMultiDim extends dHVariablePluginDefaultOM {
 
 class dHVariablePluginAppRates extends dHVariablePluginDefaultOM {
   // @todo:
-  
   public function hiddenFields() {
     return array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle', 'varunits');
   }
