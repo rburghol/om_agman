@@ -78,7 +78,7 @@
         foreach ($refs['und'] as $k => $ref) {
           $target_id = $refs['und'][$k]['target_id'];
           if (isset($refs['und'][$k]['erefid'])) {
-            $refprops[$key][$target_id] = array(
+            $ref_props[$key][$target_id] = array(
               'entity_type' => $key,
               'propvalue' => $target_id,
               'featureid' => $refs['und'][$k]['erefid'],
