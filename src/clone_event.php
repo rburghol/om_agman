@@ -111,8 +111,9 @@
     }
     //dpm($finfo,'finfo');
     if (!empty($ttype)) {
-      error_log("Handling eref to $ttype");
+      error_log("Handling eref $key to $ttype");
       $refs = &$dest_entity->{$key};
+      error_log("Ref field:" . print_r($refs,1));
       if (isset($refs['und'])) {
         foreach ($refs['und'] as $k => $ref) {
           if (isset($refs['und'][$k]['erefid'])) {
