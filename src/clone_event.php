@@ -91,6 +91,8 @@
   }
   $dest_entity->save();
   dpm($dest_entity,'after adjusting erefs');
+  // reload - does this grab eref_id?
+  $dest_entity = entity_load_single('dh_adminreg_feature', $dest_entity->identifier());
   // Now clone properties 
   // - must add a clone() method on the object
   // clone event props and entity reference props
