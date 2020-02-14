@@ -216,6 +216,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       if (!isset($this->dh_farm_feature->dh_properties['agchem_sprayer_vol'])) {
         $prop_values = array(
           'varkey' => 'agchem_sprayer_vol', 
+          'propname' => 'agchem_sprayer_vol', 
           'propvalue' => 100, 
           'entity_type' => 'dh_feature',
           'bundle' => 'dh_properties',
@@ -226,6 +227,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       if (!isset($this->dh_farm_feature->dh_properties['agman_sprayrate_default_galac'])) {
         $prop_values = array(
           'varkey' => 'agman_sprayrate_default_galac', 
+          'propname' => 'agman_sprayrate_default_galac', 
           'propvalue' => 100, 
           'entity_type' => 'dh_feature',
           'bundle' => 'dh_properties',
@@ -970,6 +972,11 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
           'value_src_type' => 'constant', 
           'value_val_key' => $row['rate_units'], 
         ),
+        'propname' => array (
+          'fieldname'=> 'propname',
+          'value_src_type' => 'constant', 
+          'value_val_key' => $this->rate_varkey, 
+        ),
       ),
       'resultid' => 'pid_rate',
     );
@@ -1023,6 +1030,11 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
           'fieldname'=> 'propcode',
           'value_src_type' => 'constant', 
           'value_val_key' => $this->convertRateUnitsAmount($row['rate_units']), 
+        ),
+        'propname' => array (
+          'fieldname'=> 'propname',
+          'value_src_type' => 'constant', 
+          'value_val_key' => $this->amount_varkey, 
         ),
       ),
       'resultid' => 'pid_amount',
