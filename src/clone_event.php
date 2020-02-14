@@ -3,6 +3,22 @@
   module_load_include('inc', 'dh', 'plugins/dh.display');
   $adminid = 7237; // put a valid event to test here
   $entity_type = 'dh_adminreg_feature';
+  // spoof class for entity reference 
+  class erefEntity {
+    var $entity_type;
+    var $entity_id;
+    public function __construct($entity_type, $entity_id) {
+      $this->entity_type = $entity_type;
+      $this->entity_id = $entity_id;
+    }
+    public function entityType() {
+      return $this->entity_type;
+    }
+    public function identifier() {
+      return $this->entity_id;
+    }
+  }
+  
   $entity = entity_load_single($entity_type, $adminid);
   dpm($entity, 'src entity');
   // clone event 
@@ -60,18 +76,13 @@
       $refs = &$dest_entity->{$key};
       if (isset($refs['und'])) {
         foreach ($refs['und'] as $k => $ref) {
-          //dpm($ref, 'ref');
-          //$tid = $ref['target_id'];
-          //dh_perms_contact_perms($uid, $tid, $ttype, $entity_id_cache, $user_perm_cache, $max_depth);
-          // add an entity link property to record this entityreference linktype = 3 (remote),
-          // 
           $target_id = $refs['und'][$k]['target_id'];
-          $refprops[$key][$target_id] = array(
-            'entity_type' => $key,
-            'propvalue' => $target_id,
-            'featureid' => $refs['und'][$k]['erefid'],
-          );
           if (isset($refs['und'][$k]['erefid'])) {
+            $refprops[$key][$target_id] = array(
+              'entity_type' => $key,
+              'propvalue' => $target_id,
+              'featureid' => $refs['und'][$k]['erefid'],
+            );
             unset($refs['und'][$k]['erefid']);
           }
         }
@@ -83,11 +94,10 @@
   // Now clone properties 
   // - must add a clone() method on the object
   // clone event props and entity reference props
-  $propnames = dh_get_dh_propnames($dest_entity->entityType(), $entity->identifier());
+  $propnames = dh_get_dh_propnames($entity->entityType(), $entity->identifier());
   foreach ($propnames as $propname) {
     om_copy_properties($entity, $dest_entity, $propname, TRUE, TRUE, TRUE);    
   }
-  /*
   // clone entity reference properties 
   // also, stash these as property based model links, to facilitate future replacement of entity references
   foreach ($finfo_all as $key => $finfo) {
@@ -104,21 +114,30 @@
       $refs = &$dest_entity->{$key};
       if (isset($refs['und'])) {
         foreach ($refs['und'] as $k => $ref) {
-          //dpm($ref, 'ref');
-          //$tid = $ref['target_id'];
-          //dh_perms_contact_perms($uid, $tid, $ttype, $entity_id_cache, $user_perm_cache, $max_depth);
-          // add an entity link property to record this entityreference linktype = 3 (remote),
-          // 
-          $refprop_info = array(
-            'entity_type' => $dest_entity->entityType(),
-            'propvalue' => $refs['und'][$k]['target_id'],
-            'old_refid' => $refs['und'][$k]['erefid'],
-          );
           if (isset($refs['und'][$k]['erefid'])) {
-            unset($refs['und'][$k]['erefid']);
+            $target_id = $refs['und'][$k]['target_id'];
+            $src_eref = new erefEntity($key, $ref_props[$key][$target_id]['featureid']);
+            $dest_eref = new erefEntity($key, $refs['und'][$k]['erefid']);
+            $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
+            foreach ($propnames as $propname) {
+              om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);    
+            }
+            // @todo: stash these as property based model links, to facilitate future replacement of entity references
+            //  should probably put this as a function in the OM module
+            /*
+            $target_entity = entity_load_single('dh_adminreg_feature', $target_id);
+            $refprop_info = array(
+              'entity_type' => $dest_entity->entityType(),
+              'propvalue' => $target_id,
+              'propcode' => 'dh_adminreg_feature',
+              'linktype' => 3,
+              'propname' => $target_entity->name,
+              'varkey' => 'om_map_model_linkage',
+            );
+            */
           }
         }
       } 
     }
-  */
+  }
 ?>
