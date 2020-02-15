@@ -32,6 +32,11 @@ if (!( (intval($a[2]) > 0) or ($a[2] == 'all'))) {
   $a[2] = 'all';
   $red = TRUE;
 } 
+// check permissions
+if (!in_array($a[1], $farms)) {
+  $a[1] = isset($_SESSION['om_agman']['facility']) ? $_SESSION['om_agman']['facility'] : 'all';
+  $red = TRUE;
+}
 
 // Finally, redirect to the location management page if we have no blocks
 if ( ($a[2] == 'all') and ($a[1] <> 'all')) {
