@@ -125,13 +125,13 @@
     $new_entity->save();
     // reload so we can set ientity ref erefid
     $new_entity = entity_load_single('dh_adminreg_feature', $new_entity->identifier());
+    dpm($new_entity,'post reload() entity');
     // swap entity references
     dh_copyFields($entity, $new_entity);
     $new_entity->save();
     dh_copyProps($entity, $new_entity);
     // Finally, save
     $new_entity->save();
-    //dpm($new_entity,'post save() entity');
     return;
   }
   
