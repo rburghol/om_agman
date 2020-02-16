@@ -5,7 +5,7 @@ module_load_include('module', 'dh');
 $plugin_def = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginAgmanAction');
 $class = ctools_plugin_get_class($plugin_def, 'handler');
 
-class dHAgmanAreaMultiDim extends dHVariablePluginDefault {
+class dHAgmanAreaMultiDim extends dHVariablePluginDefaultOM {
   // Multi-dimensional area (procode)
   public function getUnitList() {
     return array(
@@ -53,9 +53,8 @@ class dHAgmanAreaMultiDim extends dHVariablePluginDefault {
   
 }
 
-class dHVariablePluginAppRates extends dHVariablePluginDefault {
+class dHVariablePluginAppRates extends dHVariablePluginDefaultOM {
   // @todo:
-  
   public function hiddenFields() {
     return array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle', 'varunits');
   }
@@ -105,7 +104,7 @@ class dHVariablePluginAppRates extends dHVariablePluginDefault {
   }
   
 }
-class dHVariablePluginAppRatesNonD extends dHVariablePluginDefault {
+class dHVariablePluginAppRatesNonD extends dHVariablePluginDefaultOM {
   // @todo:
   
   public function hiddenFields() {
@@ -290,7 +289,7 @@ class dHVariablePluginAppRateUnits extends dHVariablePluginAppRates {
   }
 }
 
-class dHVariablePluginCanopyScaler extends dHVariablePluginDefault {
+class dHVariablePluginCanopyScaler extends dHVariablePluginDefaultOM {
   // used to scale spray amounts by growth stage
   // @todo:
   

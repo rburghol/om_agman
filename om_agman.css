@@ -61,3 +61,23 @@
   vertical-align: middle;
   position: relative;
 }
+
+.copylink {
+  padding-left: 15px;
+  background: url(images/noun_copy_65964.png) no-repeat left center;
+}
+
+.insecticide {
+  padding-left: 15px;
+  background: url(images/noun_456045_cc.png) no-repeat left center;
+}
+
+.herbicide {
+  padding-left: 15px;
+  background: url(images/noun_415297_cc.png) no-repeat left center;
+}
+
+.fungicide {
+  padding-left: 15px;
+  background: url(images/noun_146424_cc.png) no-repeat left center;
+}

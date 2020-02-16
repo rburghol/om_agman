@@ -11,3 +11,5 @@ dependencies[] = dh_adminreg
 ;files[] = views/om_agman.views_default.inc
 
 version = "7.x-1.0"
+
+stylesheets[all][] = om_agman.css
