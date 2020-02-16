@@ -39,6 +39,30 @@
       '#required' => TRUE,
       '#size' => 30,
     );
+    $form['fstatus'] = array(
+      '#title' => t('Status'),
+      '#type' => 'select',
+      '#options' => array(
+        'planned' => t('Planned'),
+        'completed' => t('Completed'),
+        'cancelled' => t('Cancelled'),
+        'post_harvest' => t('Post-Harvest'),
+      ),
+      '#default_value' => empty($dh_adminreg_feature->fstatus) ? 'planned' : $dh_adminreg_feature->fstatus,
+      '#required' => TRUE,
+      '#multiple' => FALSE,
+    );
+    $date_format = 'Y-m-d';
+    // should have code in here to guess based on the phase/or passed in from the URL
+    $form['startdate'] = array(
+      '#title' => t('Application Date'),
+      '#description' => t('Planned date for this spray.'),
+      '#required' => TRUE,
+      '#default_value' => empty($dh_adminreg_feature->startdate) ? $dh_adminreg_feature->startdate : date($date_format,$dh_adminreg_feature->startdate),
+      '#date_format' => $date_format,
+      '#type' => 'date_select',
+      '#date_year_range' => '-5:+5',
+    );
     
     if (isset($form_copy['ftype'])) {
       $form['ftype'] = $form_copy['ftype'];
@@ -217,7 +241,7 @@
         $finfo = field_info_field("$key");
         $ttype = $finfo['settings']['target_type'];
       }
-      //dpm($finfo,'finfo');
+      dpm($finfo,'finfo');
       if (!empty($ttype)) {
         error_log("Handling eref $key to $ttype");
         $refs = &$dest_entity->{$key};
