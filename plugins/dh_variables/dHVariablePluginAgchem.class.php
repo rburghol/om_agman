@@ -879,7 +879,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // Edit standalone href link
     $edit_l = l(date('Y-m-d', $feature->startdate) . $title, $uri, array('attributes' => array('class' => 'editlink')));
     // Other URIs
-    $copy_uri = "ipm-copy-events/" . $feature->vineyard->hydroid . "/all/$feature->adminid&destination=$page";
+    $copy_uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/clone/$feature->adminid&destination=$page";
     $copy_l = l(" ", $copy_uri, array('attributes' => array('class' => 'copylink', 'title' => 'Copy this event')));
     $delete_uri = "admin/content/dh_adminreg_feature/manage/" . $feature->adminid . "/delete&destination=$page";
     $delete_l = l(" ", $delete_uri, array('attributes' => array('class' => 'subtractlink', 'title' => 'Delete this event')));
