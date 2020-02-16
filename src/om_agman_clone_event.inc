@@ -39,6 +39,10 @@
       '#required' => TRUE,
       '#size' => 30,
     );
+    if (isset($form_copy['ftype'])) {
+      $form['ftype'] = $form_copy['ftype'];
+    }
+    $form['fstatus'] = $form_copy['fstatus'];
     if ($farmid == $src_farmid) {
       // use the same settings for Blocks
       om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
@@ -89,17 +93,19 @@
     // Create clone
     // apply selected blocks, title, and description.
     // then clone and save.
-    $extras = array('bundle', 'name', 'startdate', 'enddate'); // if any that don't come through the entityInfo process that we need 
+    // Extra entity properties if any that don't come through the entityInfo process that we need 
+    // in the case of adminreg features it seems we have NONE come through?
+    $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
     $new_entity = dh_entity_clone($entity, $extras);
-    dpm($new_entity,'new entity');
+    //dpm($new_entity,'new entity');
     $new_entity->save();
     // swap entity references
-    dh_copyErefProps($entity, $new_entity);
+    dh_copyFields($entity, $new_entity);
     $new_entity->save();
     dh_copyProps($entity, $new_entity);
     // Finally, save
     $new_entity->save();
-    dpm($new_entity,'post save() entity');
+    //dpm($new_entity,'post save() entity');
     return;
   }
   
@@ -108,15 +114,15 @@
   }
   
   function dh_entity_clone($entity, $extras = array()) {
-    dpm($entity, 'src entity');
+    //dpm($entity, 'src entity');
     // clone event 
     $info = $entity->entityInfo();
-    dpm($info,'entity info');
+    //dpm($info,'entity info');
     $values = array();
     $prop_info = array_values($info['property info']);
     $prop_info = is_array($prop_info) ? $prop_info : array();
     $copyable = array_unique(array_merge($extras, $prop_info));
-    dpm($copyable,'copy field and props');
+    //dpm($copyable,'copy field and props');
     foreach ($copyable as $pname) {
       if (isset($entity->{$pname})) {
         if ($pname <> 'propname') {
@@ -125,7 +131,7 @@
       }
     }
     $dest_entity = entity_create($entity->entityType(), $values);
-    dpm($dest_entity, 'clone');
+    //dpm($dest_entity, 'clone');
 
     // clone entity reference 
     // for each eref field   
@@ -159,7 +165,7 @@
     return TRUE;
   }
   
-  function dh_copyErefProps($entity, &$dest_entity) {
+  function dh_copyFields($entity, &$dest_entity) {
     // special handling of erefs that possess erefid, and can have properties attached.
     // reload in case this is a newly cloned dest_entity in order to insure erefs have erefid set
     if ($dest_entity->is_new) {
@@ -167,7 +173,7 @@
     }
     list(, , $bundle) = entity_extract_ids($entity->entityType(), $entity);
     $finfo_all = field_info_instances($entity->entityType(), $bundle);
-    dpm($finfo_all,'all fields');
+    //dpm($finfo_all,'all fields');
     $ref_props = array();
     foreach ($finfo_all as $key => $finfo) {
       if (isset($finfo['settings']['target_type'])) {
