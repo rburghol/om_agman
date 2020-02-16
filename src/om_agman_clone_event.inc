@@ -76,21 +76,36 @@
   
   function om_agman_event_clone_form_submit($form, $form_state) {
     $adminid = $form_state['values']['adminid'];
+    // Load original 
     $entity = entity_load_single($entity_type, $adminid);
+    // OR, use form stuff 
+    form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
+    form_load_include($form_state, 'inc', 'dh', 'dh.admin');
+    form_load_include($form_state, 'inc', 'dh_adminreg', 'dh_adminreg.admin');
+    // load the object
+    $entity = entity_ui_form_submit_build_entity($form, $form_state);
+    // Create clone
+    // apply selected blocks, title, and description.
+    // then clone and save.
+    $extras = array('bundle', 'name', 'startdate', 'enddate'); // if any that don't come through the entityInfo process that we need 
+    $new_entity = dh_entity_clone($entity, $extras);
+    $new_entity->save();
+    dh_copyProps($entity, $new_entity);
+    dh_copyErefProps($entity, $new_entity);
+    // Finall, save
+    $new_entity->save();
   }
   
   function om_agman_event_clone_form_cancel($form, $form_state) {
     
   }
   
-  function dh_adminreg_entity_clone($entity) {
+  function dh_entity_clone($entity, $extras = array()) {
     dpm($entity, 'src entity');
     // clone event 
     $info = $entity->entityInfo();
     dpm($info,'entity info');
     $values = array();
-    $extras = array('bundle', 'name', 'startdate', 'enddate'); // if any that don't come through the entityInfo process that we need 
-    //$extras = array();
     $prop_info = array_values($info['property info']);
     $prop_info = is_array($prop_info) ? $prop_info : array();
     $copyable = array_unique(array_merge($extras, $prop_info));
@@ -118,8 +133,30 @@
     // Add method to save for agchem event, copy erefs to property om_map_model_linkage
         // if the target_type is set on the instance, use that, otherwise look at the field
     */
-    
-    
+    return $dest_entity;
+  }
+  
+  function dh_copyProps($entity, &$dest_entity) {
+    // special handling of erefs that possess erefid, and can have properties attached.
+    // reload in case this is a newly cloned dest_entity in order to insure erefs have erefid set
+    if ($dest_entity->is_new) {
+      $dest_entity = entity_load_single('dh_adminreg_feature', $dest_entity->identifier());
+    }
+    // Now clone properties 
+    // - must add a clone() method on the object
+    // clone event props and entity reference props
+    $propnames = dh_get_dh_propnames($entity->entityType(), $entity->identifier());
+    foreach ($propnames as $propname) {
+      om_copy_properties($entity, $dest_entity, $propname, TRUE, TRUE, TRUE);    
+    }
+  }
+  
+  function dh_copyErefProps($entity, &$dest_entity) {
+    // special handling of erefs that possess erefid, and can have properties attached.
+    // reload in case this is a newly cloned dest_entity in order to insure erefs have erefid set
+    if ($dest_entity->is_new) {
+      $dest_entity = entity_load_single('dh_adminreg_feature', $dest_entity->identifier());
+    }
     list(, , $bundle) = entity_extract_ids($entity_type, $entity);
     $finfo_all = field_info_instances($entity_type, $bundle);
     dpm($finfo_all,'all fields');
@@ -153,17 +190,6 @@
         } 
       }
     }
-    $dest_entity->save();
-    dpm($dest_entity,'after adjusting erefs');
-    // reload - does this grab eref_id?
-    $dest_entity = entity_load_single('dh_adminreg_feature', $dest_entity->identifier());
-    // Now clone properties 
-    // - must add a clone() method on the object
-    // clone event props and entity reference props
-    $propnames = dh_get_dh_propnames($entity->entityType(), $entity->identifier());
-    foreach ($propnames as $propname) {
-      om_copy_properties($entity, $dest_entity, $propname, TRUE, TRUE, TRUE);    
-    }
     // clone entity reference properties 
     // also, stash these as property based model links, to facilitate future replacement of entity references
     foreach ($finfo_all as $key => $finfo) {
@@ -184,34 +210,34 @@
           foreach ($refs['und'] as $k => $ref) {
             if (isset($refs['und'][$k]['erefid'])) {
               $target_id = $refs['und'][$k]['target_id'];
-              $src_eref = new erefEntity($key, $ref_props[$key][$target_id]['featureid']);
-              $dest_eref = new erefEntity($key, $refs['und'][$k]['erefid']);
-              error_log("Copying props from " . $src_eref->entityType() . ' => ' . $src_eref->identifier());
-              $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
-              error_log("Props: " . print_r($propnames,1));
-              foreach ($propnames as $propname) {
-                om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);    
+              if (property_exists($dest_entity, 'ided_refs') and isset($ref_props[$key][$target_id])) {
+                $src_eref = new erefEntity($key, $ref_props[$key][$target_id]['featureid']);
+                $dest_eref = new erefEntity($key, $refs['und'][$k]['erefid']);
+                error_log("Copying props from " . $src_eref->entityType() . ' => ' . $src_eref->identifier());
+                $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
+                error_log("Props: " . print_r($propnames,1));
+                foreach ($propnames as $propname) {
+                  om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);    
+                }
+                // @todo: stash these as property based model links, to facilitate future replacement of entity references
+                //  should probably put this as a function in the OM module
+                /*
+                $target_entity = entity_load_single('dh_adminreg_feature', $target_id);
+                $refprop_info = array(
+                  'entity_type' => $dest_entity->entityType(),
+                  'propvalue' => $target_id,
+                  'propcode' => 'dh_adminreg_feature',
+                  'linktype' => 3,
+                  'propname' => $target_entity->name,
+                  'varkey' => 'om_map_model_linkage',
+                );
+                */
               }
-              // @todo: stash these as property based model links, to facilitate future replacement of entity references
-              //  should probably put this as a function in the OM module
-              /*
-              $target_entity = entity_load_single('dh_adminreg_feature', $target_id);
-              $refprop_info = array(
-                'entity_type' => $dest_entity->entityType(),
-                'propvalue' => $target_id,
-                'propcode' => 'dh_adminreg_feature',
-                'linktype' => 3,
-                'propname' => $target_entity->name,
-                'varkey' => 'om_map_model_linkage',
-              );
-              */
             }
           }
         } 
       }
     }
-    // do a final save
-    $dest_entity->save();
     return $dest_entity;
   }
      
