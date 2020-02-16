@@ -125,6 +125,8 @@
     $new_entity = dh_entity_clone($entity, $extras);
     //dpm($new_entity,'new entity');
     $new_entity->save();
+    // reload so we can set ientity ref erefid
+    $new_entity = entity_load_single('dh_adminreg_feature', $new_entity->identifier());
     // swap entity references
     dh_copyFields($entity, $new_entity);
     $new_entity->save();
