@@ -74,25 +74,28 @@
     return $form;
   }
   
-  function om_agman_event_clone_form_save($form, $form_state) {
+  function om_agman_event_clone_form_save(&$form, &$form_state) {
     $adminid = $form_state['values']['adminid'];
     // Load original 
     $entity = entity_load_single($entity_type, $adminid);
+    /*
     // OR, use form stuff 
     form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
     form_load_include($form_state, 'inc', 'dh', 'dh.admin');
     form_load_include($form_state, 'inc', 'dh_adminreg', 'dh_adminreg.admin');
     // load the object
     $entity = entity_ui_form_submit_build_entity($form, $form_state);
+    */
     // Create clone
     // apply selected blocks, title, and description.
     // then clone and save.
     $extras = array('bundle', 'name', 'startdate', 'enddate'); // if any that don't come through the entityInfo process that we need 
     $new_entity = dh_entity_clone($entity, $extras);
     $new_entity->save();
-    dh_copyProps($entity, $new_entity);
+    // swap entity references
     dh_copyErefProps($entity, $new_entity);
-    // Finall, save
+    dh_copyProps($entity, $new_entity);
+    // Finally, save
     $new_entity->save();
   }
   
