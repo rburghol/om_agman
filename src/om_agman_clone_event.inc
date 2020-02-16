@@ -98,6 +98,7 @@
     dh_copyProps($entity, $new_entity);
     // Finally, save
     $new_entity->save();
+    dpm($new_entity,'post save() entity');
     return;
   }
   
@@ -139,6 +140,7 @@
         // if the target_type is set on the instance, use that, otherwise look at the field
     */
     return $dest_entity;
+    return TRUE;
   }
   
   function dh_copyProps($entity, &$dest_entity) {
@@ -154,6 +156,7 @@
     foreach ($propnames as $propname) {
       om_copy_properties($entity, $dest_entity, $propname, TRUE, TRUE, TRUE);    
     }
+    return TRUE;
   }
   
   function dh_copyErefProps($entity, &$dest_entity) {
@@ -243,7 +246,7 @@
         } 
       }
     }
-    return $dest_entity;
+    return TRUE;
   }
      
   global $user;
