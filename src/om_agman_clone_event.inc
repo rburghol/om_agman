@@ -91,6 +91,8 @@
     // then clone and save.
     $extras = array('bundle', 'name', 'startdate', 'enddate'); // if any that don't come through the entityInfo process that we need 
     $new_entity = dh_entity_clone($entity, $extras);
+    dpm($new_entity,'new entity');
+    return;
     $new_entity->save();
     // swap entity references
     dh_copyErefProps($entity, $new_entity);
