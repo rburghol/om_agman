@@ -95,6 +95,7 @@
     $new_entity->save();
     // swap entity references
     dh_copyErefProps($entity, $new_entity);
+    $new_entity->save();
     dh_copyProps($entity, $new_entity);
     // Finally, save
     $new_entity->save();
@@ -140,7 +141,6 @@
         // if the target_type is set on the instance, use that, otherwise look at the field
     */
     return $dest_entity;
-    return TRUE;
   }
   
   function dh_copyProps($entity, &$dest_entity) {
