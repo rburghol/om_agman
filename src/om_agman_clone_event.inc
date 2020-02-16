@@ -39,10 +39,13 @@
       '#required' => TRUE,
       '#size' => 30,
     );
-    om_agman_form_block_select($form['dh_link_feature_submittal'], $farmid);
     if ($farmid == $src_farmid) {
       // use the same settings for Blocks
+      om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
       $form['dh_link_feature_submittal'] = $form_copy['dh_link_feature_submittal'];
+    } else {
+      // add a new one with no blocks selected
+      om_agman_form_block_select($form['dh_link_feature_submittal'], $farmid);
     }
     
     $form['description'] = $form_copy['description'];
