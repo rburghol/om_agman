@@ -3,7 +3,7 @@
   module_load_include('inc', 'dh', 'plugins/dh.display');
   
   function om_agman_event_clone_form($form, &$form_state, $dh_adminreg_feature, $farmid) {
-    dpm($dh_adminreg_feature, 'element to clone');
+    //dpm($dh_adminreg_feature, 'element to clone');
     ctools_include('plugins');
     $plugins = ctools_get_plugins('om', 'om_components');
     //dpm($plugins,'all plug');
@@ -39,9 +39,11 @@
       '#required' => TRUE,
       '#size' => 30,
     );
+    
     if (isset($form_copy['ftype'])) {
       $form['ftype'] = $form_copy['ftype'];
     }
+    dpm($form_copy,'copy of form');
     $form['fstatus'] = $form_copy['fstatus'];
     if ($farmid == $src_farmid) {
       // use the same settings for Blocks
@@ -173,7 +175,7 @@
     }
     list(, , $bundle) = entity_extract_ids($entity->entityType(), $entity);
     $finfo_all = field_info_instances($entity->entityType(), $bundle);
-    //dpm($finfo_all,'all fields');
+    dpm($finfo_all,'all fields');
     $ref_props = array();
     foreach ($finfo_all as $key => $finfo) {
       if (isset($finfo['settings']['target_type'])) {
