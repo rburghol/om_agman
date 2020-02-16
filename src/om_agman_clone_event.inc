@@ -77,15 +77,15 @@
   function om_agman_event_clone_form_save(&$form, &$form_state) {
     $adminid = $form_state['values']['adminid'];
     // Load original 
-    $entity = entity_load_single($entity_type, $adminid);
-    /*
+    //$entity = entity_load_single('dh_adminreg_feature', $adminid);
+    
     // OR, use form stuff 
     form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
     form_load_include($form_state, 'inc', 'dh', 'dh.admin');
     form_load_include($form_state, 'inc', 'dh_adminreg', 'dh_adminreg.admin');
     // load the object
     $entity = entity_ui_form_submit_build_entity($form, $form_state);
-    */
+    
     // Create clone
     // apply selected blocks, title, and description.
     // then clone and save.
