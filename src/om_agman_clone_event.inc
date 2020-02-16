@@ -165,8 +165,8 @@
     if ($dest_entity->is_new) {
       $dest_entity = entity_load_single('dh_adminreg_feature', $dest_entity->identifier());
     }
-    list(, , $bundle) = entity_extract_ids($entity_type, $entity);
-    $finfo_all = field_info_instances($entity_type, $bundle);
+    list(, , $bundle) = entity_extract_ids($entity->entityType(), $entity);
+    $finfo_all = field_info_instances($entity->entityType(), $bundle);
     dpm($finfo_all,'all fields');
     $ref_props = array();
     foreach ($finfo_all as $key => $finfo) {
