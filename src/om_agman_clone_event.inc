@@ -220,8 +220,8 @@
         $dest_eref = new erefEntity($key, $refs['und'][$k]['erefid']);
         dsm("Copying props from " . $src_eref->entityType() . ' => ' . $src_eref->identifier());
         $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
+        dpm($propnames, "Propnames ");
         foreach ($propnames as $propname) {
-          dpm($propname, "Propnames ");
           om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);    
         }
       } 
