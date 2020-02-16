@@ -74,7 +74,7 @@
     return $form;
   }
   
-  function om_agman_event_clone_form_submit($form, $form_state) {
+  function om_agman_event_clone_form_save($form, $form_state) {
     $adminid = $form_state['values']['adminid'];
     // Load original 
     $entity = entity_load_single($entity_type, $adminid);
