@@ -22,6 +22,11 @@
       drupal_set_message(t("Cannot find event to clone.  Returning."), 'error');
       return $form;
     }
+    // grab copies of the fields from the original form
+    $form_copy = $form;
+    $form_state_copy = $form_state;
+    field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form_copy, $form_state_copy);
+  
     $form['adminid'] = array(
       '#type' => 'hidden',
       '#default_value' => $dh_adminreg_feature->adminid,
@@ -37,7 +42,31 @@
     om_agman_form_block_select($form['dh_link_feature_submittal'], $farmid);
     if ($farmid == $src_farmid) {
       // use the same settings for Blocks
+      $form['dh_link_feature_submittal'] = $form_copy['dh_link_feature_submittal'];
     }
+    
+    $form['description'] = $form_copy['description'];
+    
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['save'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+      '#weight' => 40,
+      '#submit' => array('om_agman_event_clone_form_save')
+    );
+    $form['actions']['save_edit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Change Spray Details'),
+      '#weight' => 40,
+      '#submit' => array('om_agman_event_clone_form_save_and_edit')
+    );
+    $form['actions']['cancel'] = array(
+      '#type' => 'submit',
+      '#value' => t('Cancel'),
+      '#weight' => 45,
+      '#limit_validation_errors' => array(),
+      '#submit' => array('dh_app_plan_form_submit_cancel')
+    );
     dpm($form,'form');
     return $form;
   }
