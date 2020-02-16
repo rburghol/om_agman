@@ -85,7 +85,7 @@
     form_load_include($form_state, 'inc', 'dh_adminreg', 'dh_adminreg.admin');
     // load the object
     $entity = entity_ui_form_submit_build_entity($form, $form_state);
-    
+    dpm($entity,'src entity');
     // Create clone
     // apply selected blocks, title, and description.
     // then clone and save.
