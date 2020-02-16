@@ -67,8 +67,6 @@
     if (isset($form_copy['ftype'])) {
       $form['ftype'] = $form_copy['ftype'];
     }
-    dpm($form_copy,'copy of form');
-    $form['fstatus'] = $form_copy['fstatus'];
     if ($farmid == $src_farmid) {
       // use the same settings for Blocks
       om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
