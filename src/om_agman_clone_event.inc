@@ -130,7 +130,7 @@
     $new_entity->save();
     dh_copyProps($entity, $new_entity);
     dpm($new_entity, 'post form save, before plugin event save');
-    return;
+    //return;
     // Now, handle any changes in blocks that affect area and totals
     // load the plugin to handle this aggregate form
     $class = ctools_plugin_load_class('om', 'om_components', 'ObjectModelAgmanSprayAppEvent', 'handler');
