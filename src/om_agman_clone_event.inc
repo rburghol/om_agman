@@ -125,7 +125,6 @@
     $new_entity->save();
     // reload so we can set ientity ref erefid
     $new_entity = entity_load_single('dh_adminreg_feature', $new_entity->identifier());
-    dpm($new_entity,'post reload() entity');
     // swap entity references
     dh_copyFields($entity, $new_entity);
     $new_entity->save();
@@ -212,12 +211,13 @@
     $dest_entity->save();
     // save and reload
     $dest_entity = entity_load_single('dh_adminreg_feature', $dest_entity->identifier());
+    dpm($dest_entity,'post reload() entity');
     // special handling of erefs that possess erefid, and can have properties attached.
     foreach ($ref_props as $key => $refs) {
       dpm($refs, "Handling eref $key");
       foreach ($refs as $target_id => $ref) {
         $src_eref = new erefEntity($key, $ref['featureid']);
-        $dest_eref = new erefEntity($key, $refs['und'][$k]['erefid']);
+        $dest_eref = new erefEntity($key, $dest_entity->{$key}['und'][$k]['erefid']);
         dsm("Copying props from " . $src_eref->entityType() . ' => ' . $src_eref->identifier());
         $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
         dpm($propnames, "Propnames ");
