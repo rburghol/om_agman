@@ -218,7 +218,8 @@
       foreach ($refs as $target_id => $ref) {
         $src_eref = new erefEntity($key, $ref['featureid']);
         $dest_eref = new erefEntity($key, $dest_entity->{$key}['und'][$k]['erefid']);
-        dsm("Copying props from " . $src_eref->entityType() . ' => ' . $src_eref->identifier());
+        dpm($src_eref,'from eref');
+        dpm($dest_eref,'to eref');
         $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
         dpm($propnames, "Propnames ");
         foreach ($propnames as $propname) {
