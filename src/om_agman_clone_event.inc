@@ -222,7 +222,8 @@
         $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
         dpm($propnames, "Propnames ");
         foreach ($propnames as $propname) {
-          om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);    
+          $copy = om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);
+          dpm($copy,'copy');
         }
       } 
     }
