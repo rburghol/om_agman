@@ -129,6 +129,17 @@
     dh_copyFields($entity, $new_entity);
     $new_entity->save();
     dh_copyProps($entity, $new_entity);
+    // Now, handle any changes in blocks that affect area and totals
+    // load the plugin to handle this aggregate form
+    $class = ctools_plugin_load_class('om', 'om_components', 'ObjectModelAgmanSprayAppEvent', 'handler');
+    $src = new $class(array());
+    $src->dh_adminreg_feature = $new_entity;
+    // handle all the attached stuff using the SaveDataObjectsAsForm
+    $dummy_form = array();
+    $dummy_form_state = array();
+    $src->BuildForm($dummy_form, $dummy_form_state);
+    echo "Loaded $src->name ($record->adminid) area = " . $src->agchem_event_area . "\n";
+    $src->SaveDataObjectsAsForm();
     // Finally, save
     $new_entity->save();
     return;
