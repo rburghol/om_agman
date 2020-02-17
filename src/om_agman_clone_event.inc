@@ -64,6 +64,17 @@
       '#date_year_range' => '-5:+5',
     );
     
+    $dur_hours = ($dh_adminreg_feature->enddate > $dh_adminreg_feature->startdate) ? 
+               ($dh_adminreg_feature->enddate - $dh_adminreg_feature->startdate) / 3600.0 : 4; // duration in hours
+    $dur_hours = ($dur_hours > 16) ? 16.0 : ceil($dur_hours * 2) / 2;// round to next greatest half hour
+    $range = range(0.5, 16, 0.5);
+    $form['duration'] = array(
+      '#type' => 'select',
+      '#default_value' => $dur_hours,
+      '#multiple' => FALSE,
+      '#description' => 'Event duration in hours, for calculating re-entry intervals. Events lasting longer than 16 hours must be split into separate events.'
+    );
+    
     if (isset($form_copy['ftype'])) {
       $form['ftype'] = $form_copy['ftype'];
     }
@@ -85,12 +96,14 @@
       '#weight' => 40,
       '#submit' => array('om_agman_event_clone_form_save')
     );
+    /*
     $form['actions']['save_edit'] = array(
       '#type' => 'submit',
       '#value' => t('Change Spray Details'),
       '#weight' => 40,
       '#submit' => array('om_agman_event_clone_form_save_and_edit')
     );
+    */
     $form['actions']['cancel'] = array(
       '#type' => 'submit',
       '#value' => t('Cancel'),
@@ -121,6 +134,8 @@
     // in the case of adminreg features it seems we have NONE come through?
     $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
     $new_entity = dh_entity_clone($entity, $extras);
+    // recalculate enddate 
+    $new_entity->enddate = dh_handletimestamp($form_state['values']['startdate']) + 3600.0 * $form_state['values']['duration'];
     //dpm($new_entity,'new entity');
     $new_entity->save();
     // reload so we can set ientity ref erefid
@@ -129,8 +144,6 @@
     dh_copyFields($entity, $new_entity);
     $new_entity->save();
     dh_copyProps($entity, $new_entity);
-    dpm($new_entity, 'post form save, before plugin event save');
-    //return;
     // Now, handle any changes in blocks that affect area and totals
     // load the plugin to handle this aggregate form
     $class = ctools_plugin_load_class('om', 'om_components', 'ObjectModelAgmanSprayAppEvent', 'handler');
