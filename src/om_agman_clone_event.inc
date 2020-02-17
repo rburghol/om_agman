@@ -112,7 +112,7 @@
       '#limit_validation_errors' => array(),
       '#submit' => array('dh_app_plan_form_submit_cancel')
     );
-    dpm($form,'form');
+    //dpm($form,'form');
     return $form;
   }
   
@@ -127,7 +127,7 @@
     form_load_include($form_state, 'inc', 'dh_adminreg', 'dh_adminreg.admin');
     // load the object
     $entity = entity_ui_form_submit_build_entity($form, $form_state);
-    dpm($entity,'src entity');
+    //dpm($entity,'src entity');
     // Create clone
     // apply selected blocks, title, and description.
     // then clone and save.
@@ -247,13 +247,13 @@
           $target_id = $ref['target_id'];
           $src_eref = new erefEntity($key, $src_refs[$target_id]['featureid']);
           $dest_eref = new erefEntity($key, $ref['erefid']);
-          dpm($src_eref,'from eref');
-          dpm($dest_eref,'to eref');
+          //dpm($src_eref,'from eref');
+          //dpm($dest_eref,'to eref');
           $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
           //dpm($propnames, "Propnames ");
           foreach ($propnames as $propname) {
             $copy = om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);
-            dpm($copy,'copy');
+            //dpm($copy,'copy');
           }
         }
       } 
