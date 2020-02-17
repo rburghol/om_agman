@@ -213,11 +213,12 @@
     $dest_entity = entity_load_single('dh_adminreg_feature', $dest_entity->identifier());
     dpm($dest_entity,'post reload() entity');
     // special handling of erefs that possess erefid, and can have properties attached.
-    foreach ($ref_props as $key => $refs) {
-      dpm($refs, "Handling eref $key");
-      foreach ($refs as $target_id => $ref) {
-        $src_eref = new erefEntity($key, $ref['featureid']);
-        $dest_eref = new erefEntity($key, $dest_entity->{$key}['und'][$k]['erefid']);
+    foreach ($ref_props as $key => $src_refs) {
+      dpm($src_refs, "Handling eref $key");
+      foreach ($dest_entity->{$key}['und'] as $tk => $ref) {
+        $target_id = $ref['target_id'];
+        $src_eref = new erefEntity($key, $src_refs[$target_id]['featureid']);
+        $dest_eref = new erefEntity($key, $ref['erefid']);
         dpm($src_eref,'from eref');
         dpm($dest_eref,'to eref');
         $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
