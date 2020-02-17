@@ -67,11 +67,12 @@
     $dur_hours = ($dh_adminreg_feature->enddate > $dh_adminreg_feature->startdate) ? 
                ($dh_adminreg_feature->enddate - $dh_adminreg_feature->startdate) / 3600.0 : 4; // duration in hours
     $dur_hours = ($dur_hours > 16) ? 16.0 : ceil($dur_hours * 2) / 2;// round to next greatest half hour
-    $range = range(0.5, 16, 0.5);
+    $drange = range(0.5, 16, 0.5);
     $form['duration'] = array(
       '#type' => 'select',
       '#default_value' => $dur_hours,
       '#multiple' => FALSE,
+      '#options' => $drange,
       '#description' => 'Event duration in hours, for calculating re-entry intervals. Events lasting longer than 16 hours must be split into separate events.'
     );
     
