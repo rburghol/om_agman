@@ -925,11 +925,15 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       case 'full':
       case 'plugin':
       default: 
-        $content['title']['#markup'] = $edit_l . '  &nbsp;' . $copy_l . '  &nbsp;' . $delete_l;
+        if ($feature->fstatus == 'cancelled') {
+          $pre = "<s>";
+          $suf = "</s>";
+        }
+        $content['title']['#markup'] = $pre . $edit_l . '  &nbsp;' . $copy_l . '  &nbsp;' . $delete_l . $suf;
         $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => '<b>Blocks:</b> ' . $feature->block_names,
+          '#markup' => $pre . '<b>Blocks:</b> ' . $feature->block_names,
         );
         if ($now > $entity->tstime) {
           $content['body']['#prefix'] = '<div class="help-block">';
@@ -940,7 +944,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['body']['#markup'] .= "<br><b>Materials:</b> $chem_list";
         //$content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
         $content['body']['#markup'] .= "<b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
-        $content['body']['#markup'] .= "<br><b>REI:</b> $feature->rei_date ($feature->rei_chem)";
+        $content['body']['#markup'] .= "<br><b>REI:</b> $feature->rei_date ($feature->rei_chem)" . $suf;
 
         $entity->title = $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
