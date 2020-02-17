@@ -211,21 +211,23 @@
     $dest_entity->save();
     // save and reload
     $dest_entity = entity_load_single('dh_adminreg_feature', $dest_entity->identifier());
-    dpm($dest_entity,'post reload() entity');
+    //dpm($dest_entity,'post reload() entity');
     // special handling of erefs that possess erefid, and can have properties attached.
     foreach ($ref_props as $key => $src_refs) {
-      dpm($src_refs, "Handling eref $key");
+      //dpm($src_refs, "Handling eref $key");
       foreach ($dest_entity->{$key}['und'] as $tk => $ref) {
-        $target_id = $ref['target_id'];
-        $src_eref = new erefEntity($key, $src_refs[$target_id]['featureid']);
-        $dest_eref = new erefEntity($key, $ref['erefid']);
-        dpm($src_eref,'from eref');
-        dpm($dest_eref,'to eref');
-        $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
-        dpm($propnames, "Propnames ");
-        foreach ($propnames as $propname) {
-          $copy = om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);
-          dpm($copy,'copy');
+        if (isset($ref['erefid'])) {
+          $target_id = $ref['target_id'];
+          $src_eref = new erefEntity($key, $src_refs[$target_id]['featureid']);
+          $dest_eref = new erefEntity($key, $ref['erefid']);
+          //dpm($src_eref,'from eref');
+          //dpm($dest_eref,'to eref');
+          $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
+          //dpm($propnames, "Propnames ");
+          foreach ($propnames as $propname) {
+            $copy = om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);
+            //dpm($copy,'copy');
+          }
         }
       } 
     }
