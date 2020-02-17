@@ -231,13 +231,13 @@
           $target_id = $ref['target_id'];
           $src_eref = new erefEntity($key, $src_refs[$target_id]['featureid']);
           $dest_eref = new erefEntity($key, $ref['erefid']);
-          //dpm($src_eref,'from eref');
-          //dpm($dest_eref,'to eref');
+          dpm($src_eref,'from eref');
+          dpm($dest_eref,'to eref');
           $propnames = dh_get_dh_propnames($src_eref->entityType(), $src_eref->identifier());
           //dpm($propnames, "Propnames ");
           foreach ($propnames as $propname) {
             $copy = om_copy_properties($src_eref, $dest_eref, $propname, TRUE, TRUE, TRUE);
-            //dpm($copy,'copy');
+            dpm($copy,'copy');
           }
         }
       } 
