@@ -64,6 +64,18 @@
       '#date_year_range' => '-5:+5',
     );
     
+    $dur_hours = ($dh_adminreg_feature->enddate > $dh_adminreg_feature->startdate) ? 
+               ($dh_adminreg_feature->enddate - $dh_adminreg_feature->startdate) / 3600.0 : 4; // duration in hours
+    $dur_hours = ($dur_hours > 16) ? 16.0 : ceil($dur_hours * 2) / 2;// round to next greatest half hour
+    $drange = range(0.5, 16, 0.5);
+    $form['duration'] = array(
+      '#type' => 'select',
+      '#default_value' => $dur_hours,
+      '#multiple' => FALSE,
+      '#options' => $drange,
+      '#description' => 'Event duration in hours, for calculating re-entry intervals. Events lasting longer than 16 hours must be split into separate events.'
+    );
+    
     if (isset($form_copy['ftype'])) {
       $form['ftype'] = $form_copy['ftype'];
     }
@@ -85,12 +97,14 @@
       '#weight' => 40,
       '#submit' => array('om_agman_event_clone_form_save')
     );
+    /*
     $form['actions']['save_edit'] = array(
       '#type' => 'submit',
       '#value' => t('Change Spray Details'),
       '#weight' => 40,
       '#submit' => array('om_agman_event_clone_form_save_and_edit')
     );
+    */
     $form['actions']['cancel'] = array(
       '#type' => 'submit',
       '#value' => t('Cancel'),
@@ -98,7 +112,7 @@
       '#limit_validation_errors' => array(),
       '#submit' => array('dh_app_plan_form_submit_cancel')
     );
-    dpm($form,'form');
+    //dpm($form,'form');
     return $form;
   }
   
@@ -113,7 +127,7 @@
     form_load_include($form_state, 'inc', 'dh_adminreg', 'dh_adminreg.admin');
     // load the object
     $entity = entity_ui_form_submit_build_entity($form, $form_state);
-    dpm($entity,'src entity');
+    //dpm($entity,'src entity');
     // Create clone
     // apply selected blocks, title, and description.
     // then clone and save.
@@ -121,6 +135,8 @@
     // in the case of adminreg features it seems we have NONE come through?
     $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
     $new_entity = dh_entity_clone($entity, $extras);
+    // recalculate enddate 
+    $new_entity->enddate = dh_handletimestamp($form_state['values']['startdate']) + 3600.0 * $form_state['values']['duration'];
     //dpm($new_entity,'new entity');
     $new_entity->save();
     // reload so we can set ientity ref erefid
