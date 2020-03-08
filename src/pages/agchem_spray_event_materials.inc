@@ -141,6 +141,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
     );
     break;
   }
+  dpm($form, 'form');
   return $form;
 }
 
