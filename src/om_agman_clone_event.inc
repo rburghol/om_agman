@@ -135,7 +135,7 @@
   function om_agman_event_clone_form_save(&$form, &$form_state) {
     dpm($form, 'save form');
     dpm($form_state, 'save form_state');
-    $adminid = $form_state['values']['src_entity_id'];
+    $src_entity_id = $form_state['values']['src_entity_id'];
     // Load original 
     //$entity = entity_load_single('dh_adminreg_feature', $adminid);
     
@@ -143,21 +143,15 @@
     form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
     form_load_include($form_state, 'inc', 'dh', 'dh.admin');
     form_load_include($form_state, 'inc', 'dh_adminreg', 'dh_adminreg.admin');
-    // load the object
-    $entity = entity_ui_form_submit_build_entity($form, $form_state);
-    dpm($entity,'src entity');
-    // Create clone
-    // apply selected blocks, title, and description.
-    // then clone and save.
-    // Extra entity properties if any that don't come through the entityInfo process that we need 
-    // in the case of adminreg features it seems we have NONE come through?
-    $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
-    $new_entity = dh_entity_clone($entity, $extras);
+    // load the source object
+    $entity = entity_load_single('dh_adminreg_feature', $src_entity_id);
+    $new_entity = entity_ui_form_submit_build_entity($form, $form_state);
+    dpm($new_entity,'new entity');
     // recalculate enddate 
     $new_entity->enddate = dh_handletimestamp($form_state['values']['startdate']) + 3600.0 * $form_state['values']['duration'];
     //dpm($new_entity,'new entity');
+    // save to create adminid then reload so we can set ientity ref erefid
     $new_entity->save();
-    // reload so we can set ientity ref erefid
     $new_entity = entity_load_single('dh_adminreg_feature', $new_entity->identifier());
     // swap entity references
     dh_copyFields($entity, $new_entity);
