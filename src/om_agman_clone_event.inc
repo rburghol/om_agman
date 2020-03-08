@@ -133,8 +133,8 @@
   }
   
   function om_agman_event_clone_form_save(&$form, &$form_state) {
-    dpm($form, 'save form');
-    dpm($form_state, 'save form_state');
+    //dpm($form, 'save form');
+    //dpm($form_state, 'save form_state');
     $src_entity_id = $form_state['values']['src_entity_id'];
     // Load original 
     //$entity = entity_load_single('dh_adminreg_feature', $adminid);
@@ -151,7 +151,6 @@
     //dpm($new_entity,'new entity');
     // save to create adminid then reload so we can set ientity ref erefid
     $new_entity->save();
-    dpm($new_entity,'new entity');
     $new_entity = entity_load_single('dh_adminreg_feature', $new_entity->identifier());
     // swap entity references
     dh_copyFields($entity, $new_entity, array('field_link_to_registered_agchem'));
@@ -166,6 +165,7 @@
     $dummy_form = array();
     $dummy_form_state = array();
     $dummy_form_state['values']['dh_link_feature_submittal'] = $form_state['dh_link_feature_submittal'];
+    dpm($new_entity,'new entity before buildform');
     $src->BuildForm($form, $form_state);
     echo "Loaded $src->name ($record->adminid) area = " . $src->agchem_event_area . "\n";
     $src->SaveDataObjectsAsForm();
