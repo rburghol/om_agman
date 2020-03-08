@@ -3,7 +3,7 @@
   module_load_include('inc', 'dh', 'plugins/dh.display');
   
   function om_agman_event_clone_form($form, &$form_state, $dh_adminreg_feature, $farmid, $src_entity_id) {
-    //dpm($dh_adminreg_feature, 'element to clone');
+    dpm($dh_adminreg_feature, 'element to clone');
     /*
     // TEST
     ctools_include('plugins');
