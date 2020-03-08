@@ -99,6 +99,8 @@
       om_agman_form_block_select($form['dh_link_feature_submittal'], $farmid);
     }
     */
+    // format the block selector 
+    om_agman_form_block_select($form['dh_link_feature_submittal'], $farmid);
     dpm($form,'form');
     
     $form['description'] = $form_copy['description'];
