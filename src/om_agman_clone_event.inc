@@ -154,7 +154,7 @@
     $new_entity->save();
     $new_entity = entity_load_single('dh_adminreg_feature', $new_entity->identifier());
     // swap entity references
-    dh_copyFields($entity, $new_entity);
+    dh_copyFields($entity, $new_entity, array('field_link_to_registered_agchem'));
     $new_entity->save();
     dh_copyProps($entity, $new_entity);
     // Now, handle any changes in blocks that affect area and totals
