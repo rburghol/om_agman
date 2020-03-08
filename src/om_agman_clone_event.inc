@@ -79,6 +79,7 @@
     if (isset($form_copy['ftype'])) {
       $form['ftype'] = $form_copy['ftype'];
     }
+    dpm($form,'form');
     if ($farmid == $src_farmid) {
       // use the same settings for Blocks
       om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
@@ -87,6 +88,7 @@
       // add a new one with no blocks selected
       om_agman_form_block_select($form['dh_link_feature_submittal'], $farmid);
     }
+    dpm($form,'form');
     
     $form['description'] = $form_copy['description'];
     
@@ -113,7 +115,6 @@
       '#submit' => array('dh_app_plan_form_submit_cancel')
     );
     dpm($form,'form');
-    dpm($form['actions'],'form actions');
     return $form;
   }
   
