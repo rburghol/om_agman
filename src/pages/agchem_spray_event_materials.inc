@@ -173,6 +173,7 @@ function dh_app_plan_form_save(&$form, &$form_state) {
 }
 
 function dh_app_plan_form_sprayquan(&$form, &$form_state) {
+  dpm($form_state,'form_state');
   dpm(t('This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.'), NULL, 'warning');
   $blockid = $form_state['values']['dh_link_feature_submittal']['und'][0]['target_id'];
   $dh_adminreg_feature = dh_app_plan_form_save($form, $form_state);
