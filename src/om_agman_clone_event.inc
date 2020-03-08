@@ -146,12 +146,12 @@
     // load the source object
     $entity = entity_load_single('dh_adminreg_feature', $src_entity_id);
     $new_entity = entity_ui_form_submit_build_entity($form, $form_state);
-    dpm($new_entity,'new entity');
     // recalculate enddate 
     $new_entity->enddate = dh_handletimestamp($form_state['values']['startdate']) + 3600.0 * $form_state['values']['duration'];
     //dpm($new_entity,'new entity');
     // save to create adminid then reload so we can set ientity ref erefid
     $new_entity->save();
+    dpm($new_entity,'new entity');
     $new_entity = entity_load_single('dh_adminreg_feature', $new_entity->identifier());
     // swap entity references
     dh_copyFields($entity, $new_entity, array('field_link_to_registered_agchem'));
@@ -170,6 +170,7 @@
     echo "Loaded $src->name ($record->adminid) area = " . $src->agchem_event_area . "\n";
     $src->SaveDataObjectsAsForm();
     // Finally, save
+    dpm($new_entity,'post-save entity');
     $new_entity->save();
     return;
   }
