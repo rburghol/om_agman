@@ -220,11 +220,14 @@
     return TRUE;
   }
   
-  function dh_copyFields($entity, &$dest_entity) {
+  function dh_copyFields($entity, &$dest_entity, $fields = array()) {
     list(, , $bundle) = entity_extract_ids($entity->entityType(), $entity);
     $finfo_all = field_info_instances($entity->entityType(), $bundle);
+    if (empty($fields)) {
+      $fields = array_keys($finfo_all);
     $ref_props = array();
-    foreach ($finfo_all as $key => $finfo) {
+    foreach ($fields as $key) {
+      $finfo = $finfo_all[$key];
       if (isset($finfo['settings']['target_type'])) {
         $ttype = $finfo['settings']['target_type'];
       } else {
@@ -350,6 +353,7 @@
     $src_farm = $src->dh_farm_feature;
     $src_farmid = $src_farm->hydroid;
   }
+  dpm($dh_adminreg_feature,'original');
   $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
   $new_entity = dh_entity_clone($dh_adminreg_feature, $extras);
   $new_entity->dh_link_feature_submittal = $dh_adminreg_feature->dh_link_feature_submittal; // copy this directly cause the copy routine does a save to enable eref ids
