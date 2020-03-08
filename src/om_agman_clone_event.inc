@@ -24,12 +24,15 @@
       drupal_set_message(t("Cannot find event to clone.  Returning."), 'error');
       return $form;
     }
-    // grab copies of the fields from the original form
+    */
+    // grab copies of the fields from the original form, but we don't want to show them all.
     $form_copy = $form;
     $form_state_copy = $form_state;
     field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form_copy, $form_state_copy);
-    */
-    field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form, $form_state);
+    // add copied fields 
+    if (isset($form_copy['ftype'])) {
+      $form['ftype'] = $form_copy['ftype'];
+    }
   
     $form['adminid'] = array(
       '#type' => 'hidden',
@@ -84,9 +87,6 @@
       '#description' => 'Event duration in hours, for calculating re-entry intervals. Events lasting longer than 16 hours must be split into separate events.'
     );
     
-    if (isset($form_copy['ftype'])) {
-      $form['ftype'] = $form_copy['ftype'];
-    }
     /*
     // TEST
     dpm($form,'form before checking changes');
