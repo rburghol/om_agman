@@ -156,6 +156,7 @@
     $dummy_form_state['values']['dh_link_feature_submittal'] = $form_state['dh_link_feature_submittal'];
     $src->BuildForm($dummy_form, $dummy_form_state);
     echo "Loaded $src->name ($record->adminid) area = " . $src->agchem_event_area . "\n";
+    dpm($src->dh_adminreg_feature,'new event');
     $src->SaveDataObjectsAsForm();
     // Finally, save
     $new_entity->save();
