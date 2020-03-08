@@ -326,7 +326,32 @@
   $form_state['redirect'] = $redirect;
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   // set things before initial form_state build
-  $form_state['build_info']['args'] = array($dh_adminreg_feature, $farmid);
+  dpm($form,'form');
+  
+  // BEGIN - New Stuff 
+  // New Stuff - try to clone first 
+  ctools_include('plugins');
+  $plugins = ctools_get_plugins('om', 'om_components');
+  $plugin = ctools_get_plugins('om', 'om_components', 'ObjectModelAgmanSprayAppEvent');
+  $class = ctools_plugin_get_class($plugin, 'handler');
+  $config = array();
+  if ($class) {
+    $src = new $class($config);
+    //dpm($src,'app plugin object');
+    $src->dh_adminreg_feature = $dh_adminreg_feature;
+    $src->eventPropDefaultConf();
+    $src_farm = $src->dh_farm_feature;
+    $src_farmid = $src_farm->hydroid;
+  }
+  $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
+  $new_entity = dh_entity_clone($dh_adminreg_feature, $extras);
+  if ($farmid <> $src_farmid) {
+    // use the same settings for Blocks
+    $new_entity->dh_link_feature_submittal = array('und'=>array());
+  }
+  $form_state['build_info']['args'] = array($new_entity, $farmid, $adminid);
+  // END - New Stuff 
+  //$form_state['build_info']['args'] = array($dh_adminreg_feature, $farmid);
 
   // **********************
   // Load the form

@@ -64,7 +64,7 @@ $args[] = $block_id;
 $_SESSION['om_agman']['facility'] = $vineyard_id;
 $_SESSION['om_agman']['landunit'] = $block_id;
 $view = views_get_view('list_user_vineyards_blocks'); 
-$view->set_display('page_3'); 
+$view->set_display('page_5'); 
 //$view->set_arguments($a);
 $view->pre_execute($args );
 $view->execute();
