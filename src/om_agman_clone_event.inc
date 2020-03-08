@@ -159,7 +159,7 @@
     dpm($form_state,'form state');
     dpm($src->dh_adminreg_feature,'new event');
     foreach ($form_state['dh_link_feature_submittal'] as $block_link) {
-      $src->dh_adminreg_feature->dh_link_feature_submittal['und'][] = array('target_id' => $block_link['target_id'];
+      $src->dh_adminreg_feature->dh_link_feature_submittal['und'][] = array('target_id' => $block_link['target_id']);
     }
     $src->SaveDataObjectsAsForm();
     // Finally, save
