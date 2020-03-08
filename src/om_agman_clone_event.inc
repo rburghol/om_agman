@@ -3,7 +3,7 @@
   module_load_include('inc', 'dh', 'plugins/dh.display');
   
   function om_agman_event_clone_form($form, &$form_state, $dh_adminreg_feature, $farmid, $src_entity_id) {
-    dpm($dh_adminreg_feature, 'element to clone');
+    //dpm($dh_adminreg_feature, 'new element');
     /*
     // TEST
     ctools_include('plugins');
@@ -225,8 +225,9 @@
     $finfo_all = field_info_instances($entity->entityType(), $bundle);
     if (empty($fields)) {
       $fields = array_keys($finfo_all);
+    }
     $ref_props = array();
-    foreach ($fields as $key) {
+    foreach ($finfo_all as $key => $finfo) {
       $finfo = $finfo_all[$key];
       if (isset($finfo['settings']['target_type'])) {
         $ttype = $finfo['settings']['target_type'];
@@ -353,7 +354,7 @@
     $src_farm = $src->dh_farm_feature;
     $src_farmid = $src_farm->hydroid;
   }
-  dpm($dh_adminreg_feature,'original');
+  dpm($dh_adminreg_feature,'src entity');
   $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
   $new_entity = dh_entity_clone($dh_adminreg_feature, $extras);
   $new_entity->dh_link_feature_submittal = $dh_adminreg_feature->dh_link_feature_submittal; // copy this directly cause the copy routine does a save to enable eref ids
