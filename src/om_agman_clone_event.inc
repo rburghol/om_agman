@@ -153,6 +153,7 @@
     // handle all the attached stuff using the SaveDataObjectsAsForm
     $dummy_form = array();
     $dummy_form_state = array();
+    $dummy_form_state['values']['dh_link_feature_submittal'] = $form_state['dh_link_feature_submittal'];
     $src->BuildForm($dummy_form, $dummy_form_state);
     echo "Loaded $src->name ($record->adminid) area = " . $src->agchem_event_area . "\n";
     $src->SaveDataObjectsAsForm();
