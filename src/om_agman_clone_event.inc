@@ -224,7 +224,7 @@
       $fields = array_keys($finfo_all);
     }
     $ref_props = array();
-    foreach ($finfo_all as $key => $finfo) {
+    foreach ($fields as $key) {
       $finfo = $finfo_all[$key];
       if (isset($finfo['settings']['target_type'])) {
         $ttype = $finfo['settings']['target_type'];
