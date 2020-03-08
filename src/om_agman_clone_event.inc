@@ -119,6 +119,8 @@
   }
   
   function om_agman_event_clone_form_save(&$form, &$form_state) {
+    dpm($form, 'save form');
+    dpm($form_state, 'save form_state');
     $adminid = $form_state['values']['adminid'];
     // Load original 
     //$entity = entity_load_single('dh_adminreg_feature', $adminid);
