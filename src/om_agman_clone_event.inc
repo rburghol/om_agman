@@ -2,8 +2,10 @@
   module_load_include('module', 'dh');
   module_load_include('inc', 'dh', 'plugins/dh.display');
   
-  function om_agman_event_clone_form($form, &$form_state, $dh_adminreg_feature, $farmid) {
+  function om_agman_event_clone_form($form, &$form_state, $dh_adminreg_feature, $farmid, $src_entity_id) {
     //dpm($dh_adminreg_feature, 'element to clone');
+    /*
+    // TEST
     ctools_include('plugins');
     $plugins = ctools_get_plugins('om', 'om_components');
     //dpm($plugins,'all plug');
@@ -26,10 +28,16 @@
     $form_copy = $form;
     $form_state_copy = $form_state;
     field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form_copy, $form_state_copy);
+    */
+    field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form, $form_state);
   
     $form['adminid'] = array(
       '#type' => 'hidden',
       '#default_value' => $dh_adminreg_feature->adminid,
+    );
+    $form['src_entity_id'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $src_entity_id,
     );
     $form['name'] = array(
       '#title' => t('Event Name'),
@@ -79,6 +87,8 @@
     if (isset($form_copy['ftype'])) {
       $form['ftype'] = $form_copy['ftype'];
     }
+    /*
+    // TEST
     dpm($form,'form before checking changes');
     if ($farmid == $src_farmid) {
       // use the same settings for Blocks
@@ -88,6 +98,7 @@
       // add a new one with no blocks selected
       om_agman_form_block_select($form['dh_link_feature_submittal'], $farmid);
     }
+    */
     dpm($form,'form');
     
     $form['description'] = $form_copy['description'];
@@ -121,7 +132,7 @@
   function om_agman_event_clone_form_save(&$form, &$form_state) {
     dpm($form, 'save form');
     dpm($form_state, 'save form_state');
-    $adminid = $form_state['values']['adminid'];
+    $adminid = $form_state['values']['src_entity_id'];
     // Load original 
     //$entity = entity_load_single('dh_adminreg_feature', $adminid);
     
@@ -131,7 +142,7 @@
     form_load_include($form_state, 'inc', 'dh_adminreg', 'dh_adminreg.admin');
     // load the object
     $entity = entity_ui_form_submit_build_entity($form, $form_state);
-    //dpm($entity,'src entity');
+    dpm($entity,'src entity');
     // Create clone
     // apply selected blocks, title, and description.
     // then clone and save.
@@ -326,7 +337,6 @@
   $form_state['redirect'] = $redirect;
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   // set things before initial form_state build
-  dpm($form,'form');
   
   // BEGIN - New Stuff 
   // New Stuff - try to clone first 
@@ -351,6 +361,7 @@
   }
   $form_state['build_info']['args'] = array($new_entity, $farmid, $adminid);
   // END - New Stuff 
+  // TEST
   //$form_state['build_info']['args'] = array($dh_adminreg_feature, $farmid);
 
   // **********************
