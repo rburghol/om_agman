@@ -357,6 +357,7 @@
   }
   $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
   $new_entity = dh_entity_clone($dh_adminreg_feature, $extras);
+  dh_copyFields($dh_adminreg_feature, $new_entity);
   if ($farmid <> $src_farmid) {
     // use the same settings for Blocks
     $new_entity->dh_link_feature_submittal = array('und'=>array());
