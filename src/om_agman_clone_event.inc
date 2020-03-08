@@ -4,6 +4,7 @@
   
   function om_agman_event_clone_form($form, &$form_state, $dh_adminreg_feature, $farmid) {
     //dpm($dh_adminreg_feature, 'element to clone');
+    dpm($form,'form');
     ctools_include('plugins');
     $plugins = ctools_get_plugins('om', 'om_components');
     //dpm($plugins,'all plug');
