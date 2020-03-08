@@ -357,7 +357,7 @@
   }
   $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
   $new_entity = dh_entity_clone($dh_adminreg_feature, $extras);
-  dh_copyFields($dh_adminreg_feature, $new_entity);
+  $new_entity->dh_link_feature_submittal = $dh_adminreg_feature->dh_link_feature_submittal; // copy this directly cause the copy routine does a save to enable eref ids
   if ($farmid <> $src_farmid) {
     dsm("Blanking linked blocks because farmid $farmid differs from src $src_farmid");
     // use the same settings for Blocks
