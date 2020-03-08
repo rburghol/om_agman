@@ -155,6 +155,7 @@
     // swap entity references
     dh_copyFields($entity, $new_entity, array('field_link_to_registered_agchem'));
     $new_entity->save();
+    dpm($new_entity,'new entity before dh_copyProps');
     dh_copyProps($entity, $new_entity);
     // Now, handle any changes in blocks that affect area and totals
     // load the plugin to handle this aggregate form
