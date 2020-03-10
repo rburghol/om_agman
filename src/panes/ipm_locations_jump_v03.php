@@ -31,7 +31,7 @@ if (!in_array($a[1], $farms)) {
 }
 
 // Finally, redirect to the location management page if we have no blocks
-if ( ($a[2] == 'all') and ($a[1] <> 'all')) {
+if ( $a[1] <> 'all' ) {
   $blockids = dh_get_facility_mps($a[1], 'landunit');
   if (empty($blockids) and ($a[0] <> 'ipm-facility-info')) {
     drupal_set_message("You must create at least 1 block on your farm to access these features.");
