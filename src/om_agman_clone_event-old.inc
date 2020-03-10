@@ -2,23 +2,34 @@
   module_load_include('module', 'dh');
   module_load_include('inc', 'dh', 'plugins/dh.display');
   
-  function om_agman_event_clone_form($form, &$form_state, $dh_adminreg_feature, $farmid, $src_entity_id) {
-    // grab copies of the fields from the original form, but we don't want to show them all.
+  function om_agman_event_clone_form($form, &$form_state, $dh_adminreg_feature, $farmid) {
+    //dpm($dh_adminreg_feature, 'element to clone');
+    ctools_include('plugins');
+    $plugins = ctools_get_plugins('om', 'om_components');
+    //dpm($plugins,'all plug');
+    $plugin = ctools_get_plugins('om', 'om_components', 'ObjectModelAgmanSprayAppEvent');
+    $class = ctools_plugin_get_class($plugin, 'handler');
+    //dpm($plugin,'plug');
+    $config = array();
+    if ($class) {
+      $src = new $class($config);
+      //dpm($src,'app plugin object');
+      $src->dh_adminreg_feature = $dh_adminreg_feature;
+      $src->eventPropDefaultConf();
+      $src_farm = $src->dh_farm_feature;
+      $src_farmid = $src_farm->hydroid;
+    } else {
+      drupal_set_message(t("Cannot find event to clone.  Returning."), 'error');
+      return $form;
+    }
+    // grab copies of the fields from the original form
     $form_copy = $form;
     $form_state_copy = $form_state;
     field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form_copy, $form_state_copy);
-    // add copied fields 
-    if (isset($form_copy['ftype'])) {
-      $form['ftype'] = $form_copy['ftype'];
-    }
   
     $form['adminid'] = array(
       '#type' => 'hidden',
       '#default_value' => $dh_adminreg_feature->adminid,
-    );
-    $form['src_entity_id'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $src_entity_id,
     );
     $form['name'] = array(
       '#title' => t('Event Name'),
@@ -65,10 +76,17 @@
       '#description' => 'Event duration in hours, for calculating re-entry intervals. Events lasting longer than 16 hours must be split into separate events.'
     );
     
-    // format the block selector 
-    om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
-    $form['dh_link_feature_submittal'] = $form_copy['dh_link_feature_submittal'];
-    //dpm($form,'form');
+    if (isset($form_copy['ftype'])) {
+      $form['ftype'] = $form_copy['ftype'];
+    }
+    if ($farmid == $src_farmid) {
+      // use the same settings for Blocks
+      om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
+      $form['dh_link_feature_submittal'] = $form_copy['dh_link_feature_submittal'];
+    } else {
+      // add a new one with no blocks selected
+      om_agman_form_block_select($form['dh_link_feature_submittal'], $farmid);
+    }
     
     $form['description'] = $form_copy['description'];
     
@@ -99,9 +117,7 @@
   }
   
   function om_agman_event_clone_form_save(&$form, &$form_state) {
-    //dpm($form, 'save form');
-    //dpm($form_state, 'save form_state');
-    $src_entity_id = $form_state['values']['src_entity_id'];
+    $adminid = $form_state['values']['adminid'];
     // Load original 
     //$entity = entity_load_single('dh_adminreg_feature', $adminid);
     
@@ -109,18 +125,24 @@
     form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
     form_load_include($form_state, 'inc', 'dh', 'dh.admin');
     form_load_include($form_state, 'inc', 'dh_adminreg', 'dh_adminreg.admin');
-    // load the source object
-    $entity = entity_load_single('dh_adminreg_feature', $src_entity_id);
-    $new_entity = entity_ui_form_submit_build_entity($form, $form_state);
+    // load the object
+    $entity = entity_ui_form_submit_build_entity($form, $form_state);
+    //dpm($entity,'src entity');
+    // Create clone
+    // apply selected blocks, title, and description.
+    // then clone and save.
+    // Extra entity properties if any that don't come through the entityInfo process that we need 
+    // in the case of adminreg features it seems we have NONE come through?
+    $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
+    $new_entity = dh_entity_clone($entity, $extras);
     // recalculate enddate 
     $new_entity->enddate = dh_handletimestamp($form_state['values']['startdate']) + 3600.0 * $form_state['values']['duration'];
     //dpm($new_entity,'new entity');
-    // save to create adminid then reload so we can set ientity ref erefid
     $new_entity->save();
+    // reload so we can set ientity ref erefid
     $new_entity = entity_load_single('dh_adminreg_feature', $new_entity->identifier());
     // swap entity references
-    //dpm($new_entity,'new entity before dh_copyFields');
-    dh_copyFields($entity, $new_entity, array('field_link_to_registered_agchem'));
+    dh_copyFields($entity, $new_entity);
     $new_entity->save();
     dh_copyProps($entity, $new_entity);
     // Now, handle any changes in blocks that affect area and totals
@@ -131,13 +153,10 @@
     // handle all the attached stuff using the SaveDataObjectsAsForm
     $dummy_form = array();
     $dummy_form_state = array();
-    $dummy_form_state['values']['dh_link_feature_submittal'] = $form_state['dh_link_feature_submittal'];
-    //dpm($new_entity,'new entity before buildform');
-    $src->BuildForm($form, $form_state);
+    $src->BuildForm($dummy_form, $dummy_form_state);
     echo "Loaded $src->name ($record->adminid) area = " . $src->agchem_event_area . "\n";
     $src->SaveDataObjectsAsForm();
     // Finally, save
-    //dpm($new_entity,'post-save entity');
     $new_entity->save();
     return;
   }
@@ -183,15 +202,11 @@
     return TRUE;
   }
   
-  function dh_copyFields($entity, &$dest_entity, $fields = array()) {
+  function dh_copyFields($entity, &$dest_entity) {
     list(, , $bundle) = entity_extract_ids($entity->entityType(), $entity);
     $finfo_all = field_info_instances($entity->entityType(), $bundle);
-    if (empty($fields)) {
-      $fields = array_keys($finfo_all);
-    }
     $ref_props = array();
-    foreach ($fields as $key) {
-      $finfo = $finfo_all[$key];
+    foreach ($finfo_all as $key => $finfo) {
       if (isset($finfo['settings']['target_type'])) {
         $ttype = $finfo['settings']['target_type'];
       } else {
@@ -301,35 +316,7 @@
   $form_state['redirect'] = $redirect;
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   // set things before initial form_state build
-  
-  // BEGIN - New Stuff 
-  // New Stuff - try to clone first 
-  ctools_include('plugins');
-  $plugins = ctools_get_plugins('om', 'om_components');
-  $plugin = ctools_get_plugins('om', 'om_components', 'ObjectModelAgmanSprayAppEvent');
-  $class = ctools_plugin_get_class($plugin, 'handler');
-  $config = array();
-  if ($class) {
-    $src = new $class($config);
-    //dpm($src,'app plugin object');
-    $src->dh_adminreg_feature = $dh_adminreg_feature;
-    $src->eventPropDefaultConf();
-    $src_farm = $src->dh_farm_feature;
-    $src_farmid = $src_farm->hydroid;
-  }
-  //dpm($dh_adminreg_feature,'src entity');
-  $extras = array('bundle', 'name', 'startdate', 'enddate', 'ftype', 'fstatus'); 
-  $new_entity = dh_entity_clone($dh_adminreg_feature, $extras);
-  $new_entity->dh_link_feature_submittal = $dh_adminreg_feature->dh_link_feature_submittal; // copy this directly cause the copy routine does a save to enable eref ids
-  if ($farmid <> $src_farmid) {
-    dsm("Blanking linked blocks because farmid $farmid differs from src $src_farmid");
-    // use the same settings for Blocks
-    $new_entity->dh_link_feature_submittal = array('und'=>array());
-  }
-  $form_state['build_info']['args'] = array($new_entity, $farmid, $adminid);
-  // END - New Stuff 
-  // TEST
-  //$form_state['build_info']['args'] = array($dh_adminreg_feature, $farmid);
+  $form_state['build_info']['args'] = array($dh_adminreg_feature, $farmid);
 
   // **********************
   // Load the form
