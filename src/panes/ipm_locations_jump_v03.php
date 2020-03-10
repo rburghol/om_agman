@@ -17,21 +17,13 @@ if (!isset($a[1])) {
   $a[1] = isset($_SESSION['om_agman']['facility']) ? $_SESSION['om_agman']['facility'] : 'all';
   $red = TRUE;
 }
-if (!isset($a[2])) {
-  $a[2] = isset($_SESSION['om_agman']['landunit']) ? $_SESSION['om_agman']['landunit'] : 'all';
-  $red = TRUE;
-}
 //dpm($a,'args');
 // check to see if user has only 1 farm, if so, default to that.
 $farms = dh_get_user_mgr_features($user->uid, 'facility', 'vineyard');
 if ( (count($farms) == 1) and ($a[1] =='all')) {
   $a[1] = array_shift($farms);
 }
-// make sure that we don't pick up any junk
-if (!( (intval($a[2]) > 0) or ($a[2] == 'all'))) {
-  $a[2] = 'all';
-  $red = TRUE;
-} 
+
 // check permissions
 if (!in_array($a[1], $farms)) {
   $a[1] = isset($_SESSION['om_agman']['facility']) ? $_SESSION['om_agman']['facility'] : 'all';
@@ -70,7 +62,10 @@ $view->pre_execute($args );
 $view->execute();
 //$content = $view->render(); 
 //echo $content;
-$q = explode('/',$_GET['q']);;
+$pp = drupal_get_query_parameters();
+//dpm($pp,'get');
+$q = explode('/',$_GET['q']);
+//dpm($q,'initial url params');
 $page_name = array_shift($q);
 
 // this replicates the code for  views_plugin_style_jump_menu::render()
@@ -93,11 +88,21 @@ foreach ($sets as $title => $records) {
     if (strpos($path, $base_path) === 0) {
       $path = drupal_substr($path, drupal_strlen($base_path));
     }
-
+    $pargs = explode("/", $path);
+    // ad on extra URL args if present 
+    foreach ($a as $ak => $av) {
+      if (!isset($pargs[$ak])) {
+        $pargs[$ak] = $av;
+      }
+    }
+    $path = implode("/", $pargs);
     // use drupal_parse_url() to preserve query and fragment in case the user
     // wants to do fun tricks.
     $url_options = drupal_parse_url($path);
-
+    // now restore other items passed in as URL fragments
+    $url_options['query'] = array_merge($url_options['query'], $pp);
+    //dpm($url_options,'url opts');
+    //dsm("item path $path");
     $path = url($url_options['path'], $url_options);
     $field = strip_tags(decode_entities($view->style_plugin->row_plugin->render($row)));
     $key = md5($path . $field) . "::" . $path;
@@ -123,6 +128,7 @@ if ($view->style_plugin->options['default_value']) {
   }
   // detect if default values have been selected and we have enabled detect_views_arg_override
   $view->style_plugin->options['views_argument_override'] = TRUE;
+  
   if ($view->style_plugin->options['views_argument_override']) {
     $pieces = array();
     //dsm('over-riding args');
@@ -132,6 +138,8 @@ if ($view->style_plugin->options['default_value']) {
   } else {
     $pieces = $_GET['q'];
   }
+  
+  //dpm($pieces,'final url pieces');
   $lookup_url = url($pieces, $lookup_options);
   if (!empty($paths[$lookup_url])) {
     $default_value = $paths[$lookup_url];
@@ -161,5 +169,5 @@ $form = drupal_get_form('ctools_jump_menu', $options, $settings);
 //dpm($form);
 $content = drupal_render($form);
 echo $content;
-watchdog('ipm','completed jump list');
+//watchdog('ipm','completed jump list');
 ?>
