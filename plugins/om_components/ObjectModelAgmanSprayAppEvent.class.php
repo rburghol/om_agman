@@ -777,7 +777,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $ra = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
       $rs = empty($rate_limits) ? '---' : implode(' to ', $ra) . " $pretty_units ";
       // calculate volume of h2o per acre for info purposes
-      $scaled_galac = $scale * $this->agchem_total_spray_rate_galac;
+      $scaled_galac = round($cf * $this->agchem_total_spray_rate_galac,2);
       $rate_select_key = $r/100.0;
       $rowform['rate_range']["rate_$r"] = array(
         '#type' => 'item',
