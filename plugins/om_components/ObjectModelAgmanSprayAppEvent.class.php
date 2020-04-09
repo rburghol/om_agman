@@ -128,6 +128,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       $value = isset($this->dh_adminreg_feature->dh_properties[$varkey]) ? $this->dh_adminreg_feature->dh_properties[$varkey]->propvalue : $value;
     } else {
       // set the value on the event property to the correct default as well
+      dsm("Can't find property w/varkey $varkey, using default $value");
       $this->dh_adminreg_feature->dh_properties[$varkey]->propvalue = $value;
     }
     // add setting default in prop grid
