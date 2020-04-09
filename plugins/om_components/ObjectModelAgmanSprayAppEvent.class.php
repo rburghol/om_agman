@@ -373,6 +373,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $eventprops = new dhPropertiesGroup($event_conf);
     $eventprops->prepareQuery();
     $eventprops->getData();
+    $eventprops->agchem_total_spray_rate_galac = $this->dh_adminreg_feature->dh_properties['agchem_total_spray_rate_galac']->propvalue;
     // sort items
     $sorted = array();
     foreach ($eventprops->data as $el) {
@@ -495,6 +496,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
   var $total_amount = 1; 
   var $event_area = 1; 
   var $canopy_frac = 1; 
+  var $agchem_total_spray_rate_galac = 100.0; // total volume to spray at full canopy.
   var $save_method = 'form_entity_map';
   var $form_entity_map; // @todo - move this to parent class
   public function __construct($conf = array()) {
@@ -774,11 +776,13 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $scale = $this->scaleFactor($cf, $rate_units);
       $ra = array_map(function($el, $frac) { return $el * $frac; }, $rate_limits, array_fill(0,count($rate_limits),$scale));
       $rs = empty($rate_limits) ? '---' : implode(' to ', $ra) . " $pretty_units ";
+      // calculate volume of h2o per acre for info purposes
+      $scaled_galac = round($cf * $this->agchem_total_spray_rate_galac,2);
       $rate_select_key = $r/100.0;
       $rowform['rate_range']["rate_$r"] = array(
         '#type' => 'item',
         '#markup' => '&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy'
-          . '<br>&nbsp;&nbsp; <i>Adjusted Rate</i> &nbsp;= ' . $rs,
+          . '<br>&nbsp;&nbsp; <i>Adjusted Rate</i> &nbsp;= ' . $rs . ' in ' . $scaled_galac . ' gals of water',
         '#states' => array(
           'visible' => array(
             ':input[name="event_settings[3][propvalue]"]' => array('value' => "$rate_select_key"),
