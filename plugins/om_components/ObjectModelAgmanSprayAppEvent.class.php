@@ -782,7 +782,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $rowform['rate_range']["rate_$r"] = array(
         '#type' => 'item',
         '#markup' => '&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy'
-          . '<br>&nbsp;&nbsp; <i>Adjusted Rate</i> &nbsp;= ' . $rs . ' in ' . $scaled_galac . ' gals of water',
+          . '<br>&nbsp;&nbsp; <i>Adjusted Rate</i> &nbsp;= ' . $rs . ' in ' . $scaled_galac . ' gals of water/acre',
         '#states' => array(
           'visible' => array(
             ':input[name="event_settings[3][propvalue]"]' => array('value' => "$rate_select_key"),
