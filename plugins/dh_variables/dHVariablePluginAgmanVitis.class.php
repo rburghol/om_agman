@@ -771,6 +771,51 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     }
     parent::save();
   }
+  
+  public function buildContent(&$content, &$entity, $view_mode) {
+    // special render handlers when using a content array
+    // get all FRAC Codes associated with this entity
+    dpm($entity,'buildcontent called');
+    $codes = $this->incidentCodes();
+    $incident_detail = $codes[$entity->tscode];
+    $feature = $this->getParentEntity($entity);
+    $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
+    $varname = $varinfo->varname;
+    if ($varinfo === FALSE) {
+      return;
+    }
+    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
+    foreach ($hidden as $col) {
+      $content[$col]['#type'] = 'hidden';
+    }
+    $pct = ($entity->tsvalue <= $this->loval) ? $this->lolabel : round(100.0 * $entity->tsvalue) . '%';
+    $link = $this->getLink($entity);
+    switch($view_mode) {
+      case 'ical_summary':
+        //$content['title'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "Verasion @ $pct in " . $feature->name,
+        //);
+        unset($content['title']['#type']);
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$varname: $incident_detail @ $pct in " . $feature->name,
+        );
+      break;
+      default:
+        //$content['title'] = array(
+        //  '#type' => 'item',
+        //  '#markup' => "$varname @ $pct in " . $feature->name,
+        //);
+        $content['title'] = $link;
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$varname: $incident_detail @ $pct in " . $feature->name,
+        );
+      break;
+    }
+  }
 }
 
 class dHVariablePluginVitisHarvest extends dHVariablePluginAgmanAction {
