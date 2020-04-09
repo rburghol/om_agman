@@ -374,6 +374,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $eventprops->prepareQuery();
     $eventprops->getData();
     $eventprops->agchem_total_spray_rate_galac = $this->dh_adminreg_feature->dh_properties['agchem_total_spray_rate_galac']->propvalue;
+    dsm("Setting eventprops agchem_total_spray_rate_galac = $eventprops->agchem_total_spray_rate_galac");
     // sort items
     $sorted = array();
     foreach ($eventprops->data as $el) {
@@ -782,7 +783,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $rowform['rate_range']["rate_$r"] = array(
         '#type' => 'item',
         '#markup' => '&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy'
-          . '<br>&nbsp;&nbsp; <i>Adjusted Rate</i> &nbsp;= ' . $rs . ' in ' . $scaled_galac . ' gals of water/acre',
+          . '<br>&nbsp;&nbsp; <i>Estimated Amount to Be Sprayed</i> &nbsp;= ' . $rs . ' in ' . $scaled_galac . ' gals of water/acre',
         '#states' => array(
           'visible' => array(
             ':input[name="event_settings[3][propvalue]"]' => array('value' => "$rate_select_key"),
