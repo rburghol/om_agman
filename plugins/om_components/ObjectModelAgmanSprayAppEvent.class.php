@@ -374,7 +374,6 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $eventprops->prepareQuery();
     $eventprops->getData();
     $eventprops->agchem_total_spray_rate_galac = $this->dh_adminreg_feature->dh_properties['agchem_total_spray_rate_galac']->propvalue;
-    dsm("Setting eventprops agchem_total_spray_rate_galac = $eventprops->agchem_total_spray_rate_galac");
     // sort items
     $sorted = array();
     foreach ($eventprops->data as $el) {
@@ -384,12 +383,12 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     ksort($sorted);
     $eventprops->data = $sorted;
     $eventprops->buildForm($form, $form_state);
-    dsm("After buildForm the eventprops agchem_total_spray_rate_galac = $eventprops->agchem_total_spray_rate_galac");
     // quick and dirty set the event area default 
     // @todo: allow us to pass this in to the dhPropertiesGroup
     $cfrac = 1.0;
     $chem_conf = $this->MaterialEventPropConfDefault();
     $chemgrid = new ObjectModelAgmanSprayMaterialProps($chem_conf);
+    $chemgrid->agchem_total_spray_rate_galac = $this->dh_adminreg_feature->dh_properties['agchem_total_spray_rate_galac']->propvalue;
     $chemgrid->prepareQuery();
     $chemgrid->getData();
     //dpm($chemgrid,'chemgrid');
@@ -767,7 +766,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         
       }
     }
-    dpm($this,'widget');
     # dynamically adjusting rate range scaler
     for ($r = 5; $r <= 100; $r += 5) {
       // create a set of conditionals
