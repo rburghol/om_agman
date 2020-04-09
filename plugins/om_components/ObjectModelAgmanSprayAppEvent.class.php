@@ -384,6 +384,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     ksort($sorted);
     $eventprops->data = $sorted;
     $eventprops->buildForm($form, $form_state);
+    dsm("After buildForm the eventprops agchem_total_spray_rate_galac = $eventprops->agchem_total_spray_rate_galac");
     // quick and dirty set the event area default 
     // @todo: allow us to pass this in to the dhPropertiesGroup
     $cfrac = 1.0;
@@ -766,6 +767,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         
       }
     }
+    dpm($this,'widget');
     # dynamically adjusting rate range scaler
     for ($r = 5; $r <= 100; $r += 5) {
       // create a set of conditionals
