@@ -540,7 +540,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       $content[$col]['#type'] = 'hidden';
     }
     // stash rendered tsvalue, tscode and featureid in case these are used elsewhere
-    $content['tscode']['#title'] = 'Type';
+    $content['tscode']['#title'] = '&nbsp;';
     $content['tscode']['#markup'] = $incident_detail;
     $content['featureid']['#markup'] = $feature->name;
     $content['tsvalue']['#markup'] = $pct;
