@@ -607,7 +607,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
     $form['Advanced']['Extent'] = $form['Extent'];
     unset($form['Incidence']);
     unset($form['Extent']);
-    dpm($form,'form');
+    //dpm($form,'form');
   }
   
   public function save($entity) {
@@ -615,6 +615,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
       // use advanced notation
       $entity->tsvalue = $entity->Incidence * $entity->Extent;
     }
+    dpm($entity,'entity');
     parent::save();
   }
 }
@@ -761,14 +762,6 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
-    //dpm($row,'entity');
-    // done in parent now, override if ranges are insufficient
-    //$pcts = $this->pct_list(array('<1', 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, '>95'));
-    //$form['tsvalue']['#options'] = $pcts;
-    $form['tsvalue']['#default_value'] = ($row->tid > 0) ? $row->tsvalue : 0.25;
-    $form['tsvalue']['#title'] = t('% Affected (incidence * extent)');
-    $form['tsvalue']['#weight'] = 1;
-    $form['tsvalue']['#type'] = 'select';
     $form['tscode']['#title'] = t('Organism Type');
     $form['tscode']['#type'] = 'select';
     $form['tscode']['#options'] = $this->incidentCodes();
