@@ -539,6 +539,10 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     foreach ($hidden as $col) {
       $content[$col]['#type'] = 'hidden';
     }
+    // stash rendered tsvalue, tscode and featureid in case these are used elsewhere
+    $content['tscode']['#markup'] = $incident_detail;
+    $content['featureid']['#markup'] = $feature->name;
+    $content['tsvalue']['#markup'] = $pct;
     $pct = ($entity->tsvalue <= $this->loval) ? $this->lolabel : round(100.0 * $entity->tsvalue) . '%';
     $link = $this->getLink($entity);
     switch($view_mode) {
