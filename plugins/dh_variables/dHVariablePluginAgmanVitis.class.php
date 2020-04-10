@@ -566,20 +566,20 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
       'leaf_burn' => 'Leaf Burn',
     );
   }
-  public function formRowEdit(&$rowform, $row) {
-    parent::formRowEdit($rowform, $row); // does hiding etc.
+  public function formRowEdit(&$form, $row) {
+    parent::formRowEdit($form, $row); // does hiding etc.
     $pcts = array('<1');
     for ($i = 5; $i < 95; $i+= 5) {
       $pcts[] = $i;
     }
     $pcts[] = '>95';
     $pcts = $this->pct_list($pcts);
-    $rowform['tsvalue']['#options'] = $pcts;
-    $rowform['tsvalue']['#title'] = t('% of Plants Affected');
-    $rowform['tscode']['#title'] = t('Incident Type');
-    $rowform['tscode']['#type'] = 'select';
-    $rowform['tscode']['#options'] = $this->incidentCodes();
-    $rowform['tscode']['#size'] = 1;
+    $form['tsvalue']['#options'] = $pcts;
+    $form['tsvalue']['#title'] = t('% of Plants Affected');
+    $form['tscode']['#title'] = t('Incident Type');
+    $form['tscode']['#type'] = 'select';
+    $form['tscode']['#options'] = $this->incidentCodes();
+    $form['tscode']['#size'] = 1;
     
     $form['Advanced']['Advanced'] = $form['Advanced'];
     $form['Advanced']['#type'] = 'fieldset';
@@ -633,30 +633,30 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginAgmanAction {
     }
   }
   
-  public function formRowEdit(&$rowform, $row) {
+  public function formRowEdit(&$form, $row) {
     // parent method handles location stuff
-    parent::formRowEdit($rowform, $row);
+    parent::formRowEdit($form, $row);
     // apply custom settings here
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
     
-    $rowform['tstime']['#type'] = 'date_popup';
+    $form['tstime']['#type'] = 'date_popup';
     $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
-    $rowform['tsvalue'] = array(
+    $form['tsvalue'] = array(
       '#title' => t('% Veraison'),
       '#type' => 'select',
       '#options' => $pcts,
       '#weight' => 2,
       '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : "0.5",
     );
-    $rowform['actions']['submit']['#value'] = t('Save');
-    $rowform['actions']['delete']['#value'] = t('Delete');
+    $form['actions']['submit']['#value'] = t('Save');
+    $form['actions']['delete']['#value'] = t('Delete');
     /*
     $hidden = array('pid', 'startdate', 'entity_type', 'bundle');
     foreach ($hidden as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
+      $form[$hide_this]['#type'] = 'hidden';
     }
     */
   }
@@ -683,15 +683,15 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     return $opts;
   }
   
-  public function formRowEdit(&$rowform, $row) {
-    parent::formRowEdit($rowform, $row); // does hiding etc.
+  public function formRowEdit(&$form, $row) {
+    parent::formRowEdit($form, $row); // does hiding etc.
     $opts = $this->getOptions();
-    $rowform['propcode']['#title'] = t('Share Event Info?');
-    $rowform['propcode']['#type'] = 'select';
-    $rowform['propcode']['#options'] = $opts;
-    $rowform['propcode']['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
-    $rowform['propcode']['#size'] = 1;
-    $rowform['propcode']['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users of GrapeIPM.org.');
+    $form['propcode']['#title'] = t('Share Event Info?');
+    $form['propcode']['#type'] = 'select';
+    $form['propcode']['#options'] = $opts;
+    $form['propcode']['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
+    $form['propcode']['#size'] = 1;
+    $form['propcode']['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users of GrapeIPM.org.');
   }
   public function attachNamedForm(&$rowform, $row) {
     parent::attachNamedForm($rowform, $row);
