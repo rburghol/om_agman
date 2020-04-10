@@ -607,6 +607,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
     $form['Advanced']['Extent'] = $form['Extent'];
     unset($form['Incidence']);
     unset($form['Extent']);
+    dpm($form,'form');
   }
   
   public function save($entity) {
