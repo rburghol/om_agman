@@ -499,6 +499,26 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         'varkey' => 'ipm_extent',
         'varid' => dh_varkey2varid('ipm_extent', TRUE),
       ),
+      'Location' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'leaves',
+        'propvalue_default' => 0.0,
+        'propname' => 'Location',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_tissue',
+        'varid' => dh_varkey2varid('ipm_tissue', TRUE),
+      ),
+      'Sharing' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'locality',
+        'propvalue_default' => 0.0,
+        'propname' => 'Sharing',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_info_share',
+        'varid' => dh_varkey2varid('ipm_info_share', TRUE),
+      ),
     );
     return $defaults;
   }
@@ -608,7 +628,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
     $form['Advanced']['Extent'] = $form['Extent'];
     unset($form['Incidence']);
     unset($form['Extent']);
-    //dpm($form,'form');
+    dpm($form,'form');
   }
   
   public function save($entity) {
@@ -731,33 +751,6 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $options = dh_varkey_varselect_options(array("vocabulary = 'fungal_pathogens'"));
     asort($options);
     return $options;
-  }
-  
-  public function getDefaults($entity, &$defaults = array()) {
-    parent::getDefaults($entity, $defaults);
-    $defaults += array(
-      'Location' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => 'leaves',
-        'propvalue_default' => 0.0,
-        'propname' => 'Location',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_tissue',
-        'varid' => dh_varkey2varid('ipm_tissue', TRUE),
-      ),
-      'Sharing' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => 'locality',
-        'propvalue_default' => 0.0,
-        'propname' => 'Sharing',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_info_share',
-        'varid' => dh_varkey2varid('ipm_info_share', TRUE),
-      ),
-    );
-    return $defaults;
   }
   
   public function formRowEdit(&$form, $row) {
