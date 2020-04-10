@@ -775,7 +775,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
-    dpm($entity,'buildcontent called');
+    // Note: Views result sets MUST have tid column included, even if hidden, in order to show a rendered ts entity.
     $codes = $this->incidentCodes();
     $incident_detail = $codes[$entity->tscode];
     $feature = $this->getParentEntity($entity);
