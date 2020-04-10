@@ -482,7 +482,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         'propcode_default' => NULL,
         'propvalue_default' => 0.5,
         'propname' => 'Incidence',
-        'vardesc' => 'Fraction of plants effected (0.0-1.0)',
+        'vardesc' => 'Fraction of plants affected (0.0-1.0)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_incidence',
@@ -493,7 +493,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         'propcode_default' => NULL,
         'propvalue_default' => 0.5,
         'propname' => 'Extent',
-        'vardesc' => 'Fraction effected tissue per plant (0.0-1.0)',
+        'vardesc' => 'Fraction affected tissue per plant (0.0-1.0)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_extent',
@@ -629,7 +629,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
     $form['Advanced']['Extent'] = $form['Extent'];
     unset($form['Incidence']);
     unset($form['Extent']);
-    dpm($form,'form');
+    //dpm($form,'form');
   }
   
   public function save($entity) {
@@ -637,7 +637,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
       // use advanced notation
       $entity->tsvalue = $entity->Incidence * $entity->Extent;
     }
-    dpm($entity,'entity');
+    //dpm($entity,'entity');
     parent::save();
   }
 }
