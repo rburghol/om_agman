@@ -482,7 +482,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         'propcode_default' => NULL,
         'propvalue_default' => 0.5,
         'propname' => 'Incidence',
-        'vardesc' => 'Fraction of plants effected (0.0-1.0)',
+        'vardesc' => 'Fraction of plants affected (0.0-1.0)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_incidence',
@@ -493,11 +493,31 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         'propcode_default' => NULL,
         'propvalue_default' => 0.5,
         'propname' => 'Extent',
-        'vardesc' => 'Fraction effected tissue per plant (0.0-1.0)',
+        'vardesc' => 'Fraction affected tissue per plant (0.0-1.0)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_extent',
         'varid' => dh_varkey2varid('ipm_extent', TRUE),
+      ),
+      'Location' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'leaves',
+        'propvalue_default' => 0.0,
+        'propname' => 'Location',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_tissue',
+        'varid' => dh_varkey2varid('ipm_tissue', TRUE),
+      ),
+      'Sharing' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'locality',
+        'propvalue_default' => 0.0,
+        'propname' => 'Sharing',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_info_share',
+        'varid' => dh_varkey2varid('ipm_info_share', TRUE),
       ),
     );
     return $defaults;
@@ -506,6 +526,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
+    // Note: Views result sets MUST have tid column included, even if hidden, in order to show a rendered ts entity.
     $codes = $this->incidentCodes();
     $incident_detail = $codes[$entity->tscode];
     $feature = $this->getParentEntity($entity);
@@ -550,6 +571,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
 }
 
 class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
+  var $attach_method = 'contained';
   
   public function incidentCodes() {
     return array(
@@ -565,20 +587,58 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
       'leaf_burn' => 'Leaf Burn',
     );
   }
-  public function formRowEdit(&$rowform, $row) {
-    parent::formRowEdit($rowform, $row); // does hiding etc.
+  public function formRowEdit(&$form, $row) {
+    parent::formRowEdit($form, $row); // does hiding etc.
     $pcts = array('<1');
     for ($i = 5; $i < 95; $i+= 5) {
       $pcts[] = $i;
     }
     $pcts[] = '>95';
     $pcts = $this->pct_list($pcts);
-    $rowform['tsvalue']['#options'] = $pcts;
-    $rowform['tsvalue']['#title'] = t('% of Plants Affected');
-    $rowform['tscode']['#title'] = t('Incident Type');
-    $rowform['tscode']['#type'] = 'select';
-    $rowform['tscode']['#options'] = $this->incidentCodes();
-    $rowform['tscode']['#size'] = 1;
+    $form['tsvalue']['#options'] = $pcts;
+    $form['tsvalue']['#title'] = t('% of Plants Affected');
+    $form['tscode']['#title'] = t('Incident Type');
+    $form['tscode']['#type'] = 'select';
+    $form['tscode']['#options'] = $this->incidentCodes();
+    $form['tscode']['#size'] = 1;
+    
+    $form['Advanced']['Advanced'] = $form['Advanced'];
+    $form['Advanced']['#title'] = t('IPM Advanced');
+    $form['Advanced']['#type'] = 'fieldset';
+    $form['Advanced']['#collapsible'] = TRUE;
+    $form['Advanced']['#collapsed'] = TRUE;
+    $form['Advanced']['#weight'] = 2;
+    
+    $adv = $row->Advanced;
+    //dpm($row,'row');
+    //dpm($adv,'adv');
+    //dpm($form,'form');
+    //dpm($adv->propvalue,'propvalue');
+    if (floatval($adv->propvalue) > 0) {
+      // using advanced notation, so show as expanded
+      $form['Advanced']['#collapsed'] = FALSE;
+      $form['tsvalue']['#type'] = 'hidden';
+      $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
+      $form['tsvalue']['#element_validate'] = array('element_validate_number');
+      unset( $form['tsvalue']['#options']);
+    }
+    // this moves to this grouped location.  
+    // @todo: There may be a better way?  Or more automated, by using 
+    // some array hierarchy in getDefaults() routine?
+    $form['Advanced']['Incidence'] = $form['Incidence'];
+    $form['Advanced']['Extent'] = $form['Extent'];
+    unset($form['Incidence']);
+    unset($form['Extent']);
+    //dpm($form,'form');
+  }
+  
+  public function save($entity) {
+    if ($entity->Advanced > 0) {
+      // use advanced notation
+      $entity->tsvalue = $entity->Incidence * $entity->Extent;
+    }
+    //dpm($entity,'entity');
+    parent::save();
   }
 }
 
@@ -596,30 +656,30 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginAgmanAction {
     }
   }
   
-  public function formRowEdit(&$rowform, $row) {
+  public function formRowEdit(&$form, $row) {
     // parent method handles location stuff
-    parent::formRowEdit($rowform, $row);
+    parent::formRowEdit($form, $row);
     // apply custom settings here
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
     }
     
-    $rowform['tstime']['#type'] = 'date_popup';
+    $form['tstime']['#type'] = 'date_popup';
     $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
-    $rowform['tsvalue'] = array(
+    $form['tsvalue'] = array(
       '#title' => t('% Veraison'),
       '#type' => 'select',
       '#options' => $pcts,
       '#weight' => 2,
       '#default_value' => !empty($row->tsvalue) ? $row->tsvalue : "0.5",
     );
-    $rowform['actions']['submit']['#value'] = t('Save');
-    $rowform['actions']['delete']['#value'] = t('Delete');
+    $form['actions']['submit']['#value'] = t('Save');
+    $form['actions']['delete']['#value'] = t('Delete');
     /*
     $hidden = array('pid', 'startdate', 'entity_type', 'bundle');
     foreach ($hidden as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
+      $form[$hide_this]['#type'] = 'hidden';
     }
     */
   }
@@ -646,15 +706,15 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     return $opts;
   }
   
-  public function formRowEdit(&$rowform, $row) {
-    parent::formRowEdit($rowform, $row); // does hiding etc.
+  public function formRowEdit(&$form, $row) {
+    parent::formRowEdit($form, $row); // does hiding etc.
     $opts = $this->getOptions();
-    $rowform['propcode']['#title'] = t('Share Event Info?');
-    $rowform['propcode']['#type'] = 'select';
-    $rowform['propcode']['#options'] = $opts;
-    $rowform['propcode']['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
-    $rowform['propcode']['#size'] = 1;
-    $rowform['propcode']['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users of GrapeIPM.org.');
+    $form['propcode']['#title'] = t('Share Event Info?');
+    $form['propcode']['#type'] = 'select';
+    $form['propcode']['#options'] = $opts;
+    $form['propcode']['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
+    $form['propcode']['#size'] = 1;
+    $form['propcode']['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users of GrapeIPM.org.');
   }
   public function attachNamedForm(&$rowform, $row) {
     parent::attachNamedForm($rowform, $row);
@@ -678,7 +738,6 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
 class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   var $loval = 0.01;
   var $lolabel = "<=1%"; 
-  var $attach_method = 'contained';
   // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
   //        why aren't they converting location sharing to setting?
   //    Once debugged, un-comment $attach_method = 'contained'
@@ -695,81 +754,13 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     return $options;
   }
   
-  public function getDefaults($entity, &$defaults = array()) {
-    parent::getDefaults($entity, $defaults);
-    $defaults += array(
-      'Location' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => 'leaves',
-        'propvalue_default' => 0.0,
-        'propname' => 'Location',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_tissue',
-        'varid' => dh_varkey2varid('ipm_tissue', TRUE),
-      ),
-      'Sharing' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => 'locality',
-        'propvalue_default' => 0.0,
-        'propname' => 'Sharing',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_info_share',
-        'varid' => dh_varkey2varid('ipm_info_share', TRUE),
-      ),
-    );
-    return $defaults;
-  }
-  
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
-    //dpm($row,'entity');
-    // done in parent now, override if ranges are insufficient
-    //$pcts = $this->pct_list(array('<1', 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, '>95'));
-    //$form['tsvalue']['#options'] = $pcts;
-    $form['tsvalue']['#default_value'] = ($row->tid > 0) ? $row->tsvalue : 0.25;
-    $form['tsvalue']['#title'] = t('% Affected (incidence * extent)');
-    $form['tsvalue']['#weight'] = 1;
-    $form['tsvalue']['#type'] = 'select';
     $form['tscode']['#title'] = t('Organism Type');
     $form['tscode']['#type'] = 'select';
     $form['tscode']['#options'] = $this->incidentCodes();
     $form['tscode']['#size'] = 1;
-    
-    $form['Advanced']['Advanced'] = $form['Advanced'];
-    $form['Advanced']['#type'] = 'fieldset';
-    $form['Advanced']['#collapsible'] = TRUE;
-    $form['Advanced']['#collapsed'] = TRUE;
-    $form['Advanced']['#weight'] = 2;
-    $adv = $row->Advanced;
-    //dpm($row,'row');
-    //dpm($adv,'adv');
     //dpm($form,'form');
-    //dpm($adv->propvalue,'propvalue');
-    if (floatval($adv->propvalue) > 0) {
-      // using advanced notation, so show as expanded
-      $form['Advanced']['#collapsed'] = FALSE;
-      $form['tsvalue']['#type'] = 'hidden';
-      $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
-      $form['tsvalue']['#element_validate'] = array('element_validate_number');
-      unset( $form['tsvalue']['#options']);
-    }
-    // this moves to this grouped location.  
-    // @todo: There may be a better way?  Or more automated, by using 
-    // some array hierarchy in getDefaults() routine?
-    $form['Advanced']['Incidence'] = $form['Incidence'];
-    $form['Advanced']['Extent'] = $form['Extent'];
-    unset($form['Incidence']);
-    unset($form['Extent']);
-  }
-  
-  public function save($entity) {
-    if ($entity->Advanced > 0) {
-      // use advanced notation
-      $entity->tsvalue = $entity->Incidence * $entity->Extent;
-    }
-    parent::save();
   }
 }
 
