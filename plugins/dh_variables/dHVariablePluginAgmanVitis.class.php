@@ -603,6 +603,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
     $form['tscode']['#size'] = 1;
     
     $form['Advanced']['Advanced'] = $form['Advanced'];
+    $form['Advanced']['#title'] = t('IPM Advanced');
     $form['Advanced']['#type'] = 'fieldset';
     $form['Advanced']['#collapsible'] = TRUE;
     $form['Advanced']['#collapsed'] = TRUE;
