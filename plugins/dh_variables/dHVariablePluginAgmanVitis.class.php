@@ -506,6 +506,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
+    // Note: Views result sets MUST have tid column included, even if hidden, in order to show a rendered ts entity.
     $codes = $this->incidentCodes();
     $incident_detail = $codes[$entity->tscode];
     $feature = $this->getParentEntity($entity);
@@ -579,6 +580,41 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
     $rowform['tscode']['#type'] = 'select';
     $rowform['tscode']['#options'] = $this->incidentCodes();
     $rowform['tscode']['#size'] = 1;
+    
+    $form['Advanced']['Advanced'] = $form['Advanced'];
+    $form['Advanced']['#type'] = 'fieldset';
+    $form['Advanced']['#collapsible'] = TRUE;
+    $form['Advanced']['#collapsed'] = TRUE;
+    $form['Advanced']['#weight'] = 2;
+    
+    $adv = $row->Advanced;
+    //dpm($row,'row');
+    //dpm($adv,'adv');
+    //dpm($form,'form');
+    //dpm($adv->propvalue,'propvalue');
+    if (floatval($adv->propvalue) > 0) {
+      // using advanced notation, so show as expanded
+      $form['Advanced']['#collapsed'] = FALSE;
+      $form['tsvalue']['#type'] = 'hidden';
+      $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
+      $form['tsvalue']['#element_validate'] = array('element_validate_number');
+      unset( $form['tsvalue']['#options']);
+    }
+    // this moves to this grouped location.  
+    // @todo: There may be a better way?  Or more automated, by using 
+    // some array hierarchy in getDefaults() routine?
+    $form['Advanced']['Incidence'] = $form['Incidence'];
+    $form['Advanced']['Extent'] = $form['Extent'];
+    unset($form['Incidence']);
+    unset($form['Extent']);
+  }
+  
+  public function save($entity) {
+    if ($entity->Advanced > 0) {
+      // use advanced notation
+      $entity->tsvalue = $entity->Incidence * $entity->Extent;
+    }
+    parent::save();
   }
 }
 
@@ -736,85 +772,6 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $form['tscode']['#type'] = 'select';
     $form['tscode']['#options'] = $this->incidentCodes();
     $form['tscode']['#size'] = 1;
-    
-    $form['Advanced']['Advanced'] = $form['Advanced'];
-    $form['Advanced']['#type'] = 'fieldset';
-    $form['Advanced']['#collapsible'] = TRUE;
-    $form['Advanced']['#collapsed'] = TRUE;
-    $form['Advanced']['#weight'] = 2;
-    $adv = $row->Advanced;
-    //dpm($row,'row');
-    //dpm($adv,'adv');
-    //dpm($form,'form');
-    //dpm($adv->propvalue,'propvalue');
-    if (floatval($adv->propvalue) > 0) {
-      // using advanced notation, so show as expanded
-      $form['Advanced']['#collapsed'] = FALSE;
-      $form['tsvalue']['#type'] = 'hidden';
-      $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
-      $form['tsvalue']['#element_validate'] = array('element_validate_number');
-      unset( $form['tsvalue']['#options']);
-    }
-    // this moves to this grouped location.  
-    // @todo: There may be a better way?  Or more automated, by using 
-    // some array hierarchy in getDefaults() routine?
-    $form['Advanced']['Incidence'] = $form['Incidence'];
-    $form['Advanced']['Extent'] = $form['Extent'];
-    unset($form['Incidence']);
-    unset($form['Extent']);
-  }
-  
-  public function save($entity) {
-    if ($entity->Advanced > 0) {
-      // use advanced notation
-      $entity->tsvalue = $entity->Incidence * $entity->Extent;
-    }
-    parent::save();
-  }
-  
-  public function buildContent(&$content, &$entity, $view_mode) {
-    // special render handlers when using a content array
-    // get all FRAC Codes associated with this entity
-    // Note: Views result sets MUST have tid column included, even if hidden, in order to show a rendered ts entity.
-    $codes = $this->incidentCodes();
-    $incident_detail = $codes[$entity->tscode];
-    $feature = $this->getParentEntity($entity);
-    $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
-    $varname = $varinfo->varname;
-    if ($varinfo === FALSE) {
-      return;
-    }
-    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
-    foreach ($hidden as $col) {
-      $content[$col]['#type'] = 'hidden';
-    }
-    $pct = ($entity->tsvalue <= $this->loval) ? $this->lolabel : round(100.0 * $entity->tsvalue) . '%';
-    $link = $this->getLink($entity);
-    switch($view_mode) {
-      case 'ical_summary':
-        //$content['title'] = array(
-        //  '#type' => 'item',
-        //  '#markup' => "Verasion @ $pct in " . $feature->name,
-        //);
-        unset($content['title']['#type']);
-        $content = array();
-        $content['body'] = array(
-          '#type' => 'item',
-          '#markup' => "$varname: $incident_detail @ $pct in " . $feature->name,
-        );
-      break;
-      default:
-        //$content['title'] = array(
-        //  '#type' => 'item',
-        //  '#markup' => "$varname @ $pct in " . $feature->name,
-        //);
-        $content['title'] = $link;
-        $content['body'] = array(
-          '#type' => 'item',
-          '#markup' => "$varname: $incident_detail @ $pct in " . $feature->name,
-        );
-      break;
-    }
   }
 }
 
