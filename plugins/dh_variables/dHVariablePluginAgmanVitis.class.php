@@ -876,7 +876,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
-        'propname' => 'Berry Count',
+        'propname' => 'Number of Berries',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'sample_size_berries',
