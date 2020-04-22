@@ -889,7 +889,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'propname' => 'Weight of Berries (g)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
-        'description' => "counted above, i.e. destemmed berries (g)",
+        'vardesc' => "counted above, i.e. destemmed berries (g)",
         'varkey' => 'sample_weight_g',
         'varid' => dh_varkey2varid('sample_weight_g', TRUE),
       ),
