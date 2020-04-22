@@ -872,16 +872,6 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
-      'sample_weight_g' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => NULL,
-        'propvalue_default' => 0.0,
-        'propname' => 'Sample Weight',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'sample_weight_g',
-        'varid' => dh_varkey2varid('sample_weight_g', TRUE),
-      ),
       'sample_size_berries' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
@@ -891,6 +881,17 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'featureid' => $entity->identifier(),
         'varkey' => 'sample_size_berries',
         'varid' => dh_varkey2varid('sample_size_berries', TRUE),
+      ),
+      'sample_weight_g' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
+        'propname' => 'Weight of Berries (g)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'description' => "counted above, i.e. destemmed berries (g)",
+        'varkey' => 'sample_weight_g',
+        'varid' => dh_varkey2varid('sample_weight_g', TRUE),
       ),
       'brix' => array(
         'entity_type' => $entity->entityType(),
@@ -916,7 +917,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
-        'propname' => 'Berry Weight',
+        'propname' => 'Average Berry Weight',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'berry_weight_g',
