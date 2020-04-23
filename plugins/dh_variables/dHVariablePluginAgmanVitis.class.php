@@ -861,6 +861,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   //        handle in views - maybe a setting in the filter or jumplists itself?
   //  default: agchem_apply_fert_ee
   //       fr: agchem_apply_fert_fr 
+  var $attach_method = 'contained'; // will force all getDefaults() props to be on the form unless they are marked 'embed' = FALSE
   
   public function __construct($conf = array()) {
     parent::__construct($conf);
@@ -1003,10 +1004,6 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     );
     */
     dpm($form,'form');
-  }
-  public function attachNamedForm(&$form, $entity) {
-    parent::attachNamedForm($form, $entity);
-    dpm($entity,'entity');
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
