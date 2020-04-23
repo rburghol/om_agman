@@ -599,6 +599,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
 //      'org_phomopsis' => 'Phomopsis',
 //    ),
       'hail' => 'Hail',
+      'frost' => 'Frost Damage',
       'insect_damage' => 'Insect Damage',
       'leaf_burn' => 'Leaf Burn',
     );
