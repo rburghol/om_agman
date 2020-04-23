@@ -1004,6 +1004,10 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     */
     dpm($form,'form');
   }
+  public function attachNamedForm(&$form, $entity) {
+    parent::attachNamedForm($form, $entity);
+    dpm($entity,'entity');
+  }
   
   public function formRowSave(&$rowvalues, &$entity) {
     parent::formRowSave($rowvalues, $entity);
