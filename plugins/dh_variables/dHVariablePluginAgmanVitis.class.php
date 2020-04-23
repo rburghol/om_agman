@@ -927,10 +927,11 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
-        'propname' => 'Seed Lignification',
+        'propname' => 'Seed Browning',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'seed_lignification',
+        'vardesc' => "Percent of Seed surface colored brown.",
         'varid' => dh_varkey2varid('seed_lignification', TRUE),
       ),
       'total_acidity_gpl' => array(
@@ -987,20 +988,27 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     return $defaults;
   }
   
-  public function formRowEdit(&$rowform, $entity) {
-    parent::formRowEdit($rowform, $entity); // does location
+  public function formRowEdit(&$form, $entity) {
+    parent::formRowEdit($form, $entity); // does location
     //dpm($dopple,'dopple = ' . $pn);
     // override pH format
     // @todo: put this in plugin, or just eliminate, why should we have a select list for pH?
     //        maybe just a validator code is all that is needed
     /*
-    dpm($rowform,'form before ph settings');
-    $rowform['pH']['#type'] = 'select';
-    $rowform['pH']['#options'] = array_merge(
+    dpm($form,'form before ph settings');
+    $form['pH']['#type'] = 'select';
+    $form['pH']['#options'] = array_merge(
       array(0 => 'NA'),
       $this->rangeList(2.0, 5.0, $inc = 0.01, 2)
     );
     */
+    // force over-ride of labels and descriptions set in getDefaults() method of this plugin
+    $attached = $this->getDefaults();
+    foreach ($attached as $att) {
+      if (isset($att['varname']) and isset($form[$att['propname']]) ) {
+        $form[
+    $vardesc = empty($row->vardesc) ? $varinfo->vardesc : $row->vardesc;
+    $title = empty($row->varname) ? $varinfo->varname : $row->varname;
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
