@@ -1002,13 +1002,6 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       $this->rangeList(2.0, 5.0, $inc = 0.01, 2)
     );
     */
-    // force over-ride of labels and descriptions set in getDefaults() method of this plugin
-    $attached = $this->getDefaults();
-    foreach ($attached as $att) {
-      if (isset($att['varname']) and isset($form[$att['propname']]) ) {
-        $form[
-    $vardesc = empty($row->vardesc) ? $varinfo->vardesc : $row->vardesc;
-    $title = empty($row->varname) ? $varinfo->varname : $row->varname;
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
