@@ -1003,7 +1003,6 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       $this->rangeList(2.0, 5.0, $inc = 0.01, 2)
     );
     */
-    dpm($form,'form');
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
