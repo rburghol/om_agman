@@ -560,15 +560,15 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       break;
       case 'tsvalue':
         unset($content['tsvalue']['#title']);
+        unset($content['tsvalue']['#tstext']);
       break;
       case 'tscode':
         unset($content['tscode']['#title']);
+        unset($content['tsvalue']['#tstext']);
       break;
       case 'featureid':
         unset($content['featureid']['#title']);
-      break;
-      case 'tsvalue':
-        unset($content['tscode']['#title']);
+        unset($content['tsvalue']['#tstext']);
       break;
       default:
         //$content['title'] = array(
@@ -855,6 +855,12 @@ class dHVariablePluginVitisBudBreak extends dHVariablePluginAgmanAction {
   }
 }
 
+class dHVariableVitisQuickGrowthStage extends dHVariablePluginAgmanAction {
+  // this combines all growth stages into one since they are all of the format "stage" (propcode) and % (value)
+  // this is a class to allow adding growth stage as an attachment to other events 
+  // we use 50% values for this.  Users can later select other options 
+  // Can we use getDefaults(), with featureid = $entity->featureid, and record type 
+}
 
 class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
