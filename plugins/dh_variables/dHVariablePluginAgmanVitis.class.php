@@ -560,15 +560,15 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       break;
       case 'tsvalue':
         unset($content['tsvalue']['#title']);
+        unset($content['tsvalue']['#tstext']);
       break;
       case 'tscode':
         unset($content['tscode']['#title']);
+        unset($content['tsvalue']['#tstext']);
       break;
       case 'featureid':
         unset($content['featureid']['#title']);
-      break;
-      case 'tsvalue':
-        unset($content['tscode']['#title']);
+        unset($content['tsvalue']['#tstext']);
       break;
       default:
         //$content['title'] = array(
