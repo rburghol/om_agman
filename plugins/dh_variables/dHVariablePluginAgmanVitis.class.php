@@ -572,6 +572,15 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     
   }
   
+  public function save($entity) {
+    if ($entity->Advanced > 0) {
+      // use advanced notation
+      $entity->tsvalue = $entity->Incidence * $entity->Extent;
+    }
+    //dpm($entity,'entity');
+    parent::save();
+  }
+  
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
@@ -659,15 +668,6 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
     $form['tscode']['#type'] = 'select';
     $form['tscode']['#options'] = $this->incidentCodes();
     $form['tscode']['#size'] = 1;
-  }
-  
-  public function save($entity) {
-    if ($entity->Advanced > 0) {
-      // use advanced notation
-      $entity->tsvalue = $entity->Incidence * $entity->Extent;
-    }
-    //dpm($entity,'entity');
-    parent::save();
   }
 }
 
