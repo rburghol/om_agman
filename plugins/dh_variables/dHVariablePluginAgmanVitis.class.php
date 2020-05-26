@@ -590,6 +590,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     $varname = $varinfo->varname;
     $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
+    $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
     if ($varinfo === FALSE) {
       return;
     }
