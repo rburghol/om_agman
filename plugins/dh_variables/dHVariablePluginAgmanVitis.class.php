@@ -529,6 +529,48 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     return array();
   }
   
+  public function formRowEdit(&$form, $row) {
+    parent::formRowEdit($form, $row); // does hiding etc.
+    $pcts = array('<1');
+    for ($i = 5; $i < 95; $i+= 5) {
+      $pcts[] = $i;
+    }
+    $pcts[] = '>95';
+    $pcts = $this->pct_list($pcts);
+    $form['tsvalue']['#options'] = $pcts;
+    $form['tsvalue']['#title'] = t('% of Plants Affected');
+    
+    $form['Advanced']['Advanced'] = $form['Advanced'];
+    $form['Advanced']['#title'] = t('IPM Advanced');
+    $form['Advanced']['#type'] = 'fieldset';
+    $form['Advanced']['#collapsible'] = TRUE;
+    $form['Advanced']['#collapsed'] = TRUE;
+    $form['Advanced']['#weight'] = 2;
+    
+    $adv = $row->Advanced;
+    //dpm($row,'row');
+    //dpm($adv,'adv');
+    //dpm($form,'form');
+    //dpm($adv->propvalue,'propvalue');
+    if (floatval($adv->propvalue) > 0) {
+      // using advanced notation, so show as expanded
+      $form['Advanced']['#collapsed'] = FALSE;
+      $form['tsvalue']['#type'] = 'hidden';
+      $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
+      $form['tsvalue']['#element_validate'] = array('element_validate_number');
+      unset( $form['tsvalue']['#options']);
+    }
+    // this moves to this grouped location.  
+    // @todo: There may be a better way?  Or more automated, by using 
+    // some array hierarchy in getDefaults() routine?
+    $form['Advanced']['Incidence'] = $form['Incidence'];
+    $form['Advanced']['Extent'] = $form['Extent'];
+    unset($form['Incidence']);
+    unset($form['Extent']);
+    //dpm($form,'form');
+    
+  }
+  
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
@@ -612,47 +654,10 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
   }
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
-    $pcts = array('<1');
-    for ($i = 5; $i < 95; $i+= 5) {
-      $pcts[] = $i;
-    }
-    $pcts[] = '>95';
-    $pcts = $this->pct_list($pcts);
-    $form['tsvalue']['#options'] = $pcts;
-    $form['tsvalue']['#title'] = t('% of Plants Affected');
     $form['tscode']['#title'] = t('Incident Type');
     $form['tscode']['#type'] = 'select';
     $form['tscode']['#options'] = $this->incidentCodes();
     $form['tscode']['#size'] = 1;
-    
-    $form['Advanced']['Advanced'] = $form['Advanced'];
-    $form['Advanced']['#title'] = t('IPM Advanced');
-    $form['Advanced']['#type'] = 'fieldset';
-    $form['Advanced']['#collapsible'] = TRUE;
-    $form['Advanced']['#collapsed'] = TRUE;
-    $form['Advanced']['#weight'] = 2;
-    
-    $adv = $row->Advanced;
-    //dpm($row,'row');
-    //dpm($adv,'adv');
-    //dpm($form,'form');
-    //dpm($adv->propvalue,'propvalue');
-    if (floatval($adv->propvalue) > 0) {
-      // using advanced notation, so show as expanded
-      $form['Advanced']['#collapsed'] = FALSE;
-      $form['tsvalue']['#type'] = 'hidden';
-      $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
-      $form['tsvalue']['#element_validate'] = array('element_validate_number');
-      unset( $form['tsvalue']['#options']);
-    }
-    // this moves to this grouped location.  
-    // @todo: There may be a better way?  Or more automated, by using 
-    // some array hierarchy in getDefaults() routine?
-    $form['Advanced']['Incidence'] = $form['Incidence'];
-    $form['Advanced']['Extent'] = $form['Extent'];
-    unset($form['Incidence']);
-    unset($form['Extent']);
-    //dpm($form,'form');
   }
   
   public function save($entity) {
