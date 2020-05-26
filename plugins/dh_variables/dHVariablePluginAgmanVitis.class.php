@@ -539,13 +539,14 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     $pcts = $this->pct_list($pcts);
     $form['tsvalue']['#options'] = $pcts;
     $form['tsvalue']['#description'] = t('% of Plants Affected');
+    $form['tsvalue']['#weight'] = 2;
     
     $form['Advanced']['Advanced'] = $form['Advanced'];
     $form['Advanced']['#title'] = t('IPM Advanced');
     $form['Advanced']['#type'] = 'fieldset';
     $form['Advanced']['#collapsible'] = TRUE;
     $form['Advanced']['#collapsed'] = TRUE;
-    $form['Advanced']['#weight'] = 2;
+    $form['Advanced']['#weight'] = 3;
     
     $adv = $row->Advanced;
     //dpm($row,'row');
