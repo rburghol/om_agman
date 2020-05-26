@@ -463,6 +463,7 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
 class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector {
   var $loval = 0.05;
   var $lolabel = '<=5%';
+  var $attach_method = 'contained';
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
@@ -521,6 +522,11 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       ),
     );
     return $defaults;
+  }
+  
+  public function incidentCodes() {
+    // sub-class this to provide extra info 
+    return array();
   }
   
   public function buildContent(&$content, &$entity, $view_mode) {
