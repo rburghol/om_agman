@@ -542,7 +542,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     $form['tsvalue']['#weight'] = 2;
     
     $form['Advanced']['Advanced'] = $form['Advanced'];
-    $form['Advanced']['#title'] = t('IPM Advanced');
+    $form['Advanced']['#title'] = t('Advanced');
     $form['Advanced']['#type'] = 'fieldset';
     $form['Advanced']['#collapsible'] = TRUE;
     $form['Advanced']['#collapsed'] = TRUE;
