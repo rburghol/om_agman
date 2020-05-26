@@ -586,7 +586,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     // get all FRAC Codes associated with this entity
     // Note: Views result sets MUST have tid column included, even if hidden, in order to show a rendered ts entity.
     $codes = $this->incidentCodes();
-    $incident_detail = $codes[$entity->tscode];
+    $incident_detail = isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
     $feature = $this->getParentEntity($entity);
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     $varname = $varinfo->varname;
