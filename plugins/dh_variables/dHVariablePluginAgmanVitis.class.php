@@ -649,23 +649,38 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
   var $attach_method = 'contained';
   
   public function incidentCodes() {
+    /*
     return array(
-//    'Disease' => array(
-//      'org_botrytis' => 'Botrytis',
-//      'org_black_rot' => 'Downy Mildew',
-//      'hail' => 'Powdery Mildew',
-//      'org_black_rot' => 'Black Rot',
-//      'org_phomopsis' => 'Phomopsis',
-//    ),
       'hail' => 'Hail',
       'frost' => 'Frost Damage',
       'insect_damage' => 'Insect Damage',
       'leaf_burn' => 'Leaf Burn',
     );
+    */
+    $opts = array(
+      'cutworms' => 'Climbing Cutworms',
+      'bm_stinkbugs' => 'Brown marmorated stink bug',
+      'gbm' => 'Grape berry moth',
+      'swd' => 'Spotted wing drosophila',
+      'gfb' => 'Grape flea beetle',
+      'rblr' => 'Redbanded leafroller',
+      'yj' => 'Yellowjackets',
+      'rose_chafer' => 'Rose chafer',
+      'gcurculio' => 'Grape curculio',
+      'glooper' => 'Grapevine looper',
+      'jbeetle' => 'Japanese Beetle',
+      'ermite' => 'European red mite',
+      'tgallmaker' => 'Tumid gallmaker',
+      'spotted_lanternfly' => 'Spotted Lanternfly',
+    );
+    
+    asort($opts);
+    $opts['other'] = 'Other (describe in comments)'; // put this at the end
+    return $opts;
   }
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
-    $form['tscode']['#title'] = t('Incident Type');
+    $form['tscode']['#title'] = t('Insect Type');
     $form['tscode']['#type'] = 'select';
     $form['tscode']['#options'] = $this->incidentCodes();
     $form['tscode']['#size'] = 1;
