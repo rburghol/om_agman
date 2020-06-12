@@ -884,12 +884,19 @@ class dHVariablePluginVitisBudBreak extends dHVariablePluginAgmanAction {
   }
 }
 
+class dHVariableVitisQuickGrowthStage extends dHVariablePluginAgmanAction {
+  // this combines all growth stages into one since they are all of the format "stage" (propcode) and % (value)
+  // this is a class to allow adding growth stage as an attachment to other events 
+  // we use 50% values for this.  Users can later select other options 
+  // Can we use getDefaults(), with featureid = $entity->featureid, and record type 
+}
 
 class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
   //        handle in views - maybe a setting in the filter or jumplists itself?
   //  default: agchem_apply_fert_ee
   //       fr: agchem_apply_fert_fr 
+  var $attach_method = 'contained'; // will force all getDefaults() props to be on the form unless they are marked 'embed' = FALSE
   
   public function __construct($conf = array()) {
     parent::__construct($conf);
@@ -901,25 +908,28 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
-      'sample_weight_g' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => NULL,
-        'propvalue_default' => 0.0,
-        'propname' => 'Sample Weight',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'sample_weight_g',
-        'varid' => dh_varkey2varid('sample_weight_g', TRUE),
-      ),
       'sample_size_berries' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
         'propname' => 'Berry Count',
+        'title' => 'Number of Berries',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'sample_size_berries',
         'varid' => dh_varkey2varid('sample_size_berries', TRUE),
+      ),
+      'sample_weight_g' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
+        'propname' => 'Sample Weight',
+        'title' => 'Weight of Berries',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'vardesc' => "counted above, i.e. destemmed berries (g)",
+        'varkey' => 'sample_weight_g',
+        'varid' => dh_varkey2varid('sample_weight_g', TRUE),
       ),
       'brix' => array(
         'entity_type' => $entity->entityType(),
@@ -946,6 +956,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
         'propname' => 'Berry Weight',
+        'title' => 'Average Berry Weight',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'berry_weight_g',
@@ -956,9 +967,11 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
         'propname' => 'Seed Lignification',
+        'title' => 'Seed Browning',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'seed_lignification',
+        'vardesc' => "Percent of Seed surface colored brown.",
         'varid' => dh_varkey2varid('seed_lignification', TRUE),
       ),
       'total_acidity_gpl' => array(
@@ -1015,16 +1028,16 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     return $defaults;
   }
   
-  public function formRowEdit(&$rowform, $entity) {
-    parent::formRowEdit($rowform, $entity); // does location
+  public function formRowEdit(&$form, $entity) {
+    parent::formRowEdit($form, $entity); // does location
     //dpm($dopple,'dopple = ' . $pn);
     // override pH format
     // @todo: put this in plugin, or just eliminate, why should we have a select list for pH?
     //        maybe just a validator code is all that is needed
     /*
-    dpm($rowform,'form before ph settings');
-    $rowform['pH']['#type'] = 'select';
-    $rowform['pH']['#options'] = array_merge(
+    dpm($form,'form before ph settings');
+    $form['pH']['#type'] = 'select';
+    $form['pH']['#options'] = array_merge(
       array(0 => 'NA'),
       $this->rangeList(2.0, 5.0, $inc = 0.01, 2)
     );
