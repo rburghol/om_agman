@@ -463,6 +463,7 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
 class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector {
   var $loval = 0.05;
   var $lolabel = '<=5%';
+  var $attach_method = 'contained';
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
@@ -523,15 +524,73 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     return $defaults;
   }
   
+  public function incidentCodes() {
+    // sub-class this to provide extra info 
+    return array();
+  }
+  
+  public function formRowEdit(&$form, $row) {
+    parent::formRowEdit($form, $row); // does hiding etc.
+    $pcts = array('<1');
+    for ($i = 5; $i < 95; $i+= 5) {
+      $pcts[] = $i;
+    }
+    $pcts[] = '>95';
+    $pcts = $this->pct_list($pcts);
+    $form['tsvalue']['#options'] = $pcts;
+    $form['tsvalue']['#description'] = t('% of Plants Affected.  To use incident/extent notation click below to expand the section labeled Advanced');
+    $form['tsvalue']['#weight'] = 2;
+    
+    $form['Advanced']['Advanced'] = $form['Advanced'];
+    $form['Advanced']['#title'] = t('Advanced');
+    $form['Advanced']['#type'] = 'fieldset';
+    $form['Advanced']['#collapsible'] = TRUE;
+    $form['Advanced']['#collapsed'] = TRUE;
+    $form['Advanced']['#weight'] = 3;
+    
+    $adv = $row->Advanced;
+    //dpm($row,'row');
+    //dpm($adv,'adv');
+    //dpm($form,'form');
+    //dpm($adv->propvalue,'propvalue');
+    if (floatval($adv->propvalue) > 0) {
+      // using advanced notation, so show as expanded
+      $form['Advanced']['#collapsed'] = FALSE;
+      $form['tsvalue']['#type'] = 'hidden';
+      $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
+      $form['tsvalue']['#element_validate'] = array('element_validate_number');
+      unset( $form['tsvalue']['#options']);
+    }
+    // this moves to this grouped location.  
+    // @todo: There may be a better way?  Or more automated, by using 
+    // some array hierarchy in getDefaults() routine?
+    $form['Advanced']['Incidence'] = $form['Incidence'];
+    $form['Advanced']['Extent'] = $form['Extent'];
+    unset($form['Incidence']);
+    unset($form['Extent']);
+    //dpm($form,'form');
+    
+  }
+  
+  public function save($entity) {
+    if ($entity->Advanced > 0) {
+      // use advanced notation
+      $entity->tsvalue = $entity->Incidence * $entity->Extent;
+    }
+    //dpm($entity,'entity');
+    parent::save();
+  }
+  
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
     // Note: Views result sets MUST have tid column included, even if hidden, in order to show a rendered ts entity.
     $codes = $this->incidentCodes();
-    $incident_detail = $codes[$entity->tscode];
     $feature = $this->getParentEntity($entity);
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     $varname = $varinfo->varname;
+    $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
+    $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
     if ($varinfo === FALSE) {
       return;
     }
@@ -560,15 +619,15 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       break;
       case 'tsvalue':
         unset($content['tsvalue']['#title']);
-        unset($content['tsvalue']['#tstext']);
+        unset($content['tstext']);
       break;
       case 'tscode':
         unset($content['tscode']['#title']);
-        unset($content['tsvalue']['#tstext']);
+        unset($content['tstext']);
       break;
       case 'featureid':
         unset($content['featureid']['#title']);
-        unset($content['tsvalue']['#tstext']);
+        unset($content['tstext']);
       break;
       default:
         //$content['title'] = array(
@@ -590,71 +649,41 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
   var $attach_method = 'contained';
   
   public function incidentCodes() {
+    /*
     return array(
-//    'Disease' => array(
-//      'org_botrytis' => 'Botrytis',
-//      'org_black_rot' => 'Downy Mildew',
-//      'hail' => 'Powdery Mildew',
-//      'org_black_rot' => 'Black Rot',
-//      'org_phomopsis' => 'Phomopsis',
-//    ),
       'hail' => 'Hail',
+      'frost' => 'Frost Damage',
       'insect_damage' => 'Insect Damage',
       'leaf_burn' => 'Leaf Burn',
     );
+    */
+    $opts = array(
+      'cutworms' => 'Climbing Cutworms',
+      'bm_stinkbugs' => 'Brown marmorated stink bug',
+      'gbm' => 'Grape berry moth',
+      'swd' => 'Spotted wing drosophila',
+      'gfb' => 'Grape flea beetle',
+      'rblr' => 'Redbanded leafroller',
+      'yj' => 'Yellowjackets',
+      'rose_chafer' => 'Rose chafer',
+      'gcurculio' => 'Grape curculio',
+      'glooper' => 'Grapevine looper',
+      'jbeetle' => 'Japanese Beetle',
+      'ermite' => 'European red mite',
+      'tgallmaker' => 'Tumid gallmaker',
+      'spotted_lanternfly' => 'Spotted Lanternfly',
+    );
+    
+    asort($opts);
+    $opts['other'] = 'Other (describe in comments)'; // put this at the end
+    return $opts;
   }
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
-    $pcts = array('<1');
-    for ($i = 5; $i < 95; $i+= 5) {
-      $pcts[] = $i;
-    }
-    $pcts[] = '>95';
-    $pcts = $this->pct_list($pcts);
-    $form['tsvalue']['#options'] = $pcts;
-    $form['tsvalue']['#title'] = t('% of Plants Affected');
-    $form['tscode']['#title'] = t('Incident Type');
+    $form['tscode']['#title'] = t('Insect Type');
     $form['tscode']['#type'] = 'select';
     $form['tscode']['#options'] = $this->incidentCodes();
     $form['tscode']['#size'] = 1;
-    
-    $form['Advanced']['Advanced'] = $form['Advanced'];
-    $form['Advanced']['#title'] = t('IPM Advanced');
-    $form['Advanced']['#type'] = 'fieldset';
-    $form['Advanced']['#collapsible'] = TRUE;
-    $form['Advanced']['#collapsed'] = TRUE;
-    $form['Advanced']['#weight'] = 2;
-    
-    $adv = $row->Advanced;
-    //dpm($row,'row');
-    //dpm($adv,'adv');
-    //dpm($form,'form');
-    //dpm($adv->propvalue,'propvalue');
-    if (floatval($adv->propvalue) > 0) {
-      // using advanced notation, so show as expanded
-      $form['Advanced']['#collapsed'] = FALSE;
-      $form['tsvalue']['#type'] = 'hidden';
-      $form['tsvalue']['#prefix'] = round($row->tsvalue * 100.0, 2) . "%";
-      $form['tsvalue']['#element_validate'] = array('element_validate_number');
-      unset( $form['tsvalue']['#options']);
-    }
-    // this moves to this grouped location.  
-    // @todo: There may be a better way?  Or more automated, by using 
-    // some array hierarchy in getDefaults() routine?
-    $form['Advanced']['Incidence'] = $form['Incidence'];
-    $form['Advanced']['Extent'] = $form['Extent'];
-    unset($form['Incidence']);
-    unset($form['Extent']);
-    //dpm($form,'form');
-  }
-  
-  public function save($entity) {
-    if ($entity->Advanced > 0) {
-      // use advanced notation
-      $entity->tsvalue = $entity->Incidence * $entity->Extent;
-    }
-    //dpm($entity,'entity');
-    parent::save();
   }
 }
 
