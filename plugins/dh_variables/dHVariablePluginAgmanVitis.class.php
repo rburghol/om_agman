@@ -760,14 +760,14 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     $form['propcode']['#options'] = $opts;
     $form['propcode']['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
     $form['propcode']['#size'] = 1;
-    $form['propcode']['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users of GrapeIPM.org.');
+    $form['propcode']['#description'] = t('This setting controls whether or not your report will be shared in maps, alerts, and summary information with other users of GrapeIPM.org.');
   }
   public function attachNamedForm(&$rowform, $row) {
     parent::attachNamedForm($rowform, $row);
     $opts = $this->getOptions();
     $mname = $this->handleFormPropname($row->propname);
     $rowform[$mname]['#title'] = t('Share Event Info?');
-    $rowform[$mname]['#description'] = t('This setting controls whether or not your disease outbreak information will be shared in maps, alerts, and summary information with other users of GrapeIPM.org.');
+    $rowform[$mname]['#description'] = t('This setting controls whether or not your report will be shared in maps, alerts, and summary information with other users of GrapeIPM.org.');
     $rowform[$mname]['#type'] = 'select';
     $rowform[$mname]['#options'] = $opts;
     $rowform[$mname]['#default_value'] = !empty($row->propcode) ? $row->propcode : 'locality';
@@ -806,6 +806,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $form['tscode']['#type'] = 'select';
     $form['tscode']['#options'] = $this->incidentCodes();
     $form['tscode']['#size'] = 1;
+    $form['tscode']['#weight'] = 2;
     //dpm($form,'form');
   }
 }
