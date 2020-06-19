@@ -40,7 +40,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
   }
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
-    $rowform['tstime']['#weight'] = 1;
+    $rowform['tstime']['#weight'] = 0;
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
     if (!$varinfo) {
       return FALSE;
@@ -74,12 +74,12 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
       '#type' => 'select',
       '#options' => $options,
       '#size' => 1,
-      '#weight' => -1,
+      '#weight' => 1,
       '#default_value' => $form['featureid']['#default_value'],
     );
     $form['tscode']['#type'] = 'textfield';
     $form['tscode']['#title'] = t('Row or Sub-Block');
-    $form['tscode']['#weight'] = 0;
+    $form['tscode']['#weight'] = 1;
     $form['tscode']['#description'] = t('Alphanumeric code or description of sub-area for sampling.');
     $form['tscode']['#title'] = t('Sub-Area');
   }
@@ -539,14 +539,14 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     $pcts = $this->pct_list($pcts);
     $form['tsvalue']['#options'] = $pcts;
     $form['tsvalue']['#description'] = t('% of Plants Affected.  To use incident/extent notation click below to expand the section labeled Advanced');
-    $form['tsvalue']['#weight'] = 2;
+    $form['tsvalue']['#weight'] = 3;
     
     $form['Advanced']['Advanced'] = $form['Advanced'];
     $form['Advanced']['#title'] = t('Advanced');
     $form['Advanced']['#type'] = 'fieldset';
     $form['Advanced']['#collapsible'] = TRUE;
     $form['Advanced']['#collapsed'] = TRUE;
-    $form['Advanced']['#weight'] = 3;
+    $form['Advanced']['#weight'] = 4;
     
     $adv = $row->Advanced;
     //dpm($row,'row');
@@ -744,8 +744,8 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
   
   public function getOptions() {  
     $opts = array(
-      'locality' => 'Share County/City Only',
-      'none' => 'Do Not Share Location',
+      'locality' => 'Share County/City w/Public',
+      'none' => 'Do Not Share',
       'geometry' => 'Share Exact Location',
     );
     return $opts;
@@ -979,6 +979,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
         'propname' => 'Total Acidity',
+        'title' => 'Titratable acidity (TA, g/L)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'total_acidity_gpl',
@@ -990,6 +991,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'propvalue_default' => 0.5,
         'propname' => 'Water Content',
         'singularity' => 'name_singular',
+        '#weight' => 9,
         'featureid' => $entity->identifier(),
         'varkey' => 'water_content_pct',
         'varid' => dh_varkey2varid('water_content_pct', TRUE),
