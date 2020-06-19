@@ -747,7 +747,7 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     $opts = array(
       'locality' => 'Share County/City w/Public',
       'none' => 'Do Not Share',
-      'geometry' => 'Share Exact Location',
+ //     'geometry' => 'Share Exact Location',
     );
     return $opts;
   }
