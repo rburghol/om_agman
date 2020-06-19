@@ -516,6 +516,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         'propvalue_default' => 0.0,
         'propname' => 'Sharing',
         'singularity' => 'name_singular',
+        '#weight' => 5,
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_info_share',
         'varid' => dh_varkey2varid('ipm_info_share', TRUE),
