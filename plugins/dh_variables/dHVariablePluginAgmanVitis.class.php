@@ -1200,6 +1200,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   
   public function save($entity) {
     parent::save($entity);
+    dpm($entity,'saving');
   }
 }
 
