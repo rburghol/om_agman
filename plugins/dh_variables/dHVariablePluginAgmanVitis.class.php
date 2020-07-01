@@ -1216,7 +1216,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'propcode_default' => 'org_black_rot',
         'propvalue_default' => 0.0,
         'propname' => 'org_black_rot',
-        'title' => 'Black Rot',
+        'title' => 'Black Rot (leaf)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_outbreak',
@@ -1224,14 +1224,24 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'propcode_mode' => 'read_only',
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
         'tissue_type' => 'leaf',
+        'block' => 'Leaf Samples',
         '#weight' => 4,
       ),
     );
     return $defaults;
   }
-  public function formRowEdit(&$rowform, $row) {
-    parent::formRowEdit($rowform, $row); // does hiding etc.
-    dpm($row,'sv sample event object');
+  
+  public function formRowEdit(&$form, $entity) {
+    parent::formRowEdit($form, $entity); // does hiding etc.
+    dpm($entity,'sv sample event object');
+    $attribs = $this->getDefaults($entity);
+    // @todo: move to separate blocks.  This might be best residing in some parent class 
+    foreach ($attribs as $att) {
+      if (isset($att['block'])) {
+        $form[$att['block']][$att['propname']] = $form[$att['propname']];
+        unset($form[$att['propname']]);
+      }
+    }
   }
   
   
