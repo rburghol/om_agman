@@ -1208,6 +1208,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     // how to handle saving from an embedded form.  Only one value can currently come in from the form.
     // @todo: consider moving this to base class
     // @todo: why does the base class NOT pass in as &reference, since this should have no effect? IF this is true, amend, and test extensively.
+    // @todo: later we should look for [propname]_value and [propname]_code 
     $prop->propvalue = $value;
     // if this is embedded then we know that the propcode_default should be used since this is read-only
     $prop->propcode = (empty($prop->propcode) and property_exists($prop, 'propcode_default')) ? $prop->propcode_default : $prop->propcode;
