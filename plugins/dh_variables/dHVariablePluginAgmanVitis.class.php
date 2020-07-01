@@ -774,7 +774,7 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     $rowform[$mname]['#size'] = 1;
   }
   
-  public function applyEntityAttribute($property, $value) {
+  public function applyEntityAttribute(&$property, $value) {
     // @todo: this needs to be more robust, as it assumes only one way to handle an attached property.
     //        bvut for now this will work.
     $property->propcode = $value;
