@@ -1202,6 +1202,12 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     parent::save($entity);
     dpm($entity,'saving');
   }
+  
+  public function applyEntityAttribute(&$property, $value) {
+    dpm($property,'prop to apply att');
+    // how to handle saving from an embedded form.  Only one value can currently come in from the form.
+    $prop->propvalue = $value;
+  }
 }
 
 class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
