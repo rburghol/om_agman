@@ -1148,6 +1148,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
 
 class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   // 
+  var $attach_method = 'contained'; // how to attach props found in getDefaults() 
   
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
@@ -1171,6 +1172,43 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
     dpm($row,'sv sample event object');
+  }
+  
+  public function addAttachedProperties(&$form, &$entity) {
+    $dopples = $this->getDefaults($entity);
+    dpm($entity, 'addAttachedProperties');
+    foreach ($dopples as $thisvar) {
+      if (!isset($thisvar['embed']) or ($thisvar['embed'] === TRUE)) {
+        $pn = $this->handleFormPropname($thisvar['propname']);
+        $dopple = $entity->{$thisvar['propname']};
+        dsm("Attaching $pn");
+        // @todo: if this is a code variable, we should get propcode?
+        // Attach_method is the parent override of embedded attributes.  This is weird, but will keep for now.
+        switch ($this->attach_method) {
+          case 'contained':
+          $plugin = dh_variables_getPlugins($dopple);
+          //dsm("Trying to attach $pn as contained for plugin class " . get_class($plugin));
+          if ($plugin) {
+            if (method_exists($plugin, 'attachNamedForm')) {
+              //dsm("Using attachNamedForm()");
+              $plugin->attachNamedForm($form, $dopple);
+            } else {
+              $plugin->formRowEdit($dopple_form, $dopple);
+              $form[$pn] = $dopple_form['propvalue'];
+            }
+          }
+          break;
+          default:
+          $dopple_form = array();
+          dh_variables_formRowPlugins($dopple_form, $dopple);
+          $form[$pn] = $dopple_form['propvalue'];
+          break;
+        }
+      }
+      if (isset($thisvar['#weight'])) {
+        $form[$pn]['#weight'] = $thisvar['#weight'];
+      }
+    }
   }
   
 }
