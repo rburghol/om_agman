@@ -1215,7 +1215,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'org_black_rot',
         'propvalue_default' => 0.0,
-        'propname' => 'org_black_rot',
+        'propname' => 'leaf_black_rot',
         'title' => 'Black Rot (leaf)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
