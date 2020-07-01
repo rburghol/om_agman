@@ -1197,6 +1197,10 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $rowform[$mname]['#default_value'] = !empty($row->propvalue) ? $row->propvalue : 0.0;
     dpm($row, "Attaching");
   }
+  
+  public function save($entity) {
+    parent::save($entity);
+  }
 }
 
 class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
@@ -1234,14 +1238,25 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   public function formRowEdit(&$form, $entity) {
     parent::formRowEdit($form, $entity); // does hiding etc.
     dpm($entity,'sv sample event object');
+    
+    // Comment this for the moment until debugging the plant part setting propcode on the diseases.
+    /*
     $attribs = $this->getDefaults($entity);
     // @todo: move to separate blocks.  This might be best residing in some parent class 
     foreach ($attribs as $att) {
+      if (!isset($form[$block])) {
+        $form[$block] = array();
+        $form[$block]['#title'] = t($block);
+        $form[$block]['#type'] = 'fieldset';
+        $form[$block]['#collapsible'] = TRUE;
+        $form[$block]['#collapsed'] = FALSE;
+      }
       if (isset($att['block'])) {
         $form[$att['block']][$att['propname']] = $form[$att['propname']];
         unset($form[$att['propname']]);
       }
     }
+    */
     dpm($form, 'form');
   }
   
