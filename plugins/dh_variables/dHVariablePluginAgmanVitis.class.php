@@ -573,13 +573,13 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     
   }
   
-  public function save($entity) {
+  public function save(&$entity) {
     if ($entity->Advanced > 0) {
       // use advanced notation
       $entity->tsvalue = $entity->Incidence * $entity->Extent;
     }
     dpm($entity,'entity save()');
-    parent::save();
+    parent::save($entity);
   }
   
   public function buildContent(&$content, &$entity, $view_mode) {
@@ -1199,7 +1199,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     dpm($row, "Attaching");
   }
   
-  public function save($entity) {
+  public function save(&$entity) {
     parent::save($entity);
     //dpm($entity,'saving');
   }
@@ -1317,7 +1317,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     //dpm($form, 'form');
   }
   
-  public function save($entity) {
+  public function save(&$entity) {
     // @todo: apply location sharing component settings to all children 
     parent::save($entity);
   }  
