@@ -1147,7 +1147,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_outbreak',
-        '#test' => 'some parameters',
+        'propcode_mode' => 'read_only',
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
       ),
     );
@@ -1156,6 +1156,16 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
     dpm($row,'sv sample event object');
+  }
+  
+  public function attachNamedForm(&$rowform, $row) {
+    parent::attachNamedForm($rowform, $row);
+    // if this is attached, we only show a single data entry form since we don't yet support multi in attached.
+    $mname = $this->handleFormPropname($row->propname);
+    $rowform[$mname]['#title'] = t($row->propname);
+    $rowform[$mname]['#type'] = 'textfield';
+    $rowform[$mname]['#element_validate'] = array('element_validate_number');
+    $rowform[$mname]['#default_value'] = !empty($row->propvalue) ? $row->propvalue : 0.0;
   }
   
 }
