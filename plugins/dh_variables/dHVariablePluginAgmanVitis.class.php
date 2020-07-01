@@ -1228,6 +1228,17 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
+      'Sharing' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'locality',
+        'propvalue_default' => 0.0,
+        'propname' => 'Sharing',
+        'singularity' => 'name_singular',
+        '#weight' => 5,
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_info_share',
+        'varid' => dh_varkey2varid('ipm_info_share', TRUE),
+      ),
       'leaf_black_rot' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'org_black_rot',
@@ -1305,6 +1316,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     //dpm($form, 'form');
   }
   
+  public function save($entity) {
+    // @todo: apply location sharing component settings to all children 
+  }  
   
 }
 
