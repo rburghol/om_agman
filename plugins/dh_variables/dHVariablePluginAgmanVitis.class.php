@@ -1149,6 +1149,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   //    Once debugged, un-comment $attach_method = 'contained'
   
   public function getDefaults($entity, &$defaults = array()) {
+    parent::getDefaults($entity, $defaults);
     $defaults += array(
       'tissue_type' => array(
         'entity_type' => $entity->entityType(),
