@@ -1244,6 +1244,25 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Leaf Samples',
         '#weight' => 4,
       ),
+    );
+    return $defaults;
+    $defaults += array(
+      'leaf_black_rot' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'org_black_rot',
+        'propvalue_default' => 0.0,
+        'propname' => 'leaf_black_rot',
+        'title' => 'Black Rot (leaf)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_outbreak',
+        'attach_method' => 'contained',
+        'propcode_mode' => 'read_only',
+        'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+        'tissue_type' => 'leaf',
+        'block' => 'Leaf Samples',
+        '#weight' => 4,
+      ),
       'leaf_powdery_mildew' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'org_powdery_mildew',
