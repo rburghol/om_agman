@@ -1162,6 +1162,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'varid' => dh_varkey2varid('om_agman_plant_tissue', TRUE),
       ),
     );
+    dpm($defaults, 'defaults');
     return $defaults;
   }
   public function formRowSave(&$rowvalues, &$row) {
@@ -1245,7 +1246,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         '#weight' => 4,
       ),
     );
-    dpm($defaults, 'defaults');
     return $defaults;
     $defaults += array(
       'leaf_black_rot' => array(
