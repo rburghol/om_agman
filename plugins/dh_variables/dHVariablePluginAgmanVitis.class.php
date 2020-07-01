@@ -1242,7 +1242,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         unset($form[$att['propname']]);
       }
     }
-    dom($form, 'form');
+    dpm($form, 'form');
   }
   
   
