@@ -1170,6 +1170,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'attach_method' => 'contained',
         'propcode_mode' => 'read_only',
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+        '#weight' => 4;
       ),
     );
     return $defaults;
