@@ -644,6 +644,18 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     }
   }
   
+  public function attachNamedForm(&$rowform, $row) {
+    parent::attachNamedForm($rowform, $row);
+    // if this is attached, we only show a single data entry form since we don't yet support multi in attached.
+    // we should expect that the property will have an indication of the type in use: severity (default), incident or extent 
+    $mname = $this->handleFormPropname($row->propname);
+    $rowform[$mname]['#title'] = t($row->propname);
+    $rowform[$mname]['#type'] = 'textfield';
+    $rowform[$mname]['#element_validate'] = array('element_validate_number');
+    $rowform[$mname]['#default_value'] = !empty($row->propvalue) ? $row->propvalue : 0.0;
+    dpm($row, "Attaching");
+  }
+  
 }
 
 class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
@@ -1156,16 +1168,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
     dpm($row,'sv sample event object');
-  }
-  
-  public function attachNamedForm(&$rowform, $row) {
-    parent::attachNamedForm($rowform, $row);
-    // if this is attached, we only show a single data entry form since we don't yet support multi in attached.
-    $mname = $this->handleFormPropname($row->propname);
-    $rowform[$mname]['#title'] = t($row->propname);
-    $rowform[$mname]['#type'] = 'textfield';
-    $rowform[$mname]['#element_validate'] = array('element_validate_number');
-    $rowform[$mname]['#default_value'] = !empty($row->propvalue) ? $row->propvalue : 0.0;
   }
   
 }
