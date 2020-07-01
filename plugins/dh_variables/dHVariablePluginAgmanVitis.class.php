@@ -1150,6 +1150,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
       ),
     );
+    return $defaults;
   }
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
