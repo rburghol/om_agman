@@ -1150,6 +1150,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
+    dpm($defaults, 'defaults');
     $defaults += array(
       'tissue_type' => array(
         'entity_type' => $entity->entityType(),
