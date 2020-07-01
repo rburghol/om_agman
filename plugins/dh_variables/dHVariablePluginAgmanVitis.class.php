@@ -1150,7 +1150,6 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
-    dpm($defaults, 'defaults');
     $defaults += array(
       'tissue_type' => array(
         'entity_type' => $entity->entityType(),
@@ -1163,7 +1162,6 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'varid' => dh_varkey2varid('om_agman_plant_tissue', TRUE),
       ),
     );
-    dpm($defaults, 'defaults');
     return $defaults;
   }
   public function formRowSave(&$rowvalues, &$row) {
@@ -1229,25 +1227,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
-    $defaults += array(
-      'leaf_black_rot' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => 'org_black_rot',
-        'propvalue_default' => 0.0,
-        'propname' => 'leaf_black_rot',
-        'title' => 'Black Rot (leaf)',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_outbreak',
-        'attach_method' => 'contained',
-        'propcode_mode' => 'read_only',
-        'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
-        'tissue_type' => 'leaf',
-        'block' => 'Leaf Samples',
-        '#weight' => 4,
-      ),
-    );
-    return $defaults;
     $defaults += array(
       'leaf_black_rot' => array(
         'entity_type' => $entity->entityType(),
