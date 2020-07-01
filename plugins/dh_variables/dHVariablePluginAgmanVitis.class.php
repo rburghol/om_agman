@@ -578,7 +578,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       // use advanced notation
       $entity->tsvalue = $entity->Incidence * $entity->Extent;
     }
-    dpm($entity,'entity');
+    dpm($entity,'entity save()');
     parent::save();
   }
   
@@ -1205,7 +1205,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   }
   
   public function applyEntityAttribute(&$prop, $value) {
-    //dpm($prop,'prop to apply att');
+    dpm($prop,'prop to apply att');
     // how to handle saving from an embedded form.  Only one value can currently come in from the form.
     // @todo: consider moving this to base class
     // @todo: why does the base class NOT pass in as &reference, since this should have no effect? IF this is true, amend, and test extensively.
