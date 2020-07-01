@@ -578,7 +578,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       // use advanced notation
       $entity->tsvalue = $entity->Incidence * $entity->Extent;
     }
-    //dpm($entity,'entity');
+    dpm($entity,'entity');
     parent::save();
   }
   
@@ -1201,11 +1201,11 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   
   public function save($entity) {
     parent::save($entity);
-    dpm($entity,'saving');
+    //dpm($entity,'saving');
   }
   
   public function applyEntityAttribute(&$prop, $value) {
-    dpm($prop,'prop to apply att');
+    //dpm($prop,'prop to apply att');
     // how to handle saving from an embedded form.  Only one value can currently come in from the form.
     // @todo: consider moving this to base class
     // @todo: why does the base class NOT pass in as &reference, since this should have no effect? IF this is true, amend, and test extensively.
@@ -1245,6 +1245,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         '#weight' => 4,
       ),
     );
+    dpm($defaults, 'defaults');
     return $defaults;
     $defaults += array(
       'leaf_black_rot' => array(
@@ -1321,7 +1322,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       }
     }
     */
-    dpm($form, 'form');
+    //dpm($form, 'form');
   }
   
   
