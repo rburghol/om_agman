@@ -1191,7 +1191,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     // if this is attached, we only show a single data entry form since we don't yet support multi in attached.
     // we should expect that the property will have an indication of the type in use: severity (default), incident or extent 
     $mname = $this->handleFormPropname($row->propname);
-    $rowform[$mname]['#title'] = t($row->propname);
+    $rowform[$mname]['#title'] = t($row->title);
     $rowform[$mname]['#type'] = 'textfield';
     $rowform[$mname]['#element_validate'] = array('element_validate_number');
     $rowform[$mname]['#default_value'] = !empty($row->propvalue) ? $row->propvalue : 0.0;
@@ -1215,8 +1215,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'org_black_rot',
         'propvalue_default' => 0.0,
-        'propname' => 'leaf_black_rot',
-        '#title' => 'Black Rot',
+        'propname' => 'org_black_rot',
+        'title' => 'Black Rot',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_outbreak',
