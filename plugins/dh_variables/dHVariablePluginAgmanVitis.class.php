@@ -1235,6 +1235,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'propname' => 'Sharing',
         'singularity' => 'name_singular',
         '#weight' => 5,
+        'attach_method' => 'contained',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_info_share',
         'varid' => dh_varkey2varid('ipm_info_share', TRUE),
