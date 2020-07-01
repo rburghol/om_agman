@@ -1147,6 +1147,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_outbreak',
+        '#test' => 'some parameters',
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
       ),
     );
