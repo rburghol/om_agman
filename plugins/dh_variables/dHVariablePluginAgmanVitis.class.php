@@ -1234,7 +1234,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'propvalue_default' => 0.0,
         'propname' => 'Sharing',
         'singularity' => 'name_singular',
-        '#weight' => 5,
+        '#weight' => 4,
         'attach_method' => 'contained',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_info_share',
@@ -1254,7 +1254,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
         'tissue_type' => 'leaf',
         'block' => 'Leaf Samples',
-        '#weight' => 4,
+        '#weight' => 5,
       ),
       'leaf_powdery_mildew' => array(
         'entity_type' => $entity->entityType(),
@@ -1270,7 +1270,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
         'tissue_type' => 'leaf',
         'block' => 'Leaf Samples',
-        '#weight' => 4,
+        '#weight' => 5,
       ),
       'cluster_black_rot' => array(
         'entity_type' => $entity->entityType(),
@@ -1286,7 +1286,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
         'tissue_type' => 'cluster',
         'block' => 'Cluster Samples',
-        '#weight' => 5,
+        '#weight' => 6,
       ),
     );
     return $defaults;
