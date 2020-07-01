@@ -1319,6 +1319,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   
   public function save($entity) {
     // @todo: apply location sharing component settings to all children 
+    parent::save($entity);
   }  
   
   
