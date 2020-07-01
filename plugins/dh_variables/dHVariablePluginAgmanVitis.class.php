@@ -1150,6 +1150,11 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   // 
   var $attach_method = 'contained'; // how to attach props found in getDefaults() 
   
+  public function hiddenFields() {
+    $hidden = array('varname', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
+    return $hidden;
+  }
+  
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
