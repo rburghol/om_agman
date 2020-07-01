@@ -1131,4 +1131,31 @@ class dHVariableReviewedPMG extends dHVariablePluginDefault {
     $rowform['propcode']['#size'] = 1;
   }
 }
+
+class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
+  // 
+  
+  public function getDefaults($entity, &$defaults = array()) {
+    parent::getDefaults($entity, $defaults);
+    $defaults += array(
+      'org_black_rot' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propvalue_default' => 0.0,
+        'propname' => 'Black Rot',
+        'title' => 'Black Rot',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_outbreak',
+        'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+      ),
+    );
+  }
+  public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row); // does hiding etc.
+    dpm($row,'sv sample event object');
+  }
+  
+}
+
 ?>
