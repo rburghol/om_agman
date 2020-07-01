@@ -1103,6 +1103,44 @@ class dHVariableReviewedPMG extends dHVariablePluginDefault {
   }
 }
 
+class dHAgmanVitisPlantTissue extends dHOMAlphanumericConstant {
+  
+  public function hiddenFields() {
+    $hidden = array('varname', 'varid', 'pid', 'propvalue', 'entity_type', 'featureid', 'startdate', 'enddate', 'modified', 'label');
+    return $hidden;
+  }
+  
+  public function getCodeOptions() {
+    $opts = array(
+      'leaf' => 'Leaf',
+      'stem' => 'Stem',
+      'cluster' => 'Cluster',
+      'berry' => 'Berry',
+      'petiole' => 'Petiole',
+      'rachis' => 'Rachis',
+    );
+    return $opts;  
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    parent::formRowEdit($form, $entity);
+    if (!$entity->varid) {
+      return FALSE;
+    }
+    $opts = $this->getCodeOptions();
+    //dpm($public_vars,'public vars');
+    $form['propcode'] = array(
+      '#title' => t($entity->propname),
+      '#type' => 'select',
+      '#empty_option' => t('- Select -'),
+      '#options' => $opts,
+      '#description' => $entity->vardesc,
+      '#default_value' => !empty($entity->propcode) ? $entity->propcode : "",
+    );
+  }
+  
+}
+
 class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   var $loval = 0.01;
   var $lolabel = "<=1%"; 
@@ -1110,6 +1148,21 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   //        why aren't they converting location sharing to setting?
   //    Once debugged, un-comment $attach_method = 'contained'
   
+  public function getDefaults($entity, &$defaults = array()) {
+    $defaults += array(
+      'tissue_type' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propname' => 'tissue_type',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'vardesc' => 'Portion of plant sampled.',
+        'title' => 'Plant Part',
+        'varid' => dh_varkey2varid('om_agman_plant_tissue', TRUE),
+      ),
+    );
+    return $defaults;
+  }
   public function formRowSave(&$rowvalues, &$row) {
     parent::formRowSave($rowvalues, $row);
     //dpm($rowvalues, 'submitted');
@@ -1170,6 +1223,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'attach_method' => 'contained',
         'propcode_mode' => 'read_only',
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+        'tissue_type' => 'leaf',
         '#weight' => 4,
       ),
     );
