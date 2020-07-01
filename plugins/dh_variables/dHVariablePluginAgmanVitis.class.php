@@ -644,18 +644,6 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     }
   }
   
-  public function attachNamedForm(&$rowform, $row) {
-    parent::attachNamedForm($rowform, $row);
-    // if this is attached, we only show a single data entry form since we don't yet support multi in attached.
-    // we should expect that the property will have an indication of the type in use: severity (default), incident or extent 
-    $mname = $this->handleFormPropname($row->propname);
-    $rowform[$mname]['#title'] = t($row->propname);
-    $rowform[$mname]['#type'] = 'textfield';
-    $rowform[$mname]['#element_validate'] = array('element_validate_number');
-    $rowform[$mname]['#default_value'] = !empty($row->propvalue) ? $row->propvalue : 0.0;
-    dpm($row, "Attaching");
-  }
-  
 }
 
 class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
@@ -792,35 +780,6 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     $property->propcode = $value;
   }
   
-}
-class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
-  var $loval = 0.01;
-  var $lolabel = "<=1%"; 
-  // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
-  //        why aren't they converting location sharing to setting?
-  //    Once debugged, un-comment $attach_method = 'contained'
-  
-  public function formRowSave(&$rowvalues, &$row) {
-    parent::formRowSave($rowvalues, $row);
-    //dpm($rowvalues, 'submitted');
-    // special save handlers
-  }
-  public function incidentCodes() {
-    // do this as a query of variables in the 
-    $options = dh_varkey_varselect_options(array("vocabulary = 'fungal_pathogens'"));
-    asort($options);
-    return $options;
-  }
-  
-  public function formRowEdit(&$form, $row) {
-    parent::formRowEdit($form, $row); // does hiding etc.
-    $form['tscode']['#title'] = t('Organism Type');
-    $form['tscode']['#type'] = 'select';
-    $form['tscode']['#options'] = $this->incidentCodes();
-    $form['tscode']['#size'] = 1;
-    $form['tscode']['#weight'] = 2;
-    //dpm($form,'form');
-  }
 }
 
 class dHVariablePluginVitisHarvest extends dHVariablePluginAgmanAction {
@@ -1144,6 +1103,49 @@ class dHVariableReviewedPMG extends dHVariablePluginDefault {
   }
 }
 
+class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
+  var $loval = 0.01;
+  var $lolabel = "<=1%"; 
+  // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
+  //        why aren't they converting location sharing to setting?
+  //    Once debugged, un-comment $attach_method = 'contained'
+  
+  public function formRowSave(&$rowvalues, &$row) {
+    parent::formRowSave($rowvalues, $row);
+    //dpm($rowvalues, 'submitted');
+    // special save handlers
+  }
+  public function incidentCodes() {
+    // do this as a query of variables in the 
+    $options = dh_varkey_varselect_options(array("vocabulary = 'fungal_pathogens'"));
+    asort($options);
+    return $options;
+  }
+  
+  public function formRowEdit(&$form, $row) {
+    parent::formRowEdit($form, $row); // does hiding etc.
+    $form['tscode']['#title'] = t('Organism Type');
+    $form['tscode']['#type'] = 'select';
+    $form['tscode']['#options'] = $this->incidentCodes();
+    $form['tscode']['#size'] = 1;
+    $form['tscode']['#weight'] = 2;
+    //dpm($form,'form');
+  }
+  
+  public function attachNamedForm(&$rowform, $row) {
+    // @todo: move this to the base IPMIncidentExtent class 
+    parent::attachNamedForm($rowform, $row);
+    // if this is attached, we only show a single data entry form since we don't yet support multi in attached.
+    // we should expect that the property will have an indication of the type in use: severity (default), incident or extent 
+    $mname = $this->handleFormPropname($row->propname);
+    $rowform[$mname]['#title'] = t($row->propname);
+    $rowform[$mname]['#type'] = 'textfield';
+    $rowform[$mname]['#element_validate'] = array('element_validate_number');
+    $rowform[$mname]['#default_value'] = !empty($row->propvalue) ? $row->propvalue : 0.0;
+    dpm($row, "Attaching");
+  }
+}
+
 class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   // 
   
@@ -1159,6 +1161,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'ipm_outbreak',
+        'attach_method' => 'contained',
         'propcode_mode' => 'read_only',
         'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
       ),
