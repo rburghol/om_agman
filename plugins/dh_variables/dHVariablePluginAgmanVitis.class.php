@@ -1211,11 +1211,11 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
-      'org_black_rot' => array(
+      'leaf_black_rot' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'org_black_rot',
         'propvalue_default' => 0.0,
-        'propname' => 'org_black_rot',
+        'propname' => 'leaf_black_rot',
         'title' => 'Black Rot',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
