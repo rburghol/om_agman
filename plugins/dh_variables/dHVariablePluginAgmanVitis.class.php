@@ -1210,7 +1210,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     // @todo: why does the base class NOT pass in as &reference, since this should have no effect? IF this is true, amend, and test extensively.
     $prop->propvalue = $value;
     // if this is embedded then we know that the propcode_default should be used since this is read-only
-    $prop->propcode = empty($prop->propcode) and property_exists($prop, 'propcode_default') ? $prop->propcode_default : $prop->propcode;
+    $prop->propcode = (empty($prop->propcode) and property_exists($prop, 'propcode_default')) ? $prop->propcode_default : $prop->propcode;
   }
 }
 
