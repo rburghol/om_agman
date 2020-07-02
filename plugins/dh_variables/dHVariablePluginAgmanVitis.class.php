@@ -578,7 +578,6 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       // use advanced notation
       $entity->tsvalue = $entity->Incidence * $entity->Extent;
     }
-    dpm($entity,'entity save()');
     parent::save($entity);
   }
   
@@ -1200,8 +1199,11 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   }
   
   public function save(&$entity) {
+    dpm($entity,'entity save()');
+    $dbt = debug_backtrace();
+    dsm($dbt, "debug_backtrace()");
     parent::save($entity);
-    //dpm($entity,'saving');
+    //dpm($entity,'saved');
   }
   
   public function applyEntityAttribute(&$prop, $value) {
