@@ -1246,9 +1246,9 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
       if (property_exists($entity, $propname) and !is_object($entity->{$propname})) {
         // if the prop is not an object, stash the value and load property, 
         $convert_value = TRUE;
-        $propvalue = $entity->{$thisvar['propname']};
+        $propvalue = $entity->{$propname};
         $load_property = TRUE;
-        dsm("Loading $propname from " . $entity->{$thisvar['propname']});
+        dsm("Need to load $propname = " . $entity->{$propname});
       }
       if ( ($pn <> $propname) and property_exists($entity, $pn) ) {
         // handle case where prop name had spaces and was munged by form API
@@ -1261,6 +1261,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
       }
       if ($load_property) {
         //dsm("Loading property $pn");
+        dsm("Loading $propname from " . $entity->{$propname});
         $this->loadProperties($entity, FALSE, $propname);
       }
       // now, apply the stashed value to the property
