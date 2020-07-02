@@ -1380,6 +1380,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   }
   
   public function updateProperties(&$entity) {
+    dpm($entity,'updateProperties() called');
     parent::updateProperties($entity);
   }
   
