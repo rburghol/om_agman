@@ -1376,9 +1376,12 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         $prop->featureid = $entity->identifier();
       }
     }
-    dpm($entity,'entity post conversion to props');
+    dpm($entity,'entity post convert_attributes_to_dh_props()');
   }
   
+  public function updateProperties(&$entity) {
+    parent::updateProperties($entity);
+  }
   
 }
 
