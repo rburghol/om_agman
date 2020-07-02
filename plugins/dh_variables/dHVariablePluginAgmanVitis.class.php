@@ -1157,6 +1157,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'vardesc' => 'Portion of plant sampled.',
+        'attach_method' => 'contained',
         'title' => 'Plant Part',
         'varid' => dh_varkey2varid('om_agman_plant_tissue', TRUE),
       ),
@@ -1297,6 +1298,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   public function formRowEdit(&$form, $entity) {
     parent::formRowEdit($form, $entity); // does hiding etc.
     dpm($entity,'sv sample event object');
+    
+    // @todo: add a sample method (3, 7, 10 or estimated)
     
     // Comment this for the moment until debugging the plant part setting propcode on the diseases.
     /*
