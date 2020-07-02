@@ -1196,7 +1196,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $rowform[$mname]['#type'] = 'textfield';
     $rowform[$mname]['#element_validate'] = array('element_validate_number');
     $rowform[$mname]['#default_value'] = !empty($row->propvalue) ? $row->propvalue : 0.0;
-    dpm($row, "Attaching");
+    //dpm($row, "Attaching");
   }
   
   public function save(&$entity) {
@@ -1248,6 +1248,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         $convert_value = TRUE;
         $propvalue = $entity->{$thisvar['propname']};
         $load_property = TRUE;
+        dsm("Loading $propname from " . $entity->{$thisvar['propname']});
       }
       if ( ($pn <> $propname) and property_exists($entity, $pn) ) {
         // handle case where prop name had spaces and was munged by form API
