@@ -1210,6 +1210,8 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   }
   
   public function applyEntityAttribute(&$prop, $value) {
+    // if this is embedded we know it is a property, not a time series.  
+    // so, we use a propvalue and propcode to store it.
     dpm($prop,'prop to apply att');
     // how to handle saving from an embedded form.  Only one value can currently come in from the form.
     // @todo: consider moving this to base class
@@ -1313,10 +1315,10 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'title' => 'Black Rot (leaf)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_outbreak',
+        'varkey' => 'om_class_Constant',
         'attach_method' => 'contained',
         'propcode_mode' => 'read_only',
-        'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
         'tissue_type' => 'leaf',
         'block' => 'Leaf Samples',
         '#weight' => 5,
@@ -1329,10 +1331,10 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'title' => 'Powdery Mildew (leaf)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_outbreak',
+        'varkey' => 'om_class_Constant',
         'attach_method' => 'contained',
         'propcode_mode' => 'read_only',
-        'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
         'tissue_type' => 'leaf',
         'block' => 'Leaf Samples',
         '#weight' => 5,
@@ -1345,10 +1347,10 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'title' => 'Black Rot (cluster)',
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
-        'varkey' => 'ipm_outbreak',
+        'varkey' => 'om_class_Constant',
         'attach_method' => 'contained',
         'propcode_mode' => 'read_only',
-        'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
         'tissue_type' => 'cluster',
         'block' => 'Cluster Samples',
         '#weight' => 6,
@@ -1385,6 +1387,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   }
   
   public function save(&$entity) {
+    // @todo: copy properties to dopples 
     // @todo: apply location sharing component settings to all children 
     parent::save($entity);
   }  
