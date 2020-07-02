@@ -1200,9 +1200,11 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   }
   
   public function save(&$entity) {
+    /*
     dpm($entity,'entity save()');
     $dbt = debug_backtrace();
     dsm($dbt, "debug_backtrace()");
+    */
     parent::save($entity);
     //dpm($entity,'saved');
   }
