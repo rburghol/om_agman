@@ -1248,20 +1248,21 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         $convert_value = TRUE;
         $propvalue = $entity->{$propname};
         $load_property = TRUE;
-        dsm("Need to load $propname = " . $entity->{$propname});
+        dsm("Propvalue from $propname = " . $propvalue);
       }
       if ( ($pn <> $propname) and property_exists($entity, $pn) ) {
         // handle case where prop name had spaces and was munged by form API
         // we assume that this is not going to be an object sine form API will return just a value
         $propvalue = $entity->{$pn};
         $convert_value = TRUE;
+        dsm("Propvalue from converted propname $pn = " . $propvalue);
       }
       if (!property_exists($entity, $propname) ) {
         $load_property = TRUE;
       }
       if ($load_property) {
         //dsm("Loading property $pn");
-        dsm("Loading $propname from " . $entity->{$propname});
+        dsm("Initializing property $propname");
         $this->loadProperties($entity, FALSE, $propname);
       }
       // now, apply the stashed value to the property
