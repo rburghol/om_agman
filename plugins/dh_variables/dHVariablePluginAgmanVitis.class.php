@@ -1383,7 +1383,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       if ($prop->linked_ts->is_new or ($prop->linked_td->propvalue == NULL)) {
         $prop->linked_ts->propvalue = $tid;
-        $prop->linked_ts->save();
+        //$prop->linked_ts->save();
       }
       // iterate through replicant_proplist and copy from parent to replicant 
       /*
