@@ -1460,6 +1460,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       ) 
     ) {
       $thisvar['featureid'] = $entity->{$this->row_map['id']};
+      dpm($thisvar,'var query');
       $prop = $this->insureProperty($entity, $thisvar);
       $varinfo = $prop->varid ? dh_vardef_info($prop->varid) : FALSE;
       dpm($varinfo,'varinfo');
