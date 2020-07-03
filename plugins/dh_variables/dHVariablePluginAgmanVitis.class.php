@@ -1361,8 +1361,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
       dpm($prop->linked_ts, 'linked_ts');
       if ($prop->linked_ts->propvalue > 0) {
-        $ts = $link_plugin->getLinkedEntity();
-      dpm($ts, 'ts from getLinkedEntity()');
+        //$ts = $link_plugin->getLinkedEntity();
+        dpm($ts, 'ts from getLinkedEntity()');
       } else {
         // create 
         // @todo: move this code into the dHOMLinkage plugin 
