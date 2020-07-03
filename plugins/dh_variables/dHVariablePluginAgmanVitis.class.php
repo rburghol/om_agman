@@ -1437,7 +1437,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'featureid' => $prop->pid,
         'dest_entity_type' => 'dh_timeseries'
       );
-      $this->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
+      $plugin = dh_variables_getPlugins($prop); 
+      $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
       dpm($prop, 'prop');
       dpm($prop->linked_ts, 'link');
       // iterate through replicant_proplist and copy from parent to replicant 
@@ -1449,36 +1450,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           return $entity->src_entity;
         }
        */
-    }
-  }
-  public function loadSingleProperty(&$entity, $propname, $thisvar, $overwrite = FALSE) {
-    // @todo: Replace this function with loadSingleProperty2() 
-    if ($overwrite 
-      or !property_exists($entity, $propname) 
-      or (property_exists($entity, $propname) 
-        and !is_object($entity->{$propname})
-      ) 
-    ) {
-      $thisvar['featureid'] = $entity->{$this->row_map['id']};
-      dpm($thisvar,'var query');
-      $prop = $this->insureProperty($entity, $thisvar);
-      $varinfo = $prop->varid ? dh_vardef_info($prop->varid) : FALSE;
-      dpm($varinfo,'varinfo');
-      if ($varinfo === FALSE) {
-        watchdog("loadProperty called without varid", 'error');
-        return;
-      }
-      if (!$prop) {
-        watchdog('om', 'Could not Add Properties in plugin loadProperties');
-        return FALSE;
-      }
-      // apply over-rides if given
-      $prop->vardesc = isset($thisvar['vardesc']) ? $thisvar['vardesc'] : $varinfo->vardesc;
-      $prop->varname = isset($thisvar['varname']) ? $thisvar['varname'] : $varinfo->varname;
-      $prop->title = isset($thisvar['title']) ? $thisvar['title'] : $varinfo->propname;
-      $prop->datatype = isset($thisvar['datatype']) ? $thisvar['datatype'] : $varinfo->datatype;
-      dpm($prop,'prop?');
-      $entity->{$prop->propname} = $prop;
     }
   }
 }
