@@ -1356,6 +1356,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       );
       $plugin = dh_variables_getPlugins($prop); 
       $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
+      // @todo: if we put this into the definition of the disease observation data structure, we can remove the 
+      //        call to save this property 
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
       dpm($prop->linked_ts, 'linked_ts');
       if ($prop->linked_ts->propvalue > 0) {
@@ -1377,6 +1379,10 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         $tid = dh_update_timeseries($ts_info);
         $ts = entity_load_single('dh_timeseries', $tid);
         dpm($ts, 'ts');
+      }
+      // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
+      if ($prop->linked_ts->is_new) {
+        $prop->linked_ts->tsvalue = $tid;
       }
       // iterate through replicant_proplist and copy from parent to replicant 
       /*
