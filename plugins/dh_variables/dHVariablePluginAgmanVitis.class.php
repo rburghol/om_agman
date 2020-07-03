@@ -1416,7 +1416,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     //   - replicant_code: if undefined, use propcode 
     //   - replicant_proplist: list of parent properties to copy to replicant 
     //   - also creates link from this prop to the final ts value 
-    $props = $this->getDefaults();
+    $props = $this->getDefaults($entity);
     foreach ($props as $thisvar) {
       // load the disease property from this parent object, should already reside on this $entity as named prop
       // skip if not a disease prop 
