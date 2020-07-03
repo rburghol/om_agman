@@ -1361,7 +1361,10 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
       dpm($prop->linked_ts, 'linked_ts');
       if ($prop->linked_ts->propvalue > 0) {
-        $prop->linked_ts->propvalue = intval($prop->linked_ts->propvalue);
+        // have to fix the tsvalue due to weird behavior when drupal loads number fields
+        $result = db_query("select propvalue from dh_properties where pid = $prop->linked_ts->pid");
+        $propvalue = $result->fetchField();
+        $prop->linked_ts->propvalue = $propvalue;
         $ts = $link_plugin->getLinkedEntity($prop->linked_ts);
         dpm($ts, 'ts from getLinkedEntity()');
       } else {
