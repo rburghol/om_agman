@@ -1361,6 +1361,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
       dpm($prop->linked_ts, 'linked_ts');
       if ($prop->linked_ts->propvalue > 0) {
+        $prop->linked_ts->propvalue = intval($prop->linked_ts->propvalue);
         $ts = $link_plugin->getLinkedEntity($prop->linked_ts);
         dpm($ts, 'ts from getLinkedEntity()');
       } else {
@@ -1382,7 +1383,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       }
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       if ($prop->linked_ts->is_new or ($prop->linked_td->propvalue == NULL)) {
-        $prop->linked_ts->propvalue = $ts->tid;
+        $prop->linked_ts->propvalue = intval($ts->tid);
         $prop->linked_ts->save();
       }
       // iterate through replicant_proplist and copy from parent to replicant 
