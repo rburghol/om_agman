@@ -1440,13 +1440,14 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $plugin = dh_variables_getPlugins($prop); 
       $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
+      dpm($link_plugin,'link plugin');
       //$ts = $link_plugin->getLinkedEntity();
       if (!$ts) {
         // create 
         // @todo: move this code into the dHOMLinkage plugin 
         $ts_info = array(
           'featureid' => $entity->featureid,
-          'entity_type' => $entity->entityType(),
+          'entity_type' => $entity->entity_type,
           'varkey' => 'ipm_outbreak',
           'tscode' => $prop->propcode,
           'tsvalue' => $prop->propvalue,
@@ -1455,7 +1456,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           'tissue_type' => $thisvar['tissue_type']
         );
         dpm($ts_info, ' ts info');
-        $tid = dh_update_timeseries($ts_info);
+        //$tid = dh_update_timeseries($ts_info);
         dpm($tid, 'tid');
         //$ts = entity_load_single('dh_timeseries', $tid);
         //dpm($ts, 'ts');
