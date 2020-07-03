@@ -237,6 +237,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
     }
   }
 }
+
 class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
   //        handle in views - maybe a setting in the filter or jumplists itself?
@@ -1397,6 +1398,58 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     parent::updateProperties($entity);
   }
   
+  
+  public function updateLinked(&$entity) {
+    // @todo: this code should support the om_object
+    // now, create linked 
+    // ultimately this will just support anything defined by dHOMLinkage which could create a setLocalhostLinkedValue
+    // But for now we just manually do here, to flesh out logic for use later.
+    // - check the getDefaults() list, or the properties list for this 
+    //   in other words, ANY property that is attached to this could define a linkage 
+    //   the properties in this prototype will have the ability to create timeseries entries
+    //   from the parent form information and the individual pieces.
+    // - We *should* store this as a tree of sub-props on the attached prop, but for now we will 
+    //   stash them in the getDefaults() list:
+    //   - replicant_varkey: ipm_disease_outbreak 
+    //   - replicant_value: if undefined, use propvalue 
+    //   - replicant_entity_type: if undefined, use parent type  
+    //   - replicant_code: if undefined, use propcode 
+    //   - replicant_proplist: list of parent properties to copy to replicant 
+    //   - also creates link from this prop to the final ts value 
+    $props = $this->getDefaults();
+    foreach ($props as $thisvar) {
+      // load the disease property from this parent object, should already reside on this $entity as named prop
+      // skip if not a disease prop 
+      if (!isset($thisvar['tissue_type'])) {
+        continue;
+      }
+      $prop = $entity->{$thisvar['propname']};
+      // - Load link properties for this disease prop 
+      // - @todo: find all links with loadComponents($criteria = array())
+      //   for now we just load the linked property for this, named as propname = linked 
+      //   dHOMLinkage use load_single_property which calks om_getSet
+      //   make link_type = 4, which is a newly defined class 
+      $varinfo = array(
+        'propname' => 'linked_ts', 
+        'varkey' => 'om_map_model_linkage', 
+        'link_type' => 4, 
+        'entity_type' => 'dh_properties',
+        'featureid' => $prop->pid,
+        'dest_entity_type' => 'dh_timeseries'
+      );
+      $link = $this->loadSingleProperty($prop, 'linked_ts', $thisvar, FALSE);
+      dpm($link);
+      // iterate through replicant_proplist and copy from parent to replicant 
+      /*
+        function getLinkedEntity(&$entity) {
+          $entity->src_entity_type = $entity->propcode;
+          $entity->src_entity_id = $entity->propvalue;
+          $entity->src_entity = entity_load_single($entity->src_entity_type, $entity->src_entity_id);
+          return $entity->src_entity;
+        }
+       */
+    }
+  }
 }
 
 ?>
