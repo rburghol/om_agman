@@ -1209,79 +1209,6 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     parent::save($entity);
     //dpm($entity,'saved');
   }
-  
-  public function applyEntityAttribute(&$prop, $value) {
-    // if this is embedded we know it is a property, not a time series.  
-    // so, we use a propvalue and propcode to store it.
-    dpm($prop,'prop to apply att');
-    // how to handle saving from an embedded form.  Only one value can currently come in from the form.
-    // @todo: consider moving this to base class
-    // @todo: why does the base class NOT pass in as &reference, since this should have no effect? IF this is true, amend, and test extensively.
-    // @todo: later we should look for [propname]_value and [propname]_code 
-    $prop->propvalue = $value;
-    // if this is embedded then we know that the propcode_default should be used since this is read-only
-    $prop->propcode = (empty($prop->propcode) and property_exists($prop, 'propcode_default')) ? $prop->propcode_default : $prop->propcode;
-  }
-  
-  
-  public function convert_attributes_to_dh_props(&$entity) {
-    // this will be called after a form submittal, the added form fields from attached props will be/
-    // added as plain fields on the entity, we then grab them by name and handle their contents.
-    $props = $this->getDefaults($entity);
-    //dpm($props,'props from getDefaults');
-    //error_log("Handling properties on $entity->propname " . print_r($props,1));
-    foreach ($props as $thisvar) {
-      $convert_value = FALSE; // flag to see if we need to convert (in case we are called multiple times)
-      $load_property = FALSE;
-      $propvalue = NULL;
-      $propname = $thisvar['propname'];
-      // form property name will be converted to a machine name by attachNamedForm() methods.
-      // so now we just get this name here so that we can keep things straight but allow users descriptive names
-      $pn = $this->handleFormPropname($propname);
-      // check for conversion from value to property
-      // this could need to change as fully loaded objects could be stored as array  that are then loaded as object or handled more completely
-      // in Form API *I think*
-      // but for now, this handles the case where a property value is stashed on the object
-      // cases:
-      // - property exists, and IS object: check for form API munged name and copy over, otherwise, do nothing
-      // - property exists and is NOT object: stash the value, load the prop object, and setValue to stashed
-      // - property does not exist: load property and return
-      if (property_exists($entity, $propname) and !is_object($entity->{$propname})) {
-        // if the prop is not an object, stash the value and load property, 
-        $convert_value = TRUE;
-        $propvalue = $entity->{$propname};
-        $load_property = TRUE;
-        dsm("Propvalue from $propname = " . $propvalue);
-      }
-      if ( ($pn <> $propname) and property_exists($entity, $pn) ) {
-        // handle case where prop name had spaces and was munged by form API
-        // we assume that this is not going to be an object sine form API will return just a value
-        $propvalue = $entity->{$pn};
-        $convert_value = TRUE;
-        dsm("Propvalue from converted propname $pn = " . $propvalue);
-      }
-      if (!property_exists($entity, $propname) ) {
-        $load_property = TRUE;
-      }
-      if ($load_property) {
-        //dsm("Loading property $pn");
-        dsm("Initializing property $propname");
-        $this->loadProperties($entity, FALSE, $propname);
-      }
-      // now, apply the stashed value to the property
-      if ($convert_value and is_object($entity->{$propname})) {
-        $prop = $entity->{$thisvar['propname']};
-        foreach ($prop->dh_variables_plugins as $plugin) {
-          // the default method will guess location based on the value unless overridden by the plugin
-          $plugin->applyEntityAttribute($prop, $propvalue);
-        }
-        // insure this featureid.  There is probably a better way to do this earlier in the process.
-        // we need to insure a valid parent entity first, save it, then load attached properties and update.  
-        $prop->featureid = $entity->identifier();
-      }
-    }
-    dpm($entity,'entity post convert_attributes_to_dh_props()');
-  }
 }
 
 class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
@@ -1362,7 +1289,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   
   public function formRowEdit(&$form, $entity) {
     parent::formRowEdit($form, $entity); // does hiding etc.
-    dpm($entity,'sv sample event object');
     
     // @todo: add a sample method (3, 7, 10 or estimated)
     
@@ -1394,7 +1320,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   }  
   
   public function updateProperties(&$entity) {
-    dpm($entity,'updateProperties() called');
     parent::updateProperties($entity);
   }
   
@@ -1408,14 +1333,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     //   in other words, ANY property that is attached to this could define a linkage 
     //   the properties in this prototype will have the ability to create timeseries entries
     //   from the parent form information and the individual pieces.
-    // - We *should* store this as a tree of sub-props on the attached prop, but for now we will 
-    //   stash them in the getDefaults() list:
-    //   - replicant_varkey: ipm_disease_outbreak 
-    //   - replicant_value: if undefined, use propvalue 
-    //   - replicant_entity_type: if undefined, use parent type  
-    //   - replicant_code: if undefined, use propcode 
-    //   - replicant_proplist: list of parent properties to copy to replicant 
-    //   - also creates link from this prop to the final ts value 
     $props = $this->getDefaults($entity);
     foreach ($props as $thisvar) {
       // load the disease property from this parent object, should already reside on this $entity as named prop
@@ -1440,9 +1357,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $plugin = dh_variables_getPlugins($prop); 
       $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
-      dpm($link_plugin,'link plugin');
       if ($prop->linked_ts->propvalue > 0) {
         $ts = $link_plugin->getLinkedEntity();
+      dpm($ts, 'ts from getLinkedEntity()');
       } else {
         // create 
         // @todo: move this code into the dHOMLinkage plugin 
@@ -1456,12 +1373,10 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           'Sharing' => $entity->Sharing->propcode,
           'tissue_type' => $thisvar['tissue_type']
         );
-        dpm($ts_info, ' ts info');
         $tid = dh_update_timeseries($ts_info);
-        dpm($tid, 'tid');
         $ts = entity_load_single('dh_timeseries', $tid);
+        dpm($ts, 'ts');
       }
-      dpm($ts, 'ts');
       // iterate through replicant_proplist and copy from parent to replicant 
       /*
         function getLinkedEntity(&$entity) {
