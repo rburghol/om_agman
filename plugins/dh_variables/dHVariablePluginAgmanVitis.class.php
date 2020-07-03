@@ -1435,7 +1435,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'link_type' => 4, 
         'entity_type' => 'dh_properties',
         'featureid' => $prop->pid,
-        'src_entity_type' => 'dh_timeseries'
+        'propcode' => 'dh_timeseries'
       );
       $plugin = dh_variables_getPlugins($prop); 
       $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
