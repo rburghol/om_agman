@@ -1438,8 +1438,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'dest_entity_type' => 'dh_timeseries'
       );
       $link = $this->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
-      dpm($prop, 'link');
-      dpm($link, 'link');
+      dpm($prop, 'prop');
+      dpm($prop->linked_ts, 'link');
       // iterate through replicant_proplist and copy from parent to replicant 
       /*
         function getLinkedEntity(&$entity) {
