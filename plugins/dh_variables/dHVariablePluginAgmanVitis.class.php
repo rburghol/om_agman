@@ -1435,13 +1435,13 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'link_type' => 4, 
         'entity_type' => 'dh_properties',
         'featureid' => $prop->pid,
-        'dest_entity_type' => 'dh_timeseries'
+        'src_entity_type' => 'dh_timeseries'
       );
       $plugin = dh_variables_getPlugins($prop); 
       $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
       dpm($link_plugin,'link plugin');
-      //$ts = $link_plugin->getLinkedEntity();
+      $ts = $link_plugin->getLinkedEntity();
       if (!$ts) {
         // create 
         // @todo: move this code into the dHOMLinkage plugin 
@@ -1456,11 +1456,11 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           'tissue_type' => $thisvar['tissue_type']
         );
         dpm($ts_info, ' ts info');
-        //$tid = dh_update_timeseries($ts_info);
+        $tid = dh_update_timeseries($ts_info);
         dpm($tid, 'tid');
-        //$ts = entity_load_single('dh_timeseries', $tid);
-        //dpm($ts, 'ts');
+        $ts = entity_load_single('dh_timeseries', $tid);
       }
+      dpm($ts, 'ts');
       // iterate through replicant_proplist and copy from parent to replicant 
       /*
         function getLinkedEntity(&$entity) {
