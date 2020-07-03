@@ -1454,9 +1454,11 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           'Sharing' => $entity->Sharing->propcode,
           'tissue_type' => $thisvar['tissue_type']
         );
+        dpm($ts_info, ' ts info');
         $tid = dh_update_timeseries($ts_info);
-        $ts = entity_load_single('dh_timeseries', $tid);
-        dpm($ts, 'ts');
+        dpm($tid, 'tid');
+        //$ts = entity_load_single('dh_timeseries', $tid);
+        //dpm($ts, 'ts');
       }
       // iterate through replicant_proplist and copy from parent to replicant 
       /*
