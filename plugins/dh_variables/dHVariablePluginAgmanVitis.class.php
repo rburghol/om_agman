@@ -1307,7 +1307,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     // @todo: add a sample method (3, 7, 10 or estimated)
     
     // Comment this for the moment until debugging the plant part setting propcode on the diseases.
-    /*
+    
     $attribs = $this->getDefaults($entity);
     // @todo: move to separate blocks.  This might be best residing in some parent class 
     foreach ($attribs as $att) {
@@ -1323,7 +1323,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         unset($form[$att['propname']]);
       }
     }
-    */
+    
     //dpm($form, 'form');
   }
   
