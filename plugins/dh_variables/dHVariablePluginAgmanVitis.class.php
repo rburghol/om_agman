@@ -583,7 +583,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
   }
   
   public function getIncidentDetail($entity ) {
-    $codes = incidentCodes();
+    $codes = $this->incidentCodes();
     $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
     $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
     return $incident_detail;
@@ -1183,7 +1183,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   }
   
   public function getIncidentDetail($entity ) {
-    $codes = incidentCodes();
+    $codes = $this->incidentCodes();
     $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
     $incident_detail .= ' on ' . $incident_detail->tissue_type->propcode;
     return $incident_detail;
