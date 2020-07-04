@@ -1394,7 +1394,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         continue;
       }
       $prop = $entity->{$thisvar['propname']};
-      dpm($prop,'prop');
       // - Load link properties for this disease prop 
       // - @todo: find all links with loadComponents($criteria = array())
       //   for now we just load the linked property for this, named as propname = linked 
@@ -1411,6 +1410,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $plugin = dh_variables_getPlugins($prop); 
       if (!is_object($plugin)) {
         dsm("No plugin for $prop->propname");
+        dpm($prop,'prop');
         continue;
       }
       $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
