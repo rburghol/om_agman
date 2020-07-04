@@ -1363,8 +1363,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         unset($form[$att['propname']]);
       }
     }
-    
-    dpm($form, 'form');
   }
   
   public function save(&$entity) {
@@ -1413,12 +1411,14 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       // @todo: if we put this into the definition of the disease observation data structure, we can remove the 
       //        call to save this property 
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
+      dpm($prop->linked_ts, 'prop link to ts ');
       if ($prop->linked_ts->propvalue > 0) {
         // have to fix the tsvalue due to weird behavior when drupal loads number fields
         $result = db_query("select propvalue from dh_properties where pid = " . $prop->linked_ts->pid);
         $propvalue = $result->fetchField();
         $prop->linked_ts->propvalue = $propvalue;
         $ts = $link_plugin->getLinkedEntity($prop->linked_ts);
+        dpm($ts,'existing ts link');
         $ts->tscode = $prop->propcode;
         $ts->tsvalue = $prop->propvalue;
       } else {
@@ -1435,6 +1435,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           'tissue_type' => $thisvar['tissue_type']
         );
         $ts = entity_create('dh_timeseries', $ts_info); // says get all matching tstime
+        dpm($ts,'Create new ts link');
       }
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       if ($prop->linked_ts->is_new or ($prop->linked_td->propvalue == NULL)) {
