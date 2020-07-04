@@ -1318,7 +1318,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Cluster Samples',
         '#weight' => 5,
       ),
-      'eutypa_dieback' => array(
+      'org_eutypa_dieback' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'org_eutypa_dieback',
         'propvalue_default' => 0.0,
