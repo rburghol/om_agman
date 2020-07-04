@@ -1324,7 +1324,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       }
     }
     
-    //dpm($form, 'form');
+    dpm($form, 'form');
   }
   
   public function save(&$entity) {
