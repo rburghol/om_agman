@@ -582,16 +582,21 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     parent::save($entity);
   }
   
+  public function getIncidentDetail($entity ) {
+    $codes = incidentCodes();
+    $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
+    $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
+    return $incident_detail;
+  }
+  
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
     // Note: Views result sets MUST have tid column included, even if hidden, in order to show a rendered ts entity.
-    $codes = $this->incidentCodes();
     $feature = $this->getParentEntity($entity);
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     $varname = $varinfo->varname;
-    $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
-    $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
+    $incident_detail = $this->getIncidentDetail($entity );
     if ($varinfo === FALSE) {
       return;
     }
@@ -1175,6 +1180,13 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $options = dh_varkey_varselect_options(array("vocabulary = 'fungal_pathogens'"));
     asort($options);
     return $options;
+  }
+  
+  public function getIncidentDetail($entity ) {
+    $codes = incidentCodes();
+    $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
+    $incident_detail .= ' on ' . $incident_detail->tissue_type->propcode;
+    return $incident_detail;
   }
   
   public function formRowEdit(&$form, $row) {
