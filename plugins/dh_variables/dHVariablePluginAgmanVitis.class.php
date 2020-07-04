@@ -1380,6 +1380,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           'Sharing' => $entity->Sharing->propcode,
           'tissue_type' => $thisvar['tissue_type']
         );
+        dpm($ts_info, 'ts_info');
         $ts = entity_create('dh_timeseries', $ts_info); // says get all matching tstime
         $ts->save();
         dpm($ts, 'ts');
