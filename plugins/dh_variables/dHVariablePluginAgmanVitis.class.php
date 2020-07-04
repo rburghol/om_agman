@@ -1373,7 +1373,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         $ts_info = array(
           'featureid' => $entity->featureid,
           'entity_type' => $entity->entity_type,
-          'varid' => dh_varkey2varid('ipm_outbreak'),
+          'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
           'tscode' => $prop->propcode,
           'tsvalue' => $prop->propvalue,
           'tstime' => $entity->tstime,
