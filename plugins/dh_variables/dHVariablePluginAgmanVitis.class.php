@@ -1186,7 +1186,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   public function getIncidentDetail($entity ) {
     $codes = $this->incidentCodes();
     $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
-    dpm($entity,'ent');
+    $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
     $incident_detail .= ' on ' . $entity->tissue_type->propcode;
     return $incident_detail;
   }
