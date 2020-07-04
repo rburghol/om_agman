@@ -1124,6 +1124,7 @@ class dHAgmanVitisPlantTissue extends dHOMAlphanumericConstant {
       'berry' => 'Berry',
       'petiole' => 'Petiole',
       'rachis' => 'Rachis',
+      'trunk' => 'Trunk',
     );
     return $opts;  
   }
