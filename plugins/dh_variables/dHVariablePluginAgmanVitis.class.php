@@ -1438,7 +1438,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         dpm($ts,'Create new ts link');
       }
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
-      if ($prop->linked_ts->is_new or ($prop->linked_td->propvalue == NULL)) {
+      if ($prop->linked_ts->is_new or !($prop->linked_ts->propvalue > 0)) {
         $prop->linked_ts->propvalue = intval($ts->tid);
         $prop->linked_ts->save();
       }
