@@ -1311,15 +1311,17 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     $attribs = $this->getDefaults($entity);
     // @todo: move to separate blocks.  This might be best residing in some parent class 
     foreach ($attribs as $att) {
-      if (!isset($form[$block])) {
-        $form[$block] = array();
-        $form[$block]['#title'] = t($block);
-        $form[$block]['#type'] = 'fieldset';
-        $form[$block]['#collapsible'] = TRUE;
-        $form[$block]['#collapsed'] = FALSE;
-      }
       if (isset($att['block'])) {
-        $form[$att['block']][$att['propname']] = $form[$att['propname']];
+        $block = $att['block'];
+        // create the block if not already set 
+        if (!isset($form[$block])) {
+          $form[$block] = array();
+          $form[$block]['#title'] = t($block);
+          $form[$block]['#type'] = 'fieldset';
+          $form[$block]['#collapsible'] = TRUE;
+          $form[$block]['#collapsed'] = FALSE;
+        }
+        $form[$block][$att['propname']] = $form[$att['propname']];
         unset($form[$att['propname']]);
       }
     }
