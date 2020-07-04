@@ -1382,6 +1382,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         );
         $ts = entity_create('dh_timeseries', $ts_info); // says get all matching tstime
         dpm($ts, 'ts');
+        $ts->save();
       }
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       if ($prop->linked_ts->is_new or ($prop->linked_td->propvalue == NULL)) {
