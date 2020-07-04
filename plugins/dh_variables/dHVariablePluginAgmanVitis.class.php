@@ -1409,11 +1409,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'propcode' => 'dh_timeseries'
       );
       $plugin = dh_variables_getPlugins($prop); 
-      if (!is_object($plugin)) {
-        dsm("No plugin for $prop->propname");
-        dpm($prop,'prop');
-        continue;
-      }
       $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
       // @todo: if we put this into the definition of the disease observation data structure, we can remove the 
       //        call to save this property 
@@ -1447,7 +1442,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         $prop->linked_ts->save();
       }
       $ts->save();
-      dpm($ts, 'ts');
       // iterate through replicant_proplist and copy from parent to replicant 
       /*
         function getLinkedEntity(&$entity) {
