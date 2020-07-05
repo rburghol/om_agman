@@ -1595,6 +1595,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     
     $attribs = $this->getDefaults($entity);
     // @todo: move to separate blocks.  This might be best residing in some parent class 
+    $bw = 5; // block weight counter
     foreach ($attribs as $att) {
       if (isset($att['block'])) {
         $block = $att['block'];
@@ -1605,7 +1606,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           $form[$block]['#type'] = 'fieldset';
           $form[$block]['#collapsible'] = TRUE;
           $form[$block]['#collapsed'] = FALSE;
-          $form[$block]['#weight'] = 5;
+          $form[$block]['#weight'] = $bw;
+          $bw++;
         }
         if (isset($att['options'])) {
           $form[$att['propname']]['#type'] = 'select';
