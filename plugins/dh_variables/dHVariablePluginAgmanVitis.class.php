@@ -1694,6 +1694,11 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       );
       $plugin = dh_variables_getPlugins($prop); 
       $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
+      if (!($prop->propvalue > 0) and ($prop->linked_ts->pid > 0)) {
+        // check to see if there was a previously non-zero value to delete 
+        entity_delete('dh_properties', $prop->linked_ts->pid);
+        continue;
+      }
       // @todo: if we put this into the definition of the disease observation data structure, we can remove the 
       //        call to save this property 
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
