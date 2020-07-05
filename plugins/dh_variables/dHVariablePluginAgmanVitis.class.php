@@ -1237,6 +1237,13 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
+    $sel = new dHVariablePluginPercentSelector();
+    $disease_opts = $sel->pct_list(
+      array_merge(
+        array(0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        range(15,100,5)
+      )
+    );
     $defaults += array(
       'Sharing' => array(
         'entity_type' => $entity->entityType(),
@@ -1265,6 +1272,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'leaf',
         'vardesc' => '% of leaves affected (0.0-100.0)',
         'block' => 'Leaf Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'leaf_powdery_mildew' => array(
@@ -1282,6 +1290,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'leaf',
         'vardesc' => '% of leaves affected (0.0-100.0)',
         'block' => 'Leaf Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'leaf_phomopsis' => array(
@@ -1299,6 +1308,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'leaf',
         'vardesc' => '% of leaves affected (0.0-100.0)',
         'block' => 'Leaf Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'leaf_anthracnose' => array(
@@ -1316,6 +1326,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'leaf',
         'vardesc' => '% of leaves affected (0.0-100.0)',
         'block' => 'Leaf Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'leaf_downy_mildew' => array(
@@ -1333,6 +1344,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'leaf',
         'vardesc' => '% of leaves affected (0.0-100.0)',
         'block' => 'Leaf Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'leaf_botrytis' => array(
@@ -1350,6 +1362,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'leaf',
         'vardesc' => '% of leaves affected (0.0-100.0)',
         'block' => 'Leaf Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'cluster_black_rot' => array(
@@ -1367,6 +1380,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'cluster',
         'vardesc' => '% of clusters affected (0.0-100.0)',
         'block' => 'Cluster Samples',
+        'options' => $disease_opts,
         '#weight' => 6,
       ),
       'cluster_powdery_mildew' => array(
@@ -1384,6 +1398,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'cluster',
         'vardesc' => '% of clusters affected (0.0-100.0)',
         'block' => 'Cluster Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'cluster_phomopsis' => array(
@@ -1401,6 +1416,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'cluster',
         'vardesc' => '% of clusters affected (0.0-100.0)',
         'block' => 'Cluster Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'cluster_anthracnose' => array(
@@ -1418,6 +1434,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'cluster',
         'vardesc' => '% of leaves affected (0.0-100.0)',
         'block' => 'Cluster Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'cluster_downy_mildew' => array(
@@ -1435,6 +1452,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'cluster',
         'vardesc' => '% of leaves affected (0.0-100.0)',
         'block' => 'Cluster Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'cluster_botrytis' => array(
@@ -1452,6 +1470,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'cluster',
         'vardesc' => '% of leaves affected (0.0-100.0)',
         'block' => 'Cluster Samples',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'vine_eutypa_dieback' => array(
@@ -1469,6 +1488,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'trunk',
         'vardesc' => '% of vines affected (0.0-100.0)',
         'block' => 'Vine and Trunk',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'vine_crown_gall' => array(
@@ -1486,6 +1506,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'trunk',
         'vardesc' => '% of vines affected (0.0-100.0)',
         'block' => 'Vine and Trunk',
+        'options' => $disease_pcts,
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'vine_nagy' => array(
@@ -1503,6 +1525,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'trunk',
         'vardesc' => '% of vines affected (0.0-100.0)',
         'block' => 'Vine and Trunk',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'vine_virus' => array(
@@ -1520,6 +1543,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'trunk',
         'vardesc' => '% of vines affected (0.0-100.0)',
         'block' => 'Vine and Trunk',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'vine_pierces_disease' => array(
@@ -1537,6 +1561,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'trunk',
         'vardesc' => '% of vines affected (0.0-100.0)',
         'block' => 'Vine and Trunk',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
       'vine_other' => array(
@@ -1554,6 +1579,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'trunk',
         'vardesc' => '% of vines affected (0.0-100.0), describe symptoms in comments.',
         'block' => 'Vine and Trunk',
+        'options' => $disease_opts,
         '#weight' => 5,
       ),
     );
@@ -1579,6 +1605,10 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           $form[$block]['#type'] = 'fieldset';
           $form[$block]['#collapsible'] = TRUE;
           $form[$block]['#collapsed'] = FALSE;
+        }
+        if (isset($att['options'])) {
+          $form[$att['propname']]['#type'] = 'select';
+          $form[$att['propname']]['#size'] = 1;
         }
         $form[$block][$att['propname']] = $form[$att['propname']];
         unset($form[$att['propname']]);
