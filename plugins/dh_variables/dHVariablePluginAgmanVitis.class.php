@@ -1244,7 +1244,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         range(15,100,5)
       )
     );
-    dpm($disease_opts,'opts');
+    //dpm($disease_opts,'opts');
     $defaults += array(
       'Sharing' => array(
         'entity_type' => $entity->entityType(),
@@ -1610,6 +1610,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         if (isset($att['options'])) {
           $form[$att['propname']]['#type'] = 'select';
           $form[$att['propname']]['#size'] = 1;
+          $form[$att['propname']]['#options'] = $att['options'];
         }
         $form[$block][$att['propname']] = $form[$att['propname']];
         unset($form[$att['propname']]);
