@@ -1432,31 +1432,11 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       //   for now we just load the linked property for this, named as propname = linked 
       //   dHOMLinkage use load_single_property which calks om_getSet
       //   make link_type = 4, which is a newly defined class 
-      $varinfo = array(
-        'propname' => 'linked_ts', 
-        'varkey' => 'om_map_model_linkage', 
-        'link_type' => 4, 
-        'entity_type' => 'dh_properties',
-        'featureid' => $prop->pid,
-        'propcode' => 'dh_timeseries'
-      );
-      $plugin = dh_variables_getPlugins($prop); 
-      $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
-      // @todo: if we put this into the definition of the disease observation data structure, we can remove the 
-      //        call to save this property 
-      $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
-      dpm($prop->linked_ts, 'prop link to ts ');
-      if (intval($prop->linked_ts->dest_entity_id->propcode) > 0) {
-        $ts = $link_plugin->getDestEntity($prop->linked_ts);
-        dpm($ts,'existing ts link');
-        // @todo: these 4 values settings should be replaced by individual map_model_linkage definitions 
-        //    using getSourceEntity 
-        $ts->tscode = $prop->propcode;
-        $ts->tsvalue = $prop->propvalue;
-        $ts->Sharing = $entity->Sharing->propcode;
-        $ts->tissue_type = $thisvar['tissue_type'];
-      } else {
-        // create 
+      // link prop i
+      // - propvalue = id of source entity, which is pathogen prop on this TS record 
+      // - propcode = entity type of source entity, which is pathogen prop on this TS record 
+      // - dest_entity_type = dh_timeseries, 
+        // - dest_entity_id = tid of pathogen record 
         // @todo: move this code into the dHOMLinkage plugin 
         //    - each property should be defined as a sub-prop of the link,
         //      so, every single property of the destination entity can be 
@@ -1483,6 +1463,31 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           )
         );
         // END - not used prototype data model 
+      $varinfo = array(
+        'propname' => 'linked_ts', 
+        'varkey' => 'om_map_model_linkage', 
+        'link_type' => 4, 
+        'entity_type' => 'dh_properties',
+        'featureid' => $prop->pid,
+        'propcode' => 'dh_timeseries'
+      );
+      $plugin = dh_variables_getPlugins($prop); 
+      $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
+      // @todo: if we put this into the definition of the disease observation data structure, we can remove the 
+      //        call to save this property 
+      $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
+      dpm($prop->linked_ts, 'prop link to ts ');
+      if (intval($prop->linked_ts->dest_entity_id->propcode) > 0) {
+        $ts = $link_plugin->getDestEntity($prop->linked_ts);
+        dpm($ts,'existing ts link');
+        // @todo: these 4 values settings should be replaced by individual map_model_linkage definitions 
+        //    using getSourceEntity 
+        $ts->tscode = $prop->propcode;
+        $ts->tsvalue = $prop->propvalue;
+        $ts->Sharing = $entity->Sharing->propcode;
+        $ts->tissue_type = $thisvar['tissue_type'];
+      } else {
+        // create 
         $ts_info = array(
           'featureid' => $entity->featureid,
           'entity_type' => $entity->entity_type,
@@ -1497,12 +1502,14 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         //dpm($ts,'Create new ts link');
       }
       // SAVE the linked ts
+      //dpm($ts, 'ts pre-save');
       $ts->save();
       // update the link property to insure we have the tid 
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       $prop->linked_ts->dest_entity_id = intval($ts->tid);
-      dpm($prop->linked_ts, 'linked ts final');
+      dpm($prop->linked_ts, 'ts link prop pre-save');
       $prop->linked_ts->save();
+      dpm($prop->linked_ts, 'ts link prop post-save');
     }
   }
 }
