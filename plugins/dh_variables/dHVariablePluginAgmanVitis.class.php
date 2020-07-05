@@ -1497,12 +1497,12 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         //dpm($ts,'Create new ts link');
       }
       // SAVE the linked ts
-      $ts->save();
+      entity_save($ts);
       // update the link property to insure we have the tid 
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       $prop->linked_ts->dest_entity_id = intval($ts->tid);
       dpm($prop->linked_ts, 'linked ts final');
-      $prop->linked_ts->save();
+      entity_save($prop->linked_ts);
     }
   }
 }
