@@ -1244,6 +1244,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         range(15,100,5)
       )
     );
+    dpm($disease_opts,'opts');
     $defaults += array(
       'Sharing' => array(
         'entity_type' => $entity->entityType(),
