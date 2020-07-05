@@ -1605,6 +1605,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           $form[$block]['#type'] = 'fieldset';
           $form[$block]['#collapsible'] = TRUE;
           $form[$block]['#collapsed'] = FALSE;
+          $form[$block]['#weight'] = 5;
         }
         if (isset($att['options'])) {
           $form[$att['propname']]['#type'] = 'select';
