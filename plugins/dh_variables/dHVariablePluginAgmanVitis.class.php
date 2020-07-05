@@ -1451,13 +1451,41 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         $result = db_query("select propvalue from dh_properties where pid = " . $prop->linked_ts->pid);
         $propvalue = $result->fetchField();
         $prop->linked_ts->propvalue = $propvalue;
-        $ts = $link_plugin->getLinkedEntity($prop->linked_ts);
+        $ts = $link_plugin->getDestEntity($prop->linked_ts);
         //dpm($ts,'existing ts link');
+        // @todo: these 4 values settings should be replaced by individual map_model_linkage definitions 
+        //    using getSourceEntity 
         $ts->tscode = $prop->propcode;
         $ts->tsvalue = $prop->propvalue;
+        $ts->Sharing = $entity->Sharing->propcode;
+        $ts->tissue_type = $thisvar['tissue_type'];
       } else {
         // create 
         // @todo: move this code into the dHOMLinkage plugin 
+        //    - each property should be defined as a sub-prop of the link,
+        //      so, every single property of the destination entity can be 
+        //      copied from whatever source we choose, creating a full mapping.
+        //      This will be useful here as well as in WebForm maps, or any other 
+        //      flexible, decoupled form designing mechanism.
+        //     - These sub-props should have only src_prop and dest_prop, which automatically 
+        //       assumes the linked entity 
+        //   so:
+        //   @todo: this prop_tree array is not used, should actually be a host of child properties 
+        //          each which is copied via its own methods, recursively called by the parent
+        //     - is there another module that does this? like migrate?
+        $linked_prop_def = array(
+          'src_entity_type' => 'dh_timeseries',
+          'src_prop' => 'leaf_black_rot',
+          'dest_entity_type' => 'dh_timeseries',
+          'dest_prop' => 'tsvalue',
+          'properties' => array(
+            'Sharing' => array('src_prop' => 'Sharing', 'dest_prop' => 'Sharing'),
+            'tissue_type' => array('src_prop' => 'tissue_type', 'dest_prop' => 'tissue_type'),
+            'tsvalue' => array('src_prop' => 'tsvalue', 'dest_prop' => 'tsvalue'),
+            'tscode' => array('src_prop' => 'tscode', 'dest_prop' => 'tscode'),
+            'tstime' => array('src_prop' => 'tstime', 'dest_prop' => 'tstime'),
+          )
+        );
         $ts_info = array(
           'featureid' => $entity->featureid,
           'entity_type' => $entity->entity_type,
@@ -1475,17 +1503,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $ts->save();
       // update the link property to insure we have the tid 
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
-      $prop->linked_ts->propvalue = intval($ts->tid);
+      $prop->linked_ts->dest_entity_id = intval($ts->tid);
       $prop->linked_ts->save();
-      // iterate through replicant_proplist and copy from parent to replicant 
-      /*
-        function getLinkedEntity(&$entity) {
-          $entity->src_entity_type = $entity->propcode;
-          $entity->src_entity_id = $entity->propvalue;
-          $entity->src_entity = entity_load_single($entity->src_entity_type, $entity->src_entity_id);
-          return $entity->src_entity;
-        }
-       */
     }
   }
 }
