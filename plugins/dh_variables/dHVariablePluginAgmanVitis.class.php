@@ -1420,7 +1420,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     //   the properties in this prototype will have the ability to create timeseries entries
     //   from the parent form information and the individual pieces.
     $props = $this->getDefaults($entity);
-    dpm($entity,'entity');
+    //dpm($entity,'entity');
     foreach ($props as $thisvar) {
       // load the disease property from this parent object, should already reside on this $entity as named prop
       // skip if not a disease prop 
@@ -1480,10 +1480,10 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $prop->linked_ts->propvalue = intval($prop->pid); // src_entity_type 
       //dpm($prop, 'prop');
       $link_plugin->loadProperties($prop->linked_ts);
-      dpm($prop->linked_ts, 'prop link to ts ');
+      //dpm($prop->linked_ts, 'prop link to ts ');
       if (intval($prop->linked_ts->dest_entity_id->propcode) > 0) {
         $ts = $link_plugin->getDestEntity($prop->linked_ts);
-        dpm($ts,'existing ts link');
+        //dpm($ts,'existing ts link');
         // @todo: these 4 values settings should be replaced by individual map_model_linkage definitions 
         //    using getSourceEntity 
         $ts->tscode = $prop->propcode;
@@ -1514,7 +1514,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $prop->linked_ts->dest_entity_id = intval($ts->tid);
       //dpm($prop->linked_ts, 'ts link prop pre-save');
       $prop->linked_ts->save();
-      dpm($prop->linked_ts, 'ts link prop post-save');
+      //dpm($prop->linked_ts, 'ts link prop post-save');
     }
   }
 }
