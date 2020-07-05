@@ -1512,6 +1512,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       $prop->linked_ts->dest_entity_type = 'dh_timeseries';
       $prop->linked_ts->delete_setting = 'delete';
+      $prop->linked_ts->link_type = 4;
       $prop->linked_ts->dest_entity_id = intval($ts->tid);
       //dpm($prop->linked_ts, 'ts link prop pre-save');
       $prop->linked_ts->save();
