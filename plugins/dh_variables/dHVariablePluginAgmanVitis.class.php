@@ -1482,6 +1482,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
             'tstime' => array('src_prop' => 'tstime', 'dest_prop' => 'tstime'),
           )
         );
+        // END - not used prototype data model 
         $ts_info = array(
           'featureid' => $entity->featureid,
           'entity_type' => $entity->entity_type,
@@ -1499,7 +1500,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $ts->save();
       // update the link property to insure we have the tid 
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
-      $prop->linked_ts->dest_entity_id = intval($ts->tid);
+      $prop->linked_ts->dest_entity_id->propcode = intval($ts->tid);
+      dpm($prop->linked_ts->dest_entity_id, 'dest id final');
       $prop->linked_ts->save();
     }
   }
