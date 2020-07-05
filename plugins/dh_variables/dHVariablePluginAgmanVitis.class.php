@@ -1445,12 +1445,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       // @todo: if we put this into the definition of the disease observation data structure, we can remove the 
       //        call to save this property 
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
-      //dpm($prop->linked_ts, 'prop link to ts ');
-      if ($prop->linked_ts->propvalue > 0) {
-        // have to fix the tsvalue due to weird behavior when drupal loads number fields
-        $result = db_query("select propvalue from dh_properties where pid = " . $prop->linked_ts->pid);
-        $propvalue = $result->fetchField();
-        $prop->linked_ts->propvalue = $propvalue;
+      dpm($prop->linked_ts, 'prop link to ts ');
+      if (intval($prop->linked_ts->dest_entity_id->propcode) > 0) {
         $ts = $link_plugin->getDestEntity($prop->linked_ts);
         //dpm($ts,'existing ts link');
         // @todo: these 4 values settings should be replaced by individual map_model_linkage definitions 
