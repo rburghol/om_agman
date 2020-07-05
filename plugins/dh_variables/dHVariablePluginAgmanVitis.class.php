@@ -237,6 +237,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
     }
   }
 }
+
 class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
   //        handle in views - maybe a setting in the filter or jumplists itself?
@@ -573,25 +574,30 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     
   }
   
-  public function save($entity) {
+  public function save(&$entity) {
     if ($entity->Advanced > 0) {
       // use advanced notation
       $entity->tsvalue = $entity->Incidence * $entity->Extent;
     }
-    //dpm($entity,'entity');
-    parent::save();
+    parent::save($entity);
+  }
+  
+  public function getIncidentDetail($entity ) {
+    $codes = $this->incidentCodes();
+    $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
+    $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
+    return $incident_detail;
   }
   
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity
     // Note: Views result sets MUST have tid column included, even if hidden, in order to show a rendered ts entity.
-    $codes = $this->incidentCodes();
     $feature = $this->getParentEntity($entity);
+    $this->loadProperties($entity, FALSE);
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     $varname = $varinfo->varname;
-    $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
-    $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
+    $incident_detail = $this->getIncidentDetail($entity );
     if ($varinfo === FALSE) {
       return;
     }
@@ -774,41 +780,12 @@ class dHVariableOMInfoShare extends dHVariablePluginCodeAttribute {
     $rowform[$mname]['#size'] = 1;
   }
   
-  public function applyEntityAttribute($property, $value) {
+  public function applyEntityAttribute(&$property, $value) {
     // @todo: this needs to be more robust, as it assumes only one way to handle an attached property.
     //        bvut for now this will work.
     $property->propcode = $value;
   }
   
-}
-class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
-  var $loval = 0.01;
-  var $lolabel = "<=1%"; 
-  // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
-  //        why aren't they converting location sharing to setting?
-  //    Once debugged, un-comment $attach_method = 'contained'
-  
-  public function formRowSave(&$rowvalues, &$row) {
-    parent::formRowSave($rowvalues, $row);
-    //dpm($rowvalues, 'submitted');
-    // special save handlers
-  }
-  public function incidentCodes() {
-    // do this as a query of variables in the 
-    $options = dh_varkey_varselect_options(array("vocabulary = 'fungal_pathogens'"));
-    asort($options);
-    return $options;
-  }
-  
-  public function formRowEdit(&$form, $row) {
-    parent::formRowEdit($form, $row); // does hiding etc.
-    $form['tscode']['#title'] = t('Organism Type');
-    $form['tscode']['#type'] = 'select';
-    $form['tscode']['#options'] = $this->incidentCodes();
-    $form['tscode']['#size'] = 1;
-    $form['tscode']['#weight'] = 2;
-    //dpm($form,'form');
-  }
 }
 
 class dHVariablePluginVitisHarvest extends dHVariablePluginAgmanAction {
@@ -1131,4 +1108,417 @@ class dHVariableReviewedPMG extends dHVariablePluginDefault {
     $rowform['propcode']['#size'] = 1;
   }
 }
+
+class dHAgmanVitisPlantTissue extends dHOMAlphanumericConstant {
+  
+  public function hiddenFields() {
+    $hidden = array('varname', 'varid', 'pid', 'propvalue', 'entity_type', 'featureid', 'startdate', 'enddate', 'modified', 'label');
+    return $hidden;
+  }
+  
+  public function getCodeOptions() {
+    $opts = array(
+      'leaf' => 'Leaf',
+      'stem' => 'Stem',
+      'cluster' => 'Cluster',
+      'berry' => 'Berry',
+      'petiole' => 'Petiole',
+      'rachis' => 'Rachis',
+      'trunk' => 'Trunk',
+    );
+    return $opts;  
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    parent::formRowEdit($form, $entity);
+    if (!$entity->varid) {
+      return FALSE;
+    }
+    $opts = $this->getCodeOptions();
+    //dpm($public_vars,'public vars');
+    $form['propcode'] = array(
+      '#title' => t($entity->propname),
+      '#type' => 'select',
+      '#empty_option' => t('- Select -'),
+      '#options' => $opts,
+      '#description' => $entity->vardesc,
+      '#default_value' => !empty($entity->propcode) ? $entity->propcode : "",
+    );
+  }
+  
+}
+
+class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
+  var $loval = 0.01;
+  var $lolabel = "<=1%"; 
+  // @todo: debug om class convert_attributes_to_dh_props() and loadProperties()
+  //        why aren't they converting location sharing to setting?
+  //    Once debugged, un-comment $attach_method = 'contained'
+  
+  public function getDefaults($entity, &$defaults = array()) {
+    parent::getDefaults($entity, $defaults);
+    $defaults += array(
+      'tissue_type' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => NULL,
+        'propname' => 'tissue_type',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'vardesc' => 'Portion of plant sampled.',
+        'attach_method' => 'contained',
+        'title' => 'Plant Part',
+        'varid' => dh_varkey2varid('om_agman_plant_tissue', TRUE),
+      ),
+    );
+    return $defaults;
+  }
+  public function formRowSave(&$rowvalues, &$row) {
+    parent::formRowSave($rowvalues, $row);
+    //dpm($rowvalues, 'submitted');
+    // special save handlers
+  }
+  public function incidentCodes() {
+    // do this as a query of variables in the 
+    $options = dh_varkey_varselect_options(array("vocabulary = 'fungal_pathogens'"));
+    asort($options);
+    return $options;
+  }
+  
+  public function getIncidentDetail($entity ) {
+    $codes = $this->incidentCodes();
+    $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
+    $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
+    $incident_detail .= ' on ' . $entity->tissue_type->propcode;
+    return $incident_detail;
+  }
+  
+  public function formRowEdit(&$form, $row) {
+    parent::formRowEdit($form, $row); // does hiding etc.
+    $form['tscode']['#title'] = t('Organism Type');
+    $form['tscode']['#type'] = 'select';
+    $form['tscode']['#options'] = $this->incidentCodes();
+    $form['tscode']['#size'] = 1;
+    $form['tscode']['#weight'] = 2;
+    //dpm($form,'form');
+  }
+  
+  public function attachNamedForm(&$rowform, $row) {
+    // @todo: move this to the base IPMIncidentExtent class 
+    parent::attachNamedForm($rowform, $row);
+    // if this is attached, we only show a single data entry form since we don't yet support multi in attached.
+    // we should expect that the property will have an indication of the type in use: severity (default), incident or extent 
+    $mname = $this->handleFormPropname($row->propname);
+    $rowform[$mname]['#title'] = t($row->title);
+    $rowform[$mname]['#type'] = 'textfield';
+    $rowform[$mname]['#element_validate'] = array('element_validate_number');
+    $rowform[$mname]['#default_value'] = !empty($row->propvalue) ? $row->propvalue : 0.0;
+    //dpm($row, "Attaching");
+  }
+  
+  public function save(&$entity) {
+    /*
+    dpm($entity,'entity save()');
+    $dbt = debug_backtrace();
+    dsm($dbt, "debug_backtrace()");
+    */
+    parent::save($entity);
+    //dpm($entity,'saved');
+  }
+}
+
+class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
+  // 
+  var $attach_method = 'contained'; // how to attach props found in getDefaults() 
+  
+  public function hiddenFields() {
+    $hidden = array('varname', 'varid', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
+    return $hidden;
+  }
+  
+  public function getDefaults($entity, &$defaults = array()) {
+    parent::getDefaults($entity, $defaults);
+    $defaults += array(
+      'Sharing' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'locality',
+        'propvalue_default' => 0.0,
+        'propname' => 'Sharing',
+        'singularity' => 'name_singular',
+        '#weight' => 4,
+        'attach_method' => 'contained',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'ipm_info_share',
+        'varid' => dh_varkey2varid('ipm_info_share', TRUE),
+      ),
+      'leaf_black_rot' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'org_black_rot',
+        'propvalue_default' => 0.0,
+        'propname' => 'leaf_black_rot',
+        'title' => 'Black Rot (leaf)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'om_class_Constant',
+        'attach_method' => 'contained',
+        'propcode_mode' => 'read_only',
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
+        'tissue_type' => 'leaf',
+        'vardesc' => '% of leaves affected (0.0-100.0)',
+        'block' => 'Leaf Samples',
+        '#weight' => 5,
+      ),
+      'leaf_powdery_mildew' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'org_powdery_mildew',
+        'propvalue_default' => 0.0,
+        'propname' => 'leaf_powdery_mildew',
+        'title' => 'Powdery Mildew (leaf)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'om_class_Constant',
+        'attach_method' => 'contained',
+        'propcode_mode' => 'read_only',
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
+        'tissue_type' => 'leaf',
+        'vardesc' => '% of leaves affected (0.0-100.0)',
+        'block' => 'Leaf Samples',
+        '#weight' => 5,
+      ),
+      'leaf_phomopsis' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'org_phomopsis',
+        'propvalue_default' => 0.0,
+        'propname' => 'leaf_phomopsis',
+        'title' => 'Phomopsis (leaf)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'om_class_Constant',
+        'attach_method' => 'contained',
+        'propcode_mode' => 'read_only',
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
+        'tissue_type' => 'leaf',
+        'vardesc' => '% of leaves affected (0.0-100.0)',
+        'block' => 'Leaf Samples',
+        '#weight' => 5,
+      ),
+      'cluster_black_rot' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'org_black_rot',
+        'propvalue_default' => 0.0,
+        'propname' => 'cluster_black_rot',
+        'title' => 'Black Rot (cluster)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'om_class_Constant',
+        'attach_method' => 'contained',
+        'propcode_mode' => 'read_only',
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
+        'tissue_type' => 'cluster',
+        'vardesc' => '% of clusters affected (0.0-100.0)',
+        'block' => 'Cluster Samples',
+        '#weight' => 6,
+      ),
+      'cluster_powdery_mildew' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'org_powdery_mildew',
+        'propvalue_default' => 0.0,
+        'propname' => 'cluster_powdery_mildew',
+        'title' => 'Powdery Mildew (cluster)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'om_class_Constant',
+        'attach_method' => 'contained',
+        'propcode_mode' => 'read_only',
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
+        'tissue_type' => 'cluster',
+        'vardesc' => '% of clusters affected (0.0-100.0)',
+        'block' => 'Cluster Samples',
+        '#weight' => 5,
+      ),
+      'cluster_phomopsis' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'org_phomopsis',
+        'propvalue_default' => 0.0,
+        'propname' => 'cluster_phomopsis',
+        'title' => 'Phomopsis (cluster)',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'om_class_Constant',
+        'attach_method' => 'contained',
+        'propcode_mode' => 'read_only',
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
+        'tissue_type' => 'cluster',
+        'vardesc' => '% of clusters affected (0.0-100.0)',
+        'block' => 'Cluster Samples',
+        '#weight' => 5,
+      ),
+      'org_eutypa_dieback' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => 'org_eutypa_dieback',
+        'propvalue_default' => 0.0,
+        'propname' => 'org_eutypa_dieback',
+        'title' => 'Eutypa Dieback',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'varkey' => 'om_class_Constant',
+        'attach_method' => 'contained',
+        'propcode_mode' => 'read_only',
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
+        'tissue_type' => 'trunk',
+        'vardesc' => '% of vines affected (0.0-100.0)',
+        'block' => 'Vine and Trunk',
+        '#weight' => 5,
+      ),
+    );
+    return $defaults;
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    parent::formRowEdit($form, $entity); // does hiding etc.
+    
+    // @todo: add a sample method (3, 7, 10 or estimated)
+    
+    // Comment this for the moment until debugging the plant part setting propcode on the diseases.
+    
+    $attribs = $this->getDefaults($entity);
+    // @todo: move to separate blocks.  This might be best residing in some parent class 
+    foreach ($attribs as $att) {
+      if (isset($att['block'])) {
+        $block = $att['block'];
+        // create the block if not already set 
+        if (!isset($form[$block])) {
+          $form[$block] = array();
+          $form[$block]['#title'] = t($block);
+          $form[$block]['#type'] = 'fieldset';
+          $form[$block]['#collapsible'] = TRUE;
+          $form[$block]['#collapsed'] = FALSE;
+        }
+        $form[$block][$att['propname']] = $form[$att['propname']];
+        unset($form[$att['propname']]);
+      }
+    }
+  }
+  
+  public function save(&$entity) {
+    // @todo: copy properties to dopples 
+    // @todo: apply location sharing component settings to all children 
+    parent::save($entity);
+  }  
+  
+  public function updateProperties(&$entity) {
+    parent::updateProperties($entity);
+  }
+  
+  
+  public function updateLinked(&$entity) {
+    // @todo: this code should support the om_object
+    // now, create linked 
+    // ultimately this will just support anything defined by dHOMLinkage which could create a setLocalhostLinkedValue
+    // But for now we just manually do here, to flesh out logic for use later.
+    // - check the getDefaults() list, or the properties list for this 
+    //   in other words, ANY property that is attached to this could define a linkage 
+    //   the properties in this prototype will have the ability to create timeseries entries
+    //   from the parent form information and the individual pieces.
+    $props = $this->getDefaults($entity);
+    //dpm($entity,'entity');
+    foreach ($props as $thisvar) {
+      // load the disease property from this parent object, should already reside on this $entity as named prop
+      // skip if not a disease prop 
+      if (!isset($thisvar['tissue_type'])) {
+        continue;
+      }
+      $prop = $entity->{$thisvar['propname']};
+      // - Load link properties for this disease prop 
+      // - @todo: find all links with loadComponents($criteria = array())
+      //   for now we just load the linked property for this, named as propname = linked 
+      //   dHOMLinkage use load_single_property which calks om_getSet
+      //   make link_type = 4, which is a newly defined class 
+      // link prop i
+      // - propvalue = id of source entity, which is pathogen prop on this TS record 
+      // - propcode = entity type of source entity, which is pathogen prop on this TS record 
+      // - dest_entity_type = dh_timeseries, 
+        // - dest_entity_id = tid of pathogen record 
+        // @todo: move this code into the dHOMLinkage plugin 
+        //    - each property should be defined as a sub-prop of the link,
+        //      so, every single property of the destination entity can be 
+        //      copied from whatever source we choose, creating a full mapping.
+        //      This will be useful here as well as in WebForm maps, or any other 
+        //      flexible, decoupled form designing mechanism.
+        //     - These sub-props should have only src_prop and dest_prop, which automatically 
+        //       assumes the linked entity 
+        //   so:
+        //   @todo: this prop_tree array is not used, should actually be a host of child properties 
+        //          each which is copied via its own methods, recursively called by the parent
+        //     - is there another module that does this? like migrate?
+        $linked_prop_def = array(
+          'src_entity_type' => 'dh_timeseries',
+          'src_prop' => 'leaf_black_rot',
+          'dest_entity_type' => 'dh_timeseries',
+          'dest_prop' => 'tsvalue',
+          'properties' => array(
+            'Sharing' => array('src_prop' => 'Sharing', 'dest_prop' => 'Sharing'),
+            'tissue_type' => array('src_prop' => 'tissue_type', 'dest_prop' => 'tissue_type'),
+            'tsvalue' => array('src_prop' => 'tsvalue', 'dest_prop' => 'tsvalue'),
+            'tscode' => array('src_prop' => 'tscode', 'dest_prop' => 'tscode'),
+            'tstime' => array('src_prop' => 'tstime', 'dest_prop' => 'tstime'),
+          )
+        );
+        // END - not used prototype data model 
+      $varinfo = array(
+        'propname' => 'linked_ts', 
+        'varkey' => 'om_map_model_linkage', 
+        'link_type' => 4, 
+        'entity_type' => 'dh_properties',
+        'featureid' => $prop->pid,
+      );
+      $plugin = dh_variables_getPlugins($prop); 
+      $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
+      // @todo: if we put this into the definition of the disease observation data structure, we can remove the 
+      //        call to save this property 
+      $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
+      $prop->linked_ts->propcode = 'dh_properties'; // src_entity_type 
+      $prop->linked_ts->propvalue = intval($prop->pid); // src_entity_type 
+      //dpm($prop, 'prop');
+      $link_plugin->loadProperties($prop->linked_ts);
+      //dpm($prop->linked_ts, 'prop link to ts ');
+      if (intval($prop->linked_ts->dest_entity_id->propcode) > 0) {
+        $ts = $link_plugin->getDestEntity($prop->linked_ts);
+        //dpm($ts,'existing ts link');
+        // @todo: these 4 values settings should be replaced by individual map_model_linkage definitions 
+        //    using getSourceEntity 
+        $ts->tscode = $prop->propcode;
+        $ts->tsvalue = $prop->propvalue;
+        $ts->Sharing = $entity->Sharing->propcode;
+        $ts->tissue_type = $thisvar['tissue_type'];
+      } else {
+        // create 
+        $ts_info = array(
+          'featureid' => $entity->featureid,
+          'entity_type' => $entity->entity_type,
+          'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+          'tscode' => $prop->propcode,
+          'tsvalue' => $prop->propvalue,
+          'tstime' => $entity->tstime,
+          'Sharing' => $entity->Sharing->propcode,
+          'tissue_type' => $thisvar['tissue_type']
+        );
+        $ts = entity_create('dh_timeseries', $ts_info); // says get all matching tstime
+        //dpm($ts,'Create new ts link');
+      }
+      // SAVE the linked ts
+      //dpm($ts, 'ts pre-save');
+      $ts->save();
+      // update the link property to insure we have the tid 
+      // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
+      $prop->linked_ts->dest_entity_type = 'dh_timeseries';
+      $prop->linked_ts->delete_setting = 'delete';
+      $prop->linked_ts->link_type = 4;
+      $prop->linked_ts->dest_entity_id = intval($ts->tid);
+      //dpm($prop->linked_ts, 'ts link prop pre-save');
+      $prop->linked_ts->save();
+      //dpm($prop->linked_ts, 'ts link prop post-save');
+    }
+  }
+}
+
 ?>
