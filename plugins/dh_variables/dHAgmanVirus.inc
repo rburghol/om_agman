@@ -3,7 +3,7 @@
 $plugin = array(
   'variable' =>  array(
     'varname' => 'Misc. Virus',
-    'vardesc' => 'Any non-specific viral pathogen.',
+    'vardesc' => 'Any non-specific viral pathogen -- describe in comments.',
     'vocabulary' => 'fungal_pathogens',
     'varunits' => 'n/a',
     'varkey' => 'org_virus',
