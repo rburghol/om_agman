@@ -1478,6 +1478,8 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
       $prop->linked_ts->propcode = 'dh_properties'; // src_entity_type 
       $prop->linked_ts->propvalue = intval($prop->pid); // src_entity_type 
+      //dpm($prop, 'prop');
+      $link_plugin->loadProperties($prop->linked_ts);
       dpm($prop->linked_ts, 'prop link to ts ');
       if (intval($prop->linked_ts->dest_entity_id->propcode) > 0) {
         $ts = $link_plugin->getDestEntity($prop->linked_ts);
@@ -1510,7 +1512,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       $prop->linked_ts->dest_entity_type = 'dh_timeseries';
       $prop->linked_ts->dest_entity_id = intval($ts->tid);
-      dpm($prop->linked_ts, 'ts link prop pre-save');
+      //dpm($prop->linked_ts, 'ts link prop pre-save');
       $prop->linked_ts->save();
       dpm($prop->linked_ts, 'ts link prop post-save');
     }
