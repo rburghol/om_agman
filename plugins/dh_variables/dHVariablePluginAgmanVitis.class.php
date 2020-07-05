@@ -1448,7 +1448,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       dpm($prop->linked_ts, 'prop link to ts ');
       if (intval($prop->linked_ts->dest_entity_id->propcode) > 0) {
         $ts = $link_plugin->getDestEntity($prop->linked_ts);
-        //dpm($ts,'existing ts link');
+        dpm($ts,'existing ts link');
         // @todo: these 4 values settings should be replaced by individual map_model_linkage definitions 
         //    using getSourceEntity 
         $ts->tscode = $prop->propcode;
