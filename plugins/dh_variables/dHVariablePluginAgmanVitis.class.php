@@ -1507,7 +1507,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'tissue_type' => 'trunk',
         'vardesc' => '% of vines affected (0.0-100.0)',
         'block' => 'Vine and Trunk',
-        'options' => $disease_pcts,
         'options' => $disease_opts,
         '#weight' => 5,
       ),
