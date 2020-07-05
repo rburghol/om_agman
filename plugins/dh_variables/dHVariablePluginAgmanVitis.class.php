@@ -1545,7 +1545,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'vardesc' => '% of vines affected (0.0-100.0)',
         'block' => 'Vine and Trunk',
         'options' => $disease_opts,
-        '#weight' => 5,
+        '#weight' => 6,
       ),
       'vine_pierces_disease' => array(
         'entity_type' => $entity->entityType(),
@@ -1581,7 +1581,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'vardesc' => '% of vines affected (0.0-100.0), describe symptoms in comments.',
         'block' => 'Vine and Trunk',
         'options' => $disease_opts,
-        '#weight' => 5,
+        '#weight' => 7,
       ),
     );
     return $defaults;
