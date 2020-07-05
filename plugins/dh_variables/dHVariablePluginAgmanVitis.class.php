@@ -1420,6 +1420,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
     //   the properties in this prototype will have the ability to create timeseries entries
     //   from the parent form information and the individual pieces.
     $props = $this->getDefaults($entity);
+    dpm($entity,'entity');
     foreach ($props as $thisvar) {
       // load the disease property from this parent object, should already reside on this $entity as named prop
       // skip if not a disease prop 
@@ -1469,13 +1470,14 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'link_type' => 4, 
         'entity_type' => 'dh_properties',
         'featureid' => $prop->pid,
-        'propcode' => 'dh_timeseries'
       );
       $plugin = dh_variables_getPlugins($prop); 
       $plugin->loadSingleProperty($prop, 'linked_ts', $varinfo, FALSE);
       // @todo: if we put this into the definition of the disease observation data structure, we can remove the 
       //        call to save this property 
       $link_plugin = dh_variables_getPlugins($prop->linked_ts); 
+      $prop->linked_ts->propcode = 'dh_properties'; // src_entity_type 
+      $prop->linked_ts->propvalue = intval($prop->pid); // src_entity_type 
       dpm($prop->linked_ts, 'prop link to ts ');
       if (intval($prop->linked_ts->dest_entity_id->propcode) > 0) {
         $ts = $link_plugin->getDestEntity($prop->linked_ts);
@@ -1506,6 +1508,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       $ts->save();
       // update the link property to insure we have the tid 
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
+      $prop->linked_ts->dest_entity_type = 'dh_timeseries';
       $prop->linked_ts->dest_entity_id = intval($ts->tid);
       dpm($prop->linked_ts, 'ts link prop pre-save');
       $prop->linked_ts->save();
