@@ -1733,6 +1733,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'options' => $disease_opts,
         '#weight' => 7,
       ),
+      /*
       'ccw' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => 'cutworms',
@@ -1931,6 +1932,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'options' => $disease_opts,
         '#weight' => 7,
       ),
+      */
     );
     return $defaults;
   }
