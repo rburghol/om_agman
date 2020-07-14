@@ -1047,6 +1047,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'varkey' => 'cluster_weight_g',
         'varid' => dh_varkey2varid('cluster_weight_g', TRUE),
       ),
+      /*
       'water_content_pct' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
@@ -1058,6 +1059,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'varkey' => 'water_content_pct',
         'varid' => dh_varkey2varid('water_content_pct', TRUE),
       ), 
+      */
     );
     return $defaults;
   }
