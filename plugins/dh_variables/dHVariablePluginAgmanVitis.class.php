@@ -1864,7 +1864,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'propcode_default' => 'bmsb',
         'propvalue_default' => 0.0,
         'propname' => 'bmsb',
-        'title' => "Spotted wing drosophila",
+        'title' => "Brown marmorated stink bug",
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'om_class_Constant',
