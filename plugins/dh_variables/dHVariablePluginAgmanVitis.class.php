@@ -1004,7 +1004,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
         'propname' => 'TSL',
-        'title' => "Sugar (g) per berry"
+        'title' => "Sugar (g) per berry",
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'varkey' => 'total_sugar_mgb',
