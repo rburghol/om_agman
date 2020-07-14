@@ -1054,7 +1054,6 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'propname' => 'Water Content',
         '#weight' => 23,
         'singularity' => 'name_singular',
-        '#weight' => 9,
         'featureid' => $entity->identifier(),
         'varkey' => 'water_content_pct',
         'varid' => dh_varkey2varid('water_content_pct', TRUE),
@@ -1078,6 +1077,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     );
     */
     $form['tstime']['#title'] = t("Collection Date");
+    $form['tstext']['#weight'] = 30; // place at bottom
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
