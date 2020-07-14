@@ -1717,25 +1717,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       ),
       'ccw' => array(
         'entity_type' => $entity->entityType(),
-        'propcode_default' => 'org_other',
-        'propvalue_default' => 0.0,
-        'propname' => 'ccw',
-        'title' => "Climbing Cutworm",
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'om_class_Constant',
-        'attach_method' => 'contained',
-        'propcode_mode' => 'read_only',
-        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
-        'tissue_type' => 'leaf',
-        'vardesc' => '% of vines affected (0.0-100.0)',
-        'block' => 'Insects',
-        'options' => $disease_opts,
-        '#weight' => 7,
-      ),
-      /*
-      'ccw' => array(
-        'entity_type' => $entity->entityType(),
         'propcode_default' => 'cutworms',
         'propvalue_default' => 0.0,
         'propname' => 'ccw',
@@ -1932,7 +1913,6 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'options' => $disease_opts,
         '#weight' => 7,
       ),
-      */
     );
     return $defaults;
   }
