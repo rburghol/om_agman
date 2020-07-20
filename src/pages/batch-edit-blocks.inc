@@ -22,6 +22,8 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
   }
   
   function SubmitFormCustom(array &$form, $form_state) {
+    global $user;
+    $uid = $user->uid;
     if ($form_state['values']['vineyard_id'] > 0) {
       $vid = $form_state['values']['vineyard_id'] ;
       $v = entity_load_single('dh_feature', $vid);
