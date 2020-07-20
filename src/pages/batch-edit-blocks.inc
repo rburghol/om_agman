@@ -24,6 +24,8 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
   function SubmitFormCustom(array &$form, $form_state) {
     if ($form_state['values']['vineyard_id'] > 0) {
       $vid = $form_state['values']['vineyard_id'] ;
+      $v = entity_load_single('dh_feature', $vid);
+      $default_geofield = $v->dh_geofield;
       foreach ($form_state['values'][$this->groupname] as $record_group) {
         // if hydroid > 0 save the block
         $feature = NULL;
@@ -31,7 +33,11 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
           // on the final row, check to see if it is formatted
           //dpm($record_group,"New Record Group?");
           if (empty($record_group['hydroid']) and strlen($record_group['name'])) {
-            $record_group['dh_link_facility_mps'] = array('und' => array( 0 => array('target_id' => $vid) ));
+            $record_group['dh_link_facility_mps'] = array(
+              'und' => array( 0 => array('target_id' => $vid) )
+            );
+            $record_group['dh_geofield'] = $default_geofield;
+            $record_group['dh_link_feature_mgr_id'] = array('und' => array( 0 => array('target_id' => $uid) ));
             $record_group['bundle'] = 'landunit';
             $feature = entity_create('dh_feature', $record_group);
             drupal_set_message("Created block $feature->name");
