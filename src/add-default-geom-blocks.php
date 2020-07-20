@@ -3,7 +3,7 @@
   $uid = -1;
   $update_props = TRUE;
   // sql to get records with redundant erefs
-  $q = "  select f.name, st_astext(fg.dh_geofield_geom), mp.name as block_name
+  $q = "  select f.name, st_astext(fg.dh_geofield_geom), mp.name as block_name, mp.hydroid
     from dh_feature as f 
     left outer join field_data_dh_geofield as fg 
     on (
