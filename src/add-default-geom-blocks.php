@@ -46,7 +46,7 @@
     $vid = dh_getMpFacilityHydroId($dh_feature);
     $v = entity_load_single('dh_feature', $vid);
     $default_geofield = $v->dh_geofield; 
-    if ($update_props) {
+    if ($update_props and is_object($dh_feature)) {
       $dh_feature->dh_link_feature_mgr_id = array('und' => array( 0 => array('target_id' => $uid) ));
       $dh_feature->dh_geofield = $default_geofield;
       $dh_feature->save();
