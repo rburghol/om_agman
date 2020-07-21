@@ -51,7 +51,7 @@
       $dh_feature->save();
     }
     error_log("Setting geom for $record->hydroid to geom from $vid ");
-    break;
+    //break;
     //$dh_adminreg_feature->save();
     echo "saved $record->name \n";
   }
