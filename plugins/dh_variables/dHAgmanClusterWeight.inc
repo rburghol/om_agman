@@ -3,7 +3,7 @@
 $plugin = array(
   'label' => t('AgFruitChem - Cluster Weight'),
   'variable' =>  array(
-    'varname' => '',
+    'varname' => 'Cluster Weight',
     'vardesc' => 'Mean weight of clusters sampled.',
     'vocabulary' => 'agman_fruit_chem',
     'varunits' => 'g',

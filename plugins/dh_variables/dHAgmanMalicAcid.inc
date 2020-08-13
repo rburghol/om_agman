@@ -3,7 +3,7 @@
 $plugin = array(
   'label' => t('AgFruitChem - Malic Acid'),
   'variable' =>  array(
-    'varname' => '',
+    'varname' => 'Malic Acid',
     'vardesc' => 'A measure of the total malic acid concentration.',
     'vocabulary' => 'agman_fruit_chem',
     'varunits' => 'g/L',

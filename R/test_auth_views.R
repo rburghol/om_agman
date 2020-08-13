@@ -1,5 +1,5 @@
 library(httr)
-library(readr)0
+library(readr)
 site <- 'http://deq1.bse.vt.edu/d.alpha';
 #Cross-site Request Forgery protection (Token needed for POST and PUT)
 csrf <- GET(
