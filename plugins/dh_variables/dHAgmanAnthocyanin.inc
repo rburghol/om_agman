@@ -1,13 +1,13 @@
 <?php
 // no plugin defined here, only a variable definition 
 $plugin = array(
-  'label' => t('AgFruitChem - Yeast Assimilable Nitrogen (YAN)'),
+  'label' => t('Total Anthocyanin'),
   'variable' =>  array(
-    'varname' => 'YAN',
-    'vardesc' => 'Yeast Assimilable Nitrogen (YAN).',
+    'varname' => 'Total Anthocyanin',
+    'vardesc' => 'Total anthocyanin (520 nm absorbance; AU per g berry weight)',
     'vocabulary' => 'agman_fruit_chem',
-    'varunits' => 'mg/L',
-    'varkey' => 'yan',
+    'varunits' => 'mgg',
+    'varkey' => 'total_anthocyanin_mgg',
     'datatype' => 'concentration',
     'varcode' => 'yan',
     'isregular' => 0,
