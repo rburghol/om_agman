@@ -1109,7 +1109,6 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     }
   }
   
-  
   public function buildContent(&$content, &$entity, $view_mode) {
     // special render handlers when using a content array
     // get all FRAC Codes associated with this entity

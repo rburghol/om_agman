@@ -11,3 +11,23 @@ smoothed25 <- predict(loessMod25)
 
 plot(total_sugar_mgb ~ jday, data=dat)
 lines(smoothed25, x=dat$jday, col="green")
+
+# Use REST
+library(httr)
+library(readr)
+
+# You must run this line separately to properly authenticate
+  token <- rest_token(site)
+
+pg = "agman_fruit_chem/export"
+url = paste(site,pg,sep="/")
+
+sp <- GET(
+  url,
+  add_headers(HTTP_X_CSRF_TOKEN = token),
+  encode = "xml"
+);
+
+dat <- content(sp);
+
+dat
