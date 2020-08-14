@@ -20,8 +20,6 @@ noauth
 
 
 # WITH authentication
-# but actually, due to cookies/IP stuff drupal doesn't require the 
-# CSRF token because the above one works as well.
 sp <- GET(
   paste(site,"export-dhts-fid-varkey",hydroid,sep="/"),
   add_headers(HTTP_X_CSRF_TOKEN = token),
