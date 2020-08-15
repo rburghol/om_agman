@@ -19,7 +19,7 @@ library(readr)
 # You must run this line separately to properly authenticate
   token <- rest_token(site)
 
-pg = "agman_fruit_chem/export"
+pg = "vt_fruit_chem/export"
 url = paste(site,pg,sep="/")
 
 sp <- GET(
