@@ -2006,14 +2006,26 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
           'src_prop' => 'leaf_black_rot',
           'dest_entity_type' => 'dh_timeseries',
           'dest_prop' => 'tsvalue',
-          'properties' => array(
-            'Sharing' => array('src_prop' => 'Sharing', 'dest_prop' => 'Sharing'),
-            'tissue_type' => array('src_prop' => 'tissue_type', 'dest_prop' => 'tissue_type'),
-            'tsvalue' => array('src_prop' => 'tsvalue', 'dest_prop' => 'tsvalue'),
+          'dest_properties' => array(
+            // for use with "push remote prop" linkages, i.e. type 4 
+            // implement tokens for all of this 
+            'Sharing' => array('propname' => 'Sharing', 'propcode' => '[Sharing:propcode]'),
+            'tissue_type' => 'leaf', // probably can do this since the class will use it on save?
+            'tsvalue' => '[leaf_black_rot:propvalue]',
             'tscode' => array('src_prop' => 'tscode', 'dest_prop' => 'tscode'),
             'tstime' => array('src_prop' => 'tstime', 'dest_prop' => 'tstime'),
           )
         );
+        // this can be used with the new om_tokenize function as follows:
+        // create an array to store the tokenized data
+        // $tout = array();
+        // turn the object with all it's attached ovject into an array
+        // $tsa = json_decode(json_encode($entity), true);
+        // now turn the array of flat object props, into a set of unique tokens (only allow desired props)
+        // om_tokenize('', $tsa, $tout, ':', array('propcode', 'propname', 'pid', 'propvalue', 'entity_type', 'featureid'));
+        // now, finally, use token_replace with a special OM callback function that allows any token to be created in 
+        // the passed in $data array 
+        // $linked_prop_def['dest_properties']['tsvalue'] = token_replace($prop['black_rot'], $tout, array('callback'=>'om_token_replace_all'));
         // END - not used prototype data model 
       $varinfo = array(
         'propname' => 'linked_ts', 
