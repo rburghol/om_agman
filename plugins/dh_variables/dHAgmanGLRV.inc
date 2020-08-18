@@ -17,7 +17,7 @@ $plugin = array(
     // Uses same plugin as other pathogens
     'plugin' => 'dHVariablePluginEfficacy',
     'options' => '',
-    'varabbrev' => 'PD',
+    'varabbrev' => 'GLRV',
   ),
 );
 
