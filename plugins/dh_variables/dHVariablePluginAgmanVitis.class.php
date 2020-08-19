@@ -1104,7 +1104,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
       $entity->{"Berry Weight"} = round($bw,3);
       if (($rowvalues['Brix'] > 0)) {
         // tS g/b = S g-S/100g-Berry * Berry-weight g * 1000.0 mg/g = Brix * 10 * Berry_Weight 
-        $entity->{"TSL"} = floatval($rowvalues['Brix']) * 10.0 * $bw;
+        $entity->{"TSL"} = floatval($rowvalues['Brix']) * $bw / 100.0;
       }
     }
   }
