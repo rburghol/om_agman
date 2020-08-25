@@ -928,11 +928,11 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'varkey' => 'berry_weight_g',
         'varid' => dh_varkey2varid('berry_weight_g', TRUE),
       ),
-      'brix' => array(
+      'tss' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
-        'propname' => 'Brix',
+        'propname' => 'tss',
         'title' => 'Total Soluble Solids (TSS, °Brix)',
         '#weight' => 13,
         'singularity' => 'name_singular',
@@ -1096,15 +1096,15 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     // not values.  So, Brix and ph, since they are the same with underscores replaced conflict
     // special save handlers
     // so, now we call loadProperties() to insure that all properties are objects
-    $entity->tsvalue = $rowvalues['Brix']; 
+    $entity->tsvalue = $rowvalues['tss']; 
     if (($rowvalues['sample_size_berries'] > 0) and ($rowvalues['sample_weight_g'] > 0)) {
       // auto-calculate berry weight
       $bw = floatval($rowvalues['sample_weight_g']) / floatval($rowvalues['sample_size_berries']);
       $rowvalues['Berry_Weight'] = round($bw,3);
       $entity->{"Berry Weight"} = round($bw,3);
-      if (($rowvalues['Brix'] > 0)) {
-        // tS g/b = S g-S/100g-Berry * Berry-weight g * 1000.0 mg/g = Brix * 10 * Berry_Weight 
-        $entity->{"TSL"} = floatval($rowvalues['Brix']) * 10.0 * $bw;
+      if (($rowvalues['tss'] > 0)) {
+        // tS g/b = S g-S/100g-Berry * Berry-weight g * 1000.0 mg/g = tss * 10 * Berry_Weight 
+        $entity->{"TSL"} = floatval($rowvalues['tss']) * 10.0 * $bw;
       }
     }
   }
@@ -1129,7 +1129,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content = array();
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "$varname @ $entity->tsvalue brix in " . $feature->name,
+          '#markup' => "$varname @ $entity->tss brix in " . $feature->name,
         );
       break;
       default:
@@ -1140,7 +1140,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content['title'] = $link;
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "$varname @ $entity->tsvalue brix in " . $feature->name,
+          '#markup' => "$varname @ $entity->tss brix in " . $feature->name,
         );
       break;
     }
