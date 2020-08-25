@@ -1090,10 +1090,10 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     parent::update($entity);
     // parent update() insures that all props are loaded as objects 
     $tss = $entity->{'tss'}->propvalue;
-    /*
+    $entity->tsvalue = $tss;
     $sw = $entity->{'sample_weight_g'}->propvalue;
     $ss = $entity->{'sample_size_berries'}->propvalue;
-    $entity->tsvalue = $tss;
+    /*
     if (($ss > 0) and ($sw > 0)) {
       // auto-calculate berry weight
       $bw = floatval($sw) / floatval($ss);
