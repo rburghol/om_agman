@@ -1088,6 +1088,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
   
   public function update(&$entity) {
     parent::update($entity);
+    /*
     // parent update() insures that all props are loaded as objects 
     $tss = $entity->{'tss'}->propvalue;
     $sw = $entity->{'sample_weight_g'}->propvalue;
@@ -1102,6 +1103,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $entity->{"TSL"}->propvalue = $tss * 10.0 * $bw;
       }
     }
+    */
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
