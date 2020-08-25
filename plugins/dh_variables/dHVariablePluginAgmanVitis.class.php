@@ -967,7 +967,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
-        'propname' => 'Total Acidity',
+        'propname' => 'total_acidity_gpl',
         'title' => 'Titratable acidity (TA, g/L)',
         '#weight' => 16,
         'singularity' => 'name_singular',
