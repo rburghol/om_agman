@@ -907,7 +907,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
-        'propname' => 'Sample Weight',
+        'propname' => 'sample_weight_g',
         'title' => 'Weight of Berries',
         '#weight' => 11,
         'singularity' => 'name_singular',
@@ -1097,9 +1097,9 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     // special save handlers
     // so, now we call loadProperties() to insure that all properties are objects
     $entity->tsvalue = $rowvalues['Brix']; 
-    if (($rowvalues['sample_size_berries'] > 0) and ($rowvalues['Sample_Weight'] > 0)) {
+    if (($rowvalues['sample_size_berries'] > 0) and ($rowvalues['sample_weight_g'] > 0)) {
       // auto-calculate berry weight
-      $bw = floatval($rowvalues['Sample_Weight']) / floatval($rowvalues['sample_size_berries']);
+      $bw = floatval($rowvalues['sample_weight_g']) / floatval($rowvalues['sample_size_berries']);
       $rowvalues['Berry_Weight'] = round($bw,3);
       $entity->{"Berry Weight"} = round($bw,3);
       if (($rowvalues['Brix'] > 0)) {
