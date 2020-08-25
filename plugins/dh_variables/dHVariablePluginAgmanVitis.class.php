@@ -920,7 +920,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
-        'propname' => 'Berry Weight',
+        'propname' => 'berry_weight_g',
         '#weight' => 12,
         'title' => 'Average Berry Weight (auto-calculated)',
         'singularity' => 'name_singular',
@@ -1086,6 +1086,24 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     $form['tstext']['#weight'] = 30; // place at bottom
   }
   
+  public function update(&$entity) {
+    parent::update($entity);
+    // parent update() insures that all props are loaded as objects 
+    $tss = $entity->{'tss'}->propvalue;
+    $sw = $entity->{'sample_weight_g'}->propvalue;
+    $ss = $entity->{'sample_size_berries'}->propvalue;
+    $entity->tsvalue = $tss;
+    if (($ss > 0) and ($sw > 0)) {
+      // auto-calculate berry weight
+      $bw = floatval($sw) / floatval($ss);
+      $entity->{"berry_weight_g"}->propvalue = round($bw,3);
+      if ($tss > 0) {
+        // tS g/b = S g-S/100g-Berry * berry_weight_g * 1000.0 mg/g = tss * 10 * berry_weight_g 
+        $entity->{"TSL"}->propvalue = $tss * 10.0 * $bw;
+      }
+    }
+  }
+  
   public function formRowSave(&$rowvalues, &$entity) {
     parent::formRowSave($rowvalues, $entity);
     //dpm($rowvalues,'Saving Values');
@@ -1100,10 +1118,10 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     if (($rowvalues['sample_size_berries'] > 0) and ($rowvalues['sample_weight_g'] > 0)) {
       // auto-calculate berry weight
       $bw = floatval($rowvalues['sample_weight_g']) / floatval($rowvalues['sample_size_berries']);
-      $rowvalues['Berry_Weight'] = round($bw,3);
-      $entity->{"Berry Weight"} = round($bw,3);
+      $rowvalues['berry_weight_g'] = round($bw,3);
+      $entity->{"berry_weight_g"} = round($bw,3);
       if (($rowvalues['tss'] > 0)) {
-        // tS g/b = S g-S/100g-Berry * Berry-weight g * 1000.0 mg/g = tss * 10 * Berry_Weight 
+        // tS g/b = S g-S/100g-Berry * berry_weight_g * 1000.0 mg/g = tss * 10 * berry_weight_g 
         $entity->{"TSL"} = floatval($rowvalues['tss']) * 10.0 * $bw;
       }
     }
