@@ -956,7 +956,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 3.0,
-        'propname' => 'pH',
+        'propname' => 'ph',
         '#weight' => 15,
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -1076,8 +1076,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     //        maybe just a validator code is all that is needed
     /*
     dpm($form,'form before ph settings');
-    $form['pH']['#type'] = 'select';
-    $form['pH']['#options'] = array_merge(
+    $form['ph']['#type'] = 'select';
+    $form['ph']['#options'] = array_merge(
       array(0 => 'NA'),
       $this->rangeList(2.0, 5.0, $inc = 0.01, 2)
     );
