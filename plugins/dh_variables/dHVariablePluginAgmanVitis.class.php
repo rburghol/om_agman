@@ -920,7 +920,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.0,
-        'propname' => 'Berry Weight',
+        'propname' => 'berry_weight_g',
         '#weight' => 12,
         'title' => 'Average Berry Weight (auto-calculated)',
         'singularity' => 'name_singular',
@@ -956,7 +956,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 3.0,
-        'propname' => 'pH',
+        'propname' => 'ph',
         '#weight' => 15,
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
@@ -1076,14 +1076,34 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     //        maybe just a validator code is all that is needed
     /*
     dpm($form,'form before ph settings');
-    $form['pH']['#type'] = 'select';
-    $form['pH']['#options'] = array_merge(
+    $form['ph']['#type'] = 'select';
+    $form['ph']['#options'] = array_merge(
       array(0 => 'NA'),
       $this->rangeList(2.0, 5.0, $inc = 0.01, 2)
     );
     */
     $form['tstime']['#title'] = t("Collection Date");
     $form['tstext']['#weight'] = 30; // place at bottom
+  }
+  
+  public function update(&$entity) {
+    parent::update($entity);
+    // parent update() insures that all props are loaded as objects 
+    $tss = $entity->{'tss'}->propvalue;
+    $entity->tsvalue = $tss;
+    $sw = $entity->{'sample_weight_g'}->propvalue;
+    $ss = $entity->{'sample_size_berries'}->propvalue;
+    /*
+    if (($ss > 0) and ($sw > 0)) {
+      // auto-calculate berry weight
+      $bw = floatval($sw) / floatval($ss);
+      $entity->{"berry_weight_g"}->propvalue = round($bw,3);
+      if ($tss > 0) {
+        // tS g/b = S g-S/100g-Berry * berry_weight_g * 1000.0 mg/g = tss * 10 * berry_weight_g 
+        $entity->{"TSL"}->propvalue = $tss * 10.0 * $bw;
+      }
+    }
+    */
   }
   
   public function formRowSave(&$rowvalues, &$entity) {
@@ -1100,10 +1120,10 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     if (($rowvalues['sample_size_berries'] > 0) and ($rowvalues['sample_weight_g'] > 0)) {
       // auto-calculate berry weight
       $bw = floatval($rowvalues['sample_weight_g']) / floatval($rowvalues['sample_size_berries']);
-      $rowvalues['Berry_Weight'] = round($bw,3);
-      $entity->{"Berry Weight"} = round($bw,3);
+      $rowvalues['berry_weight_g'] = round($bw,3);
+      $entity->{"berry_weight_g"} = round($bw,3);
       if (($rowvalues['tss'] > 0)) {
-        // tS g/b = S g-S/100g-Berry * Berry-weight g * 1000.0 mg/g = tss * 10 * Berry_Weight 
+        // tS g/b = S g-S/100g-Berry * berry_weight_g * 1000.0 mg/g = tss * 10 * berry_weight_g 
         $entity->{"TSL"} = floatval($rowvalues['tss']) * 10.0 * $bw;
       }
     }
