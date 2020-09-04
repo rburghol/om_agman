@@ -579,7 +579,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       $varinfo = $prop->varid ? dh_vardef_info($prop->varid) : FALSE;
       $varinfo = (!empty($prop->varkey) and !$prop->varid) ? dh_vardef_info($prop->varkey) : FALSE;
       dpm($varinfo,"varinfo");
-      if ($varinfo === FALSE) {
+      if (!$varinfo) {
         //watchdog("loadProperty called without varid");
         watchdog('om', "loadProperty called without varid", array(), 'error');
         return;
