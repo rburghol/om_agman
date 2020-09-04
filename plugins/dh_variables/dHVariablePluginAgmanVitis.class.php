@@ -559,6 +559,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         // @todo: debug the use of propname here.  Propname is ONLY set if this function is called for a single prop, 
         //        which is an unusual case 
         $this->loadSingleProperty($entity, $propname, $thisvar, $overwrite);
+        dsm("Calling loadSingleProperty(entity, $propname, thisvar, $overwrite)");
       }
     }
   }
