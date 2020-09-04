@@ -551,9 +551,9 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     $form['Advanced']['#weight'] = 4;
     
     $adv = $row->Advanced;
-    //dpm($row,'row');
-    //dpm($adv,'adv');
-    //dpm($form,'form');
+    dpm($row,'row');
+    dpm($adv,'adv');
+    dpm($form,'form');
     //dpm($adv->propvalue,'propvalue');
     if (floatval($adv->propvalue) > 0) {
       // using advanced notation, so show as expanded
