@@ -543,7 +543,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       $props = array($propname => $props[$propname]);
     }
     //error_log("Props:" . print_r($props,1));
-    foreach ($props as $thisvar) {
+    foreach ($props as $propname => $thisvar) {
 	    // propname is arbitrary by definition
       // also, propname can be non-compliant with form API, which requires underscores in place of spaces.
       // user can also rename properties, but that shouldn't be allowed with these kinds of defined by DefaultSettings
