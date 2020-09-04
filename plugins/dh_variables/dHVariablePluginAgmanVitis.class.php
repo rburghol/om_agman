@@ -564,6 +564,37 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     }
   }
   
+  public function loadSingleProperty(&$entity, $propname, $thisvar, $overwrite = FALSE) {
+    // @todo: Replace this function with loadSingleProperty2() 
+    if ($overwrite 
+      or !property_exists($entity, $propname) 
+      or (property_exists($entity, $propname) 
+        and !is_object($entity->{$propname})
+      ) 
+    ) {
+      $thisvar['featureid'] = $entity->{$this->row_map['id']};
+      $prop = $this->insureProperty($entity, $thisvar);
+      dpm($prop,"insured $propname");
+      $varinfo = $prop->varid ? dh_vardef_info($prop->varid) : FALSE;
+      $varinfo = (!empty($prop->varkey) and !$prop->varid) ? dh_vardef_info($prop->varkey) : FALSE;
+      if ($varinfo === FALSE) {
+        //watchdog("loadProperty called without varid");
+        watchdog('om', "loadProperty called without varid", array(), 'error');
+        return;
+      }
+      if (!$prop) {
+        watchdog('om', 'Could not Add Properties in plugin loadProperties');
+        return FALSE;
+      }
+      // apply over-rides if given
+      $prop->vardesc = isset($thisvar['vardesc']) ? $thisvar['vardesc'] : $varinfo->vardesc;
+      $prop->varname = isset($thisvar['varname']) ? $thisvar['varname'] : $varinfo->varname;
+      $prop->title = isset($thisvar['title']) ? $thisvar['title'] : $varinfo->propname;
+      $prop->datatype = isset($thisvar['datatype']) ? $thisvar['datatype'] : $varinfo->datatype;
+      $entity->{$prop->propname} = $prop;
+    }
+  }
+  
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
     $pcts = array('<1');
