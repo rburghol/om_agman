@@ -562,6 +562,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         dsm("Calling loadSingleProperty(entity, $propname, thisvar, $overwrite)");
       }
     }
+    dpm($entity,"entity after loading props");
   }
   
   public function loadSingleProperty(&$entity, $propname, $thisvar, $overwrite = FALSE) {
@@ -577,6 +578,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       dpm($prop,"insured $propname");
       $varinfo = $prop->varid ? dh_vardef_info($prop->varid) : FALSE;
       $varinfo = (!empty($prop->varkey) and !$prop->varid) ? dh_vardef_info($prop->varkey) : FALSE;
+      dpm($varinfo,"varinfo");
       if ($varinfo === FALSE) {
         //watchdog("loadProperty called without varid");
         watchdog('om', "loadProperty called without varid", array(), 'error');
