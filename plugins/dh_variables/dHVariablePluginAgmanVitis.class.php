@@ -468,7 +468,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $defaults += array(
-      'ipm_advanced' => array(
+      'Advanced' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0,
@@ -479,7 +479,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         'varkey' => 'ipm_advanced',
         'varid' => dh_varkey2varid('ipm_advanced', TRUE),
       ),
-      'ipm_incidence' => array(
+      'Incidence' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.5,
@@ -490,7 +490,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         'varkey' => 'ipm_incidence',
         'varid' => dh_varkey2varid('ipm_incidence', TRUE),
       ),
-      'ipm_extent' => array(
+      'Extent' => array(
         'entity_type' => $entity->entityType(),
         'propcode_default' => NULL,
         'propvalue_default' => 0.5,
