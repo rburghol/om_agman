@@ -531,6 +531,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     return array();
   }
   
+  
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
     $pcts = array('<1');
