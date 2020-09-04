@@ -444,12 +444,7 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
       return FALSE;
     }
     $rowform['tstime']['#type'] = 'date_popup';
-    $pcts = $this->pct_list(
-      array_merge(
-        array(0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        range(15,100,5)
-      )
-    );
+    $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
     $rowform['tsvalue'] = array(
       '#title' => t($varinfo->varname),
       '#type' => 'select',
