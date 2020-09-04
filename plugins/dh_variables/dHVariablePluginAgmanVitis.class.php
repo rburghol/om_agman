@@ -531,6 +531,38 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     return array();
   }
   
+  public function loadProperties(&$entity, $overwrite = FALSE, $propname = FALSE, $force_embed = FALSE) {
+    $props = $this->getDefaults($entity);
+    dpm($props,'props');
+    if (!($propname === FALSE)) {
+      // a single prop has been requested
+      if (!array_key_exists($propname, $props)) {
+        watchdog('dh', 'loadProperties(entity, propname) called on dH Variable plugin object but propname = ' . strval($propname) . ' not found');
+        return FALSE;
+      }
+      $props = array($propname => $props[$propname]);
+    }
+    //error_log("Props:" . print_r($props,1));
+    foreach ($props as $thisvar) {
+	    // propname is arbitrary by definition
+      // also, propname can be non-compliant with form API, which requires underscores in place of spaces.
+      // user can also rename properties, but that shouldn't be allowed with these kinds of defined by DefaultSettings
+      // or at least, if the user renames the property then this plugin should create a new one.
+      // name should alternatively be read-only in these forms.
+      // if we create the name as form compliant, and create a field called "form_name", can we eliminate any guesswork?
+      // we still have to deal with user-named properties, which is definitely something available to users.
+      //   - actually, user defined would be handled in a separate fashion.  We need to handle this well, since the 
+      //     modeling framework will enable many user-defined props, and we WILL want to be able to edit them in a multi-form
+      //     type scenario. 
+      $pn = $this->handleFormPropname($propname);
+      if (!isset($thisvar['embed']) or ($thisvar['embed'] === TRUE) or $force_embed) {
+        // @todo: debug the use of propname here.  Propname is ONLY set if this function is called for a single prop, 
+        //        which is an unusual case 
+        $this->loadSingleProperty($entity, $propname, $thisvar, $overwrite);
+      }
+    }
+  }
+  
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
     $pcts = array('<1');
