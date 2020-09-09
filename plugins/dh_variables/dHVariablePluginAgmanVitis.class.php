@@ -1296,7 +1296,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
     $form['tscode']['#options'] = $this->incidentCodes();
     $form['tscode']['#size'] = 1;
     $form['tscode']['#weight'] = 2;
-    //dpm($form,'form');
+    dpm($form,'form');
   }
   
   public function attachNamedForm(&$rowform, $row) {
