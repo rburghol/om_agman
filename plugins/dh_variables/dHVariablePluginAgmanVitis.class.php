@@ -1263,7 +1263,7 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'featureid' => $entity->identifier(),
         'vardesc' => 'Photo of affected plant part.',
         'attach_method' => 'contained',
-        'title' => 'Plant Part',
+        'title' => 'Image',
         'varid' => dh_varkey2varid('dh_image_field', TRUE),
       ),
     );
