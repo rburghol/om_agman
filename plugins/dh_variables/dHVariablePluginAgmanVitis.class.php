@@ -1255,6 +1255,17 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
         'title' => 'Plant Part',
         'varid' => dh_varkey2varid('om_agman_plant_tissue', TRUE),
       ),
+//      'dh_image_field' => array(
+//        'entity_type' => $entity->entityType(),
+//        'propcode_default' => NULL,
+//        'propname' => 'dh_image_field',
+//        'singularity' => 'name_singular',
+//        'featureid' => $entity->identifier(),
+//        'vardesc' => 'Photo of affected plant part.',
+//        'attach_method' => 'contained',
+//        'title' => 'Image',
+//        'varid' => dh_varkey2varid('dh_image_field', TRUE),
+//      ),
     );
     return $defaults;
   }
