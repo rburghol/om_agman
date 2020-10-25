@@ -4,6 +4,7 @@ $block_id = 147;
 $startdate = '2020-01-01';
 $enddate = '2020-12-31';
 
+
 $q = "SELECT material_frac.propcode AS material_frac, "; 
 $q .= "   block.name AS block_name, "; 
 $q .= "   frac_max_apps.propvalue AS frac_max_apps, "; 
@@ -30,6 +31,23 @@ $q .= "   AND app_event.startdate <= extract(epoch from '$enddate'::timestamp )"
 $q .= " GROUP BY block.name,material_frac.propcode,"; 
 $q .= "   frac_max_apps.propvalue, frac_max_apps.propvalue"; 
 
-echo $q;
-
+dsm($q);
+$header = array();
+$rez = db_query($q);
+while ($row = $rez->fetchAssoc()) {
+  if (empty($header)) {
+    $header = array_keys($row);
+    //dpm($row,'header row');
+  }
+  $data[] = array_values($row);
+}
+dpm($data,'data');
+$display = array(
+  '#theme' => 'table',
+  '#header' => $header,
+  '#rows' => $data,
+);
+$output = render($display);
+ 
+echo $output;
 ?>
