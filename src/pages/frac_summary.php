@@ -1,6 +1,13 @@
 <?php  
-$vineyard_id = 146;
-$block_id = 147;
+module_load_include('module', 'om');
+$status = module_load_include('inc', 'om', 'lib/om_misc_functions');
+if (!$status) {
+  dsm("Could not load om_misc_functions.inc");
+}
+$args = arg();
+dpm($args,'args');
+$vineyard_id = $args[1];
+$block_id = $args[2];
 $startdate = '2020-01-01';
 $enddate = '2020-12-31';
 
@@ -31,23 +38,42 @@ $q .= "   AND app_event.startdate <= extract(epoch from '$enddate'::timestamp )"
 $q .= " GROUP BY block.name,material_frac.propcode,"; 
 $q .= "   frac_max_apps.propvalue, frac_max_apps.propvalue"; 
 
-dsm($q);
+// default table of frac app warnings
+$messages = array(
+  array('0', 'OK. Less than max recommended seasonal applications.'),
+  array('2', 'Equal to max recommended seasonal applications. No more applications recommended.'),
+  array('3', 'You have used the same FRAC with medium or high risk of fungicide resistance 3 times, please revise your schedule.'),
+  array('4', 'You have used the same FRAC with medium or high risk of fungicide resistance 4 times, this type of practice significantly increases the risk of resistance development.'),
+  array('1000', 'You have used the same FRAC with medium or high risk of fungicide resistance 4 times, this type of practice significantly increases the risk of resistance development.')
+);
+$messages_formatted = om_formatCSVMatrix($messages, 1,  'OK', 0);
+
+$risky_frac = range( 1, 50);
+unset($risky_frac[array_search(33, $risky_frac)]);
+
 $header = array();
 $rez = db_query($q);
+$header = array("FRAC", 'Max/year', '# of Apps', 'Status');
+
 while ($row = $rez->fetchAssoc()) {
-  if (empty($header)) {
-    $header = array_keys($row);
-    //dpm($row,'header row');
-  }
+  $num = $row['frac_app_count'];
+  $frac = $row['material_frac'];
+  unset($row['block_name']);
+  //dsm($frac);
+  // @todo: we will fetch a custom table of app warnings from each frac entry, but till now we use the one from above
+  $message = '';
+  //if (is_numeric(substr($frac,0,1))) $message = om_arrayLookup($messages_formatted, $num, 2, 0, TRUE);
+  if (in_array($frac, $risky_frac)) $message = om_arrayLookup($messages_formatted, $num, 2, 0, TRUE);
+  $row['message'] = $message;
   $data[] = array_values($row);
 }
-dpm($data,'data');
+//dpm($data,'data');
 $display = array(
   '#theme' => 'table',
   '#header' => $header,
   '#rows' => $data,
 );
 $output = render($display);
- 
+
 echo $output;
 ?>
