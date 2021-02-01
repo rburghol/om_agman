@@ -957,7 +957,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   
   public function renderWorkOrder(&$content, &$entity, $feature) { 
     // 
-    dpm($feature->chems,'chems);
+    dpm($feature->chems,'chems');
   }
 }
 
