@@ -4,6 +4,14 @@
   module_load_include('module', 'om_agman');
   module_load_include('module', 'dh');
   module_load_include('module', 'dh_adminreg');
+  
+  // load agchem event specific stuff
+  ctools_include('plugins');
+  $plugins = ctools_get_plugins('om', 'om_components');
+  //dpm($plugins,'all plug');
+  $plugin = ctools_get_plugins('om', 'om_components', 'ObjectModelAgmanSprayAppEvent');
+  $class = ctools_plugin_get_class($plugin, 'handler');
+  //dpm($plugin,'plug');
   // get the arguments from URL, they come in the form farm_hydroid/sub_page_name/event_adminid
   $a = arg();
   if (!isset($a[3])) {
@@ -14,29 +22,20 @@
     $plan = entity_load_single('dh_adminreg_feature', $planid);
     if (!is_object($plan)) {
       dsm( "There was a problem, event can not be found.");
-    } 
-    
-    if ($feature->fstatus == 'canceled') {
+    }
+    if ($plan->fstatus == 'canceled') {
       $pre = "<s>Note: This event has been marked as canceled. ";
       $suf = "</s>";
     }
     // which of this is correct? 'title' or 'markup'?
-    $content['title']['#markup'] = "<h3><center>$pre" . date('Y-m-d', $feature->startdate) . ": " . $title . "$suf</center></h3>";
-    //$content['title']['#title'] = "<h3><center>$pre" . date('Y-m-d', $feature->startdate) . ": " . $title . "$suf</center></h3>";
-    $content['body'] = array(
-      '#type' => 'item',
-      '#markup' => $pre . '<b>Blocks:</b> ' . $feature->block_names,
-    );
-    // 
-    $content['body']['#markup'] .= "<br><b>Volume:</b> " . $feature->agchem_spray_vol_gal->propvalue . " gals";
-    $chem_list = "<ul><li>" . implode('</li><li>', $feature->chem_items) . "</li></ul>";
-    $content['body']['#markup'] .= "<br><b>Materials:</b> $chem_list";
-    //$content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
-    $content['body']['#markup'] .= "<b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
-    $content['body']['#markup'] .= "<br><b>REI:</b> $feature->rei_date ($feature->rei_chem)" . $suf;
 
-    $entity->title = $title;
-    $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
+    // get ts event associated with this admin record 
+    $tsrecs = dh_get_timeseries(array('entity_type' => 'dh_adminreg_feature', 'featureid' => $planid, 'varkey' => 'agchem_application_event'), 'all');
+    if (isset($tsrecs['dh_timeseries'])) {
+      $rez1 = array_shift($tsrecs['dh_timeseries']);
+      $ts = entity_load_single('dh_timeseries', $rez1$tid); 
+      dpm($ts,'ts');
+    }
   }
 
 ?>
