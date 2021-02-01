@@ -923,6 +923,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       break;
       
       case 'full':
+        $this->renderWorkOrder($content, $entity, $feature);
+      break;
+      
       case 'plugin':
       default: 
         if ($feature->fstatus == 'cancelled') {
@@ -950,6 +953,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
       break;
     }
+  }
+  
+  public function renderWorkOrder(&$content, &$entity, $feature) { 
+    // 
+    dpm($feature->chems,'chems);
   }
 }
 
