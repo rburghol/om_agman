@@ -30,7 +30,8 @@
     // which of this is correct? 'title' or 'markup'?
 
     // get ts event associated with this admin record 
-    $tsrecs = dh_get_timeseries(array('entity_type' => 'dh_adminreg_feature', 'featureid' => $planid, 'varkey' => 'agchem_application_event'), 'all');
+    $info = array('entity_type' => 'dh_adminreg_feature', 'featureid' => $planid, 'varkey' => 'agchem_application_event');
+    $tsrecs = dh_get_timeseries($info, 'all');
     if (isset($tsrecs['dh_timeseries'])) {
       $rez1 = array_shift($tsrecs['dh_timeseries']);
       $ts = entity_load_single('dh_timeseries', $rez1->tid); 
