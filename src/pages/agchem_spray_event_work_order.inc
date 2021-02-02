@@ -37,6 +37,11 @@
       $ts = entity_load_single('dh_timeseries', $rez1->tid); 
       dpm($ts,'ts');
     }
+    if (is_object($ts)) {
+      $plugin = dh_variables_getPlugins($ts);
+      $content = array();
+      $plugin->buildContent($content, $ts, 'full');
+    }
   }
 
 ?>
