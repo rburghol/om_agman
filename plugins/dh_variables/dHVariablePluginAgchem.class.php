@@ -524,6 +524,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       'varkey' => 'agchem_spray_vol_gal',
     );
     $vol_prop = dh_properties_enforce_singularity($vol_info, 'singular');
+    $batch_info = $vol_info;
+    $batch_info['varkey'] = 'agchem_batch_vol';
+    $feature->agchem_batch_vol = dh_properties_enforce_singularity($batch_info, 'singular');
+    $area_info['varkey'] = 'agchem_event_area';
+    $feature->agchem_event_area = dh_properties_enforce_singularity($area_info, 'singular');
     //dpm($vol_prop,'vol prop');
     // PHI Defaults
     $feature->phi_ts = $feature->enddate;
@@ -968,8 +973,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     dpm($feature,'feature');
     dpm($feature->chems,'chems');
     $content['title']['#markup'] = $feature->name;
-    $content['area']['#markup'] = $feature->name;
+    $content['title']['#type'] = 'item';
+    $content['area']['#markup'] = $feature->agchem_event_area->propvalue;
+    $content['area']['#type'] = 'item';
     $content['volume']['#markup'] = $feature->agchem_spray_vol_gal->propvalue;
+    $content['volume']['#type'] = 'item';
   }
 }
 
