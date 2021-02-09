@@ -545,6 +545,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         'bundle' => 'dh_properties'
       );
       $rate_pi = $chem_pi + array('propname' => 'agchem_rate');
+      dpm($rate_pi, 'rate info');
       $chem->rate = dh_properties_enforce_singularity($rate_pi, 'singular');
       // amount to mix/apply
       $amt = array(
