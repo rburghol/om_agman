@@ -544,10 +544,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         'entity_type' => 'field_link_to_registered_agchem',
         'bundle' => 'dh_properties'
       );
+      // per acre/volume rate used
       $rate_pi = $chem_pi + array('propname' => 'agchem_rate', 'varkey' => 'agchem_rate');
-      dpm($rate_pi, 'rate info');
       $chem->rate = dh_properties_enforce_singularity($rate_pi, 'singular');
-      // amount to mix/apply
+      // total amount to mix/apply
       $amt = array(
         'featureid' => $cheminfo['eref_id'],
         'entity_type' => 'field_link_to_registered_agchem',
@@ -965,7 +965,11 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   
   public function renderWorkOrder(&$content, &$entity, $feature) { 
     // 
+    dpm($feature,'feature');
     dpm($feature->chems,'chems');
+    $content['title']['#markup'] = $feature->name;
+    $content['area']['#markup'] = $feature->name;
+    $content['volume']['#markup'] = $feature->agchem_spray_vol_gal;
   }
 }
 
