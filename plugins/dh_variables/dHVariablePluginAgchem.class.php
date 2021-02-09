@@ -527,6 +527,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $batch_info = $vol_info;
     $batch_info['varkey'] = 'agchem_batch_vol';
     $feature->agchem_batch_vol = dh_properties_enforce_singularity($batch_info, 'singular');
+    $area_info = $vol_info;
     $area_info['varkey'] = 'agchem_event_area';
     $feature->agchem_event_area = dh_properties_enforce_singularity($area_info, 'singular');
     //dpm($vol_prop,'vol prop');
