@@ -41,6 +41,7 @@
       $plugin = dh_variables_getPlugins($ts);
       $content = array();
       $plugin->buildContent($content, $ts, 'full');
+      dpm($content,'content');
       $output = drupal_render($content);
       echo $output;
     }

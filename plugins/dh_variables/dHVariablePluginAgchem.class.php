@@ -969,7 +969,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     dpm($feature->chems,'chems');
     $content['title']['#markup'] = $feature->name;
     $content['area']['#markup'] = $feature->name;
-    $content['volume']['#markup'] = $feature->agchem_spray_vol_gal;
+    $content['volume']['#markup'] = $feature->agchem_spray_vol_gal->propvalue;
   }
 }
 
