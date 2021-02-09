@@ -974,7 +974,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     dpm($feature->chems,'chems');
     $content['title']['#markup'] = $feature->name;
     $content['title']['#type'] = 'item';
-    $content['area']['#markup'] = $feature->agchem_event_area->propvalue;
+    $content['area']['#markup'] = "<b>Area: </b>" . $feature->agchem_event_area->propvalue;
     $content['area']['#type'] = 'item';
     $content['volume']['#markup'] = $feature->agchem_spray_vol_gal->propvalue;
     $content['volume']['#type'] = 'item';
