@@ -980,16 +980,17 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     dpm($feature,'feature');
     dpm($feature->chems,'chems');
     $content['general'] = array(
-      '#type' => 'item'
+      '#type' => 'container'
     );
     $content['general']['title']['#type'] = 'item';
     $content['general']['title']['#markup'] = "<b>Event Title: </b>" . $feature->name;
     $content['general']['blocks']['#type'] = 'item';
     $content['general']['blocks']['#markup'] = "<b>Block(s): </b>" . $feature->block_names;
-    $content['general']['area']['#markup'] = "<b>Area: </b>" . $feature->agchem_event_area->propvalue;
     $content['general']['area']['#type'] = 'item';
-    $content['general']['volume']['#markup'] = $feature->agchem_spray_vol_gal->propvalue;
+    $content['general']['area']['#markup'] = "<b>Area: </b>" . $feature->agchem_event_area->propvalue;
     $content['general']['volume']['#type'] = 'item';
+    $content['general']['volume']['#markup'] = "<b>Total Volume: </b>" . $feature->agchem_spray_vol_gal->propvalue . ' gals';
+    if ($feature->agchem_spray_vol_gal->propvalue < $feature->agchem_batch_vol->propvalue 
   }
 }
 
