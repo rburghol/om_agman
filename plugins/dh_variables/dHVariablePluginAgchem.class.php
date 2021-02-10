@@ -621,6 +621,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $this->load_event_info($feature);
     $this->setBlockPHI($entity, $feature);
     $this->setBlockREI($entity, $feature);
+    // Add additional plumbing to copy relevant data to this event and to the linked TS events for each block.
+    // must include smart handling for blocks that have been removed from the event 
+    // since linked events are a sub-type of linked event master class, we have a reference to the original event 
+    // as tsvalue = tid of this event, therefore, we can query for events that have tsvalue = tid whose featureid is NOT in this list of blocks
+    // - uses dh_link_feature_submittal to connect blocks to adminreg events 
+    //    - the adminreg feature already has the loaded dh_feature entities included in an array "block_entities" so we can omit the dh_link... if desired
   }
   
   public function insert(&$entity) {
@@ -973,12 +979,17 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // 
     dpm($feature,'feature');
     dpm($feature->chems,'chems');
-    $content['title']['#markup'] = $feature->name;
-    $content['title']['#type'] = 'item';
-    $content['area']['#markup'] = "<b>Area: </b>" . $feature->agchem_event_area->propvalue;
-    $content['area']['#type'] = 'item';
-    $content['volume']['#markup'] = $feature->agchem_spray_vol_gal->propvalue;
-    $content['volume']['#type'] = 'item';
+    $content['general'] = array(
+      '#type' => 'item'
+    );
+    $content['general']['title']['#type'] = 'item';
+    $content['general']['title']['#markup'] = "<b>Event Title: </b>" . $feature->name;
+    $content['general']['blocks']['#type'] = 'item';
+    $content['general']['blocks']['#markup'] = "<b>Block(s): </b>" . $feature->block_names;
+    $content['general']['area']['#markup'] = "<b>Area: </b>" . $feature->agchem_event_area->propvalue;
+    $content['general']['area']['#type'] = 'item';
+    $content['general']['volume']['#markup'] = $feature->agchem_spray_vol_gal->propvalue;
+    $content['general']['volume']['#type'] = 'item';
   }
 }
 
