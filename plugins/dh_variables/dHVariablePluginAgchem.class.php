@@ -999,10 +999,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       $batch_count = 1;
       $batch_vol = $feature->agchem_spray_vol_gal->propvalue;
       $final_batch_vol = 0;
-      $blad = "batch";
+      $blab = "batch";
     }
     $content['general']['volume']['#markup'] .= " ($batch_count $blab";
-    $content['general']['volume']['#markup'] .= ($batch_count > 1) ? ", final batch is $final_batch_vol gals)" : ")";
+    $content['general']['volume']['#markup'] .= ($batch_count > 1) ? "@" . $batch_vol . " gals, final batch is $final_batch_vol gals)" : ")";
   }
 }
 
