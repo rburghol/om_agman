@@ -994,15 +994,15 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       $batch_count = ($feature->agchem_spray_vol_gal->propvalue / $feature->agchem_batch_vol->propvalue);
       $batch_vol = $feature->agchem_batch_vol->propvalue;
       $final_batch_vol = $feature->agchem_spray_vol_gal->propvalue - ($batch_count * $feature->agchem_batch_vol->propvalue);
-      $blab = "batches";
+      $blab = "tanks";
     } else {
       $batch_count = 1;
       $batch_vol = $feature->agchem_spray_vol_gal->propvalue;
       $final_batch_vol = 0;
-      $blab = "batch";
+      $blab = "tank";
     }
     $content['general']['volume']['#markup'] .= " ($batch_count $blab";
-    $content['general']['volume']['#markup'] .= ($batch_count > 1) ? "@" . $batch_vol . " gals, final batch is $final_batch_vol gals)" : ")";
+    $content['general']['volume']['#markup'] .= ($batch_count > 1) ? "@" . $batch_vol . " gals, final tank is $final_batch_vol gals)" : ")";
   }
 }
 
