@@ -990,7 +990,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $content['general']['area']['#markup'] = "<b>Area: </b>" . $feature->agchem_event_area->propvalue;
     $content['general']['volume']['#type'] = 'item';
     $content['general']['volume']['#markup'] = "<b>Total Volume: </b>" . $feature->agchem_spray_vol_gal->propvalue . ' gals';
-    if ($feature->agchem_spray_vol_gal->propvalue < $feature->agchem_batch_vol->propvalue) {
+    if ($feature->agchem_spray_vol_gal->propvalue > $feature->agchem_batch_vol->propvalue) {
       $batch_count = ($feature->agchem_spray_vol_gal->propvalue / $feature->agchem_batch_vol->propvalue);
       $batch_vol = $feature->agchem_batch_vol->propvalue;
       $final_batch_vol = $feature->agchem_spray_vol_gal->propvalue - ($batch_count * $feature->agchem_batch_vol->propvalue);
