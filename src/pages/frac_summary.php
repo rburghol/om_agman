@@ -6,7 +6,7 @@ if (!$status) {
 }
 // Get URL arguments
 $args = arg(); // this is a Drupal function that pulls things in that were passed like a/b/c
-dpm($args,'args'); // provides debugging information -- comment out for production
+dpm($args,'args in via URL'); // provides debugging information -- comment out for production
 $ao = 1; // Argument Offset -- 0 if this is a page, and 2 if this is a node
 $vineyard_id = $args[$ao + 1];
 $block_id = count($args) > ($ao + 1) ? $args[$ao + 2] : 'all';
@@ -32,17 +32,14 @@ if ($block_id == 'all') {
   $block_ids = array($block_id);
 }
 
-
 //dpm($risky_frac,'risky');
 
-// got through all blocks
-foreach ($block_ids as $block_id) {
-  // ************************************
-  // BEGIN om_agman_frac_count()- Daniel Turn this into a function 
-  // This code should be turned into a function 
-  //   function om_agman_frac_count($blockid, $startdate, $enddate, $target_fracs = array())
-  //   - if target_fracs array is empty, all fracs, otherwise, only those passed in via $target_fracs
-  // ************************************
+
+// BEGIN FUNCTION LOADING
+// ************************************
+// BEGIN om_agman_frac_count()
+// ************************************
+function om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, $target_fracs = array()) {  
   $q = " SELECT material_frac, block_name, frac_max_apps, sum(frac_app_count) as frac_app_count ";
   $q .= " FROM ( ";
   $q .= " SELECT CASE ";
@@ -77,7 +74,11 @@ foreach ($block_ids as $block_id) {
   $q .= " )"; 
   $q .= " LEFT JOIN dh_properties frac_code_info2 ON frac_vardef.hydroid = frac_code_info2.varid"; 
   $q .= " WHERE vineyard.hydroid = $vineyard_id"; 
-  $q .= "   AND block.hydroid = $block_id"; 
+  $q .= "   AND block.hydroid = $block_id";
+  if ($target_fracs != array()){
+    $cond = "('".implode("','", $target_fracs)."')";
+    $q .= "   AND material_frac.propcode IN $cond";
+  }
   $q .= "   AND app_event.bundle = 'agchem_app'"; 
   $q .= "   AND app_event.startdate >= extract(epoch from '$startdate'::timestamp ) "; 
   $q .= "   AND app_event.startdate <= extract(epoch from '$enddate'::timestamp )"; 
@@ -88,15 +89,63 @@ foreach ($block_ids as $block_id) {
   $q .= "   frac_max_apps ";
   $q .= " ORDER BY block_name, material_frac ";
   $rez = db_query($q);
-  // function should return $rez like so:
-  // return $rez;
-  // ************************************
-  // END om_agman_frac_count()
-  // *************************************
+  return $rez;
+}
+// ************************************
+// END om_agman_frac_count()
+// *************************************
 
-//dpm($q,'q');
+// ************************************
+// BEGIN om_agman_frac_assess()
+//dsm($frac);
+// @todo: we will fetch a custom table of app warnings from each frac entry, but till now we use the one from above
+// default table of frac app warnings
+// later we may have allow a custom set of warnings for agiven hem, but these are defaults and ALL will use them for now
+// ************************************
+function om_agman_frac_assess($frac, $frac_count){
+  $messages = array(
+    array('0', 'OK. Less than max recommended seasonal applications.'),
+    array('1', 'Equal to max recommended seasonal applications. No more applications recommended.'),
+    array('2', 'You have used the same FRAC with medium or high risk of fungicide resistance 3 times, please revise your schedule.'),
+    array('3', 'You have used the same FRAC with medium or high risk of fungicide resistance 4 times, this type of practice significantly increases the risk of resistance development.')
+    );
+    $messages_formatted = om_formatCSVMatrix($messages, 1,  'OK', 0);
+
+    if ($frac_count < 2) {
+      $rating = 0;
+    } elseif ($frac_count < 3) {
+      $rating = 1;
+   } elseif ($frac_count < 4) {
+      $rating = 2;
+   } else {
+      $rating = 3;
+   } 
+
+    $risky_frac = range( 1, 50);
+    unset($risky_frac[array_search(33, $risky_frac)]);
+    unset($risky_frac[array_search(44, $risky_frac)]);
+    $message = '';
+    //if (is_numeric(substr($frac,0,1))) $message = om_arrayLookup($messages_formatted, $rating, 2, 0, TRUE);
+    if (in_array($frac, $risky_frac)) {
+      $message = om_arrayLookup($messages_formatted, $rating, 2, 0, TRUE);
+    } else {
+      $message = 'This FRAC group is considered low-risk. No maximum recommended for resistance management.';
+    }
+    return array('rating' => $rating, 'message' => $message);
+}
+
+    // ************************************
+    // END om_agman_frac_assess() 
+    // ************************************
+// END FUNCTION LOADING
+
+// got through all blocks
+foreach ($block_ids as $block_id) {
+  $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, $target_fracs = array());
+
+  //dpm($q,'q');
   // This formats the result for printing, this can stay as is more or less 
-  $header = array("FRAC", 'Max/year', '# of Apps', 'Status');
+  $header = array("FRAC", 'Max/year', '# of Apps', 'Rating', 'Status');
   $data = array();
   $row_count = 0;
   while ($row = $rez->fetchAssoc()) {
@@ -104,49 +153,16 @@ foreach ($block_ids as $block_id) {
       echo "<strong>" . $row['block_name'] . "</strong><br>";
       $row_count++;
     }
-    $num = $row['frac_app_count'];
+    $frac_count = $row['frac_app_count'];
     $frac = empty(trim($row['material_frac'])) ? 'n/a' : $row['material_frac'];
     $row['material_frac'] = $frac;
     unset($row['block_name']);
-      
-    // ************************************
-    // BEGIN om_agman_frac_assess() - Daniel Turn this into a function 
-    //  function om_agman_frac_assess($frac, $frac_count)
-    //  - Formulates a message to say if there is a warning or not. Should return array('status' => $status, 'message' => $message);
-    //  - call it as $status_info = om_agman_frac_assess($frac, $frac_count)
-    // returns an array with 
-    //  - $rating = 0=low/no, 1=at max, 2=risky, 3=not a good idea at all
-    //  - $message = 
-    // code to return an array is:
-    //   return array('rating' => $rating, 'message' => $message);
-    //dsm($frac);
-    // @todo: we will fetch a custom table of app warnings from each frac entry, but till now we use the one from above
-    // default table of frac app warnings
-    // later we may have allow a custom set of warnings for agiven hem, but these are defaults and ALL will use them for now
-    // ************************************
-    $messages = array(
-    array('0', 'OK. Less than max recommended seasonal applications.'),
-    array('2', 'Equal to max recommended seasonal applications. No more applications recommended.'),
-    array('3', 'You have used the same FRAC with medium or high risk of fungicide resistance 3 times, please revise your schedule.'),
-    array('4', 'You have used the same FRAC with medium or high risk of fungicide resistance 4 times, this type of practice significantly increases the risk of resistance development.'),
-    array('1000', 'You have used the same FRAC with medium or high risk of fungicide resistance 4 times, this type of practice significantly increases the risk of resistance development.')
-    );
-    $messages_formatted = om_formatCSVMatrix($messages, 1,  'OK', 0);
-
-    $risky_frac = range( 1, 50);
-    unset($risky_frac[array_search(33, $risky_frac)]);
-    unset($risky_frac[array_search(44, $risky_frac)]);
-    $message = '';
-    //if (is_numeric(substr($frac,0,1))) $message = om_arrayLookup($messages_formatted, $num, 2, 0, TRUE);
-    if (in_array($frac, $risky_frac)) {
-      $message = om_arrayLookup($messages_formatted, $num, 2, 0, TRUE);
-    } else {
-      $message = 'This FRAC group is considered low-risk. No maximum recommended for resistance management.';
-    }
-    // ************************************
-    // END om_agman_frac_assess() 
-    // ************************************
     
+    $status = om_agman_frac_assess($frac, $frac_count);
+    $rating = $status['rating'];
+    $message = $status['message']; 
+    
+    $row['rating'] = $rating;
     $row['message'] = $message;
     $data[] = array_values($row);
   }
