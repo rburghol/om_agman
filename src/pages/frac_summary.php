@@ -103,7 +103,16 @@ function om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, $tar
 // later we may have allow a custom set of warnings for agiven hem, but these are defaults and ALL will use them for now
 // ************************************
 function om_agman_frac_assess($frac, $frac_count){
-  $messages = array(
+   $frac_ratings = array(
+    array('0', '0'),
+    array('2', '1'),
+    array('3', '2'),
+    array('4', '3'),
+    array('1000', '3')
+    );
+    $frac_ratings_formatted = om_formatCSVMatrix($frac_ratings, 1,  'OK', 0);
+
+    $messages = array(
     array('0', 'OK. Less than max recommended seasonal applications.'),
     array('1', 'Equal to max recommended seasonal applications. No more applications recommended.'),
     array('2', 'You have used the same FRAC with medium or high risk of fungicide resistance 3 times, please revise your schedule.'),
@@ -111,22 +120,13 @@ function om_agman_frac_assess($frac, $frac_count){
     );
     $messages_formatted = om_formatCSVMatrix($messages, 1,  'OK', 0);
 
-    if ($frac_count < 2) {
-      $rating = 0;
-    } elseif ($frac_count < 3) {
-      $rating = 1;
-   } elseif ($frac_count < 4) {
-      $rating = 2;
-   } else {
-      $rating = 3;
-   } 
-
     $risky_frac = range( 1, 50);
     unset($risky_frac[array_search(33, $risky_frac)]);
     unset($risky_frac[array_search(44, $risky_frac)]);
     $message = '';
     //if (is_numeric(substr($frac,0,1))) $message = om_arrayLookup($messages_formatted, $rating, 2, 0, TRUE);
     if (in_array($frac, $risky_frac)) {
+      $rating = om_arrayLookup($frac_ratings_formatted, $frac_count, 2, 0, TRUE);
       $message = om_arrayLookup($messages_formatted, $rating, 2, 0, TRUE);
     } else {
       $message = 'This FRAC group is considered low-risk. No maximum recommended for resistance management.';
