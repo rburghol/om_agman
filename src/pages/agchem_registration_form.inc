@@ -209,7 +209,8 @@ function agchem_registration_form_save(&$form, &$form_state) {
     'propcode' => 'agchem_ai',
     'propname' => 'Active Ingredients'
   );
-  om_model_getSetProperty($ai_group, 'name');
+  $aiprop = om_model_getSetProperty($ai_group, 'name');
+  //dpm($aiprop,'ai add result');
   return $dh_adminreg_feature;
 }
 

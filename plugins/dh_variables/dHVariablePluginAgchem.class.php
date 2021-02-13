@@ -524,6 +524,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       'varkey' => 'agchem_spray_vol_gal',
     );
     $vol_prop = dh_properties_enforce_singularity($vol_info, 'singular');
+    $batch_info = $vol_info;
+    $batch_info['varkey'] = 'agchem_batch_vol';
+    $feature->agchem_batch_vol = dh_properties_enforce_singularity($batch_info, 'singular');
+    $area_info = $vol_info;
+    $area_info['varkey'] = 'agchem_event_area';
+    $feature->agchem_event_area = dh_properties_enforce_singularity($area_info, 'singular');
     //dpm($vol_prop,'vol prop');
     // PHI Defaults
     $feature->phi_ts = $feature->enddate;
@@ -539,7 +545,15 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $feature->rei_info = 'unknown'; // chem w/limiting PHI
     foreach ($feature->chems as $cix => $cheminfo) {
       $chem = entity_load_single('dh_adminreg_feature', $cheminfo['adminid']);
-      // amount to mix/apply
+      $chem_pi = array(
+        'featureid' => $cheminfo['eref_id'],
+        'entity_type' => 'field_link_to_registered_agchem',
+        'bundle' => 'dh_properties'
+      );
+      // per acre/volume rate used
+      $rate_pi = $chem_pi + array('propname' => 'agchem_rate', 'varkey' => 'agchem_rate');
+      $chem->rate = dh_properties_enforce_singularity($rate_pi, 'singular');
+      // total amount to mix/apply
       $amt = array(
         'featureid' => $cheminfo['eref_id'],
         'entity_type' => 'field_link_to_registered_agchem',
@@ -607,6 +621,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $this->load_event_info($feature);
     $this->setBlockPHI($entity, $feature);
     $this->setBlockREI($entity, $feature);
+    // Add additional plumbing to copy relevant data to this event and to the linked TS events for each block.
+    // must include smart handling for blocks that have been removed from the event 
+    // since linked events are a sub-type of linked event master class, we have a reference to the original event 
+    // as tsvalue = tid of this event, therefore, we can query for events that have tsvalue = tid whose featureid is NOT in this list of blocks
+    // - uses dh_link_feature_submittal to connect blocks to adminreg events 
+    //    - the adminreg feature already has the loaded dh_feature entities included in an array "block_entities" so we can omit the dh_link... if desired
   }
   
   public function insert(&$entity) {
@@ -923,6 +943,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       break;
       
       case 'full':
+        $this->renderWorkOrder($content, $entity, $feature);
+      break;
+      
       case 'plugin':
       default: 
         if ($feature->fstatus == 'cancelled') {
@@ -950,6 +973,36 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
       break;
     }
+  }
+  
+  public function renderWorkOrder(&$content, &$entity, $feature) { 
+    // 
+    dpm($feature,'feature');
+    dpm($feature->chems,'chems');
+    $content['general'] = array(
+      '#type' => 'container'
+    );
+    $content['general']['title']['#type'] = 'item';
+    $content['general']['title']['#markup'] = "<b>Event Title: </b>" . $feature->name;
+    $content['general']['blocks']['#type'] = 'item';
+    $content['general']['blocks']['#markup'] = "<b>Block(s): </b>" . $feature->block_names;
+    $content['general']['area']['#type'] = 'item';
+    $content['general']['area']['#markup'] = "<b>Area: </b>" . $feature->agchem_event_area->propvalue;
+    $content['general']['volume']['#type'] = 'item';
+    $content['general']['volume']['#markup'] = "<b>Total Volume: </b>" . $feature->agchem_spray_vol_gal->propvalue . ' gals';
+    if ($feature->agchem_spray_vol_gal->propvalue > $feature->agchem_batch_vol->propvalue) {
+      $batch_count = ($feature->agchem_spray_vol_gal->propvalue / $feature->agchem_batch_vol->propvalue);
+      $batch_vol = $feature->agchem_batch_vol->propvalue;
+      $final_batch_vol = $feature->agchem_spray_vol_gal->propvalue - ($batch_count * $feature->agchem_batch_vol->propvalue);
+      $blab = "tanks";
+    } else {
+      $batch_count = 1;
+      $batch_vol = $feature->agchem_spray_vol_gal->propvalue;
+      $final_batch_vol = 0;
+      $blab = "tank";
+    }
+    $content['general']['volume']['#markup'] .= " ($batch_count $blab";
+    $content['general']['volume']['#markup'] .= ($batch_count > 1) ? "@" . $batch_vol . " gals, final tank is $final_batch_vol gals)" : ")";
   }
 }
 
