@@ -550,7 +550,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       //dpm($chem_fracs,'chem frac prop');
       $frac_plugin = dh_variables_getPlugins($chem_fracs);
       $c_fracs = explode(',', $frac_plugin->getCodeList($chem_fracs));
-      dpm($c_fracs,'fracs');
+      //dpm($c_fracs,'fracs');
       $feature->event_fracs = array_unique( array_merge($feature->event_fracs, $c_fracs ) );
       // load base linked props info
       $chem_pi = array(
@@ -647,7 +647,42 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   }
   
   public function checkFracStatus($entity, $feature) {
-    // @todo: 
+    // @todo:  
+    // By frac and risk level, report all blocks at that risk level.
+    // "Warning: FRAC 7, has 3 applications on Block 1, Block2, and Cab14. This can lead to problems. Please modify."
+    $vineyard_id = $feature->vineyard->hydroid;
+    $fracs = $feature->event_fracs;
+    $date = dh_handletimestamp($feature->startdate);
+    $yr = date('Y', $date);
+    $startdate = $yr . '-01-01';
+    $enddate = $yr . '-12-31';
+    $alerts = array(); // keyed by frac, 
+                       // [$frac][$rating] = array('blocks'=>array(), 'message' => '');
+    foreach ($feature->block_entities as $block) {
+      $rez = om_agman_frac_count($block->hydroid, $vineyard_id, $startdate, $enddate, $target_fracs = array());
+      $row_count = 0;
+      while ($row = $rez->fetchAssoc()) {
+        if ($row_count == 0) {
+          echo "<strong>" . $row['block_name'] . "</strong><br>";
+          $row_count++;
+        }
+        $frac_count = $row['frac_app_count'];
+        $frac = empty(trim($row['material_frac'])) ? 'n/a' : $row['material_frac'];
+        $row['material_frac'] = $frac;
+        unset($row['block_name']);
+        
+        $status = om_agman_frac_assess($frac, $frac_count);
+        $rating = $status['rating'];
+        $message = $status['message']; 
+        if ( $rating > 1 ) {
+          if (!isset($alerts[$frac])) $alerts[$frac] = array();
+          if (!isset($alerts[$frac][$rating])) $alerts[$frac][$rating] = array('blocks'=>array(), 'message' => '');
+          $alerts[$frac][$rating]['blocks'][] = $block->name;
+          $alerts[$frac][$rating]['message'] = $message;
+        }
+      }
+    }
+    dpm($alerts,'alerts');
   }
   
   public function setBlockREI(&$feature) {
@@ -747,7 +782,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $block_phi_ts->tscode = $phi_event_prop->propcode; 
         $block_phi_ts->tsvalue = $block_phi_event->featureid; // this is the adminid of the limiting event 
         $block_phi_ts->save();
-        dsm("Recording PHI event for block $fe->name on " . date('Y-m-d',$block_phi_ts->tsendtime));
+        //dsm("Recording PHI event for block $fe->name on " . date('Y-m-d',$block_phi_ts->tsendtime));
       } else {
         // @todo: Somewhere later in the routine, look for blocks that have been removed from this event.
         //        and update their PHIs
