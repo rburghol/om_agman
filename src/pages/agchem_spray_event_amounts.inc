@@ -85,7 +85,6 @@ function dh_sprayquan_form_save(&$form, &$form_state) {
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   ctools_include('plugins');
-  //dpm($form_state, 'form state submitted');
   $class = ctools_plugin_load_class('om', 'om_components', 'ObjectModelAgmanSprayAppEvent', 'handler');
   $src = new $class($config);
   $o = $src->DefineOptions(); // @todo: all functions and variables need to be camelCase not CamelCase - classes are CamelCase
