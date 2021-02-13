@@ -652,11 +652,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   }
   
   public function checkFracStatus($entity, $feature) {
-    // @todo:  
-    // By frac and risk level, report all blocks at that risk level.
+    // Performs summary of FRAC useage pertinent to the chems in this event.
+    // Groups by frac and risk level, report all blocks at that risk level.
     // "Warning: FRAC 7, has 3 applications on Block 1, Block2, and Cab14. This can lead to problems. Please modify."
-  //dpm($feature,'Admin Event');
-  //dpm($entity,'ts_event');
+    // @ todo: move the grouping/formatting functions into om_agman_frac.inc 
     $vineyard_id = $feature->vineyard->hydroid;
     $target_fracs = $feature->event_fracs;
     $date = dh_handletimestamp($feature->startdate);

@@ -126,7 +126,7 @@ function om_agman_frac_alert($dh_adminreg_feature, $threshold = 2) {
     foreach ($info as $rating => $details) {
       if ($rating >= $threshold) {
         $f_msg = "FRAC $frac has $num uses on blocks: " . implode(", ", $details['blocks']);
-        $f_msg .= "\n " . $details['message'];
+        $f_msg .= "<br>" . $details['message'];
         drupal_set_message($f_msg, $rating_dsm[$rating], FALSE);
       }
     }

@@ -105,7 +105,7 @@ function dh_sprayquan_form_save(&$form, &$form_state) {
   //dpm($dh_adminreg_feature,'post save');
   $src->dh_adminreg_feature = $dh_adminreg_feature;
   $src->submitForm($form, $form_state);
-  om_agman_frac_alert($dh_adminreg_feature);
+  om_agman_frac_alert($dh_adminreg_feature, 1);
   return $dh_adminreg_feature;
 }
 
