@@ -4,7 +4,7 @@ $status = module_load_include('inc', 'om_agman', 'src/lib/om_agman_frac');
 // Get URL arguments
 $args = arg(); // this is a Drupal function that pulls things in that were passed like a/b/c
 //dpm($args,'args in via URL'); // provides debugging information -- comment out for production
-$ao = 1; // Argument Offset -- 0 if this is a page, and 2 if this is a node
+$ao = 0; // Argument Offset -- 0 if this is a page, and 2 if this is a node
 $vineyard_id = $args[$ao + 1];
 $block_id = count($args) > ($ao + 1) ? $args[$ao + 2] : 'all';
 //dsm("Searching for vineyard $vineyard_id and blocks $block_id");
