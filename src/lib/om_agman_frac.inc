@@ -100,6 +100,7 @@ function om_agman_frac_assess($frac, $frac_count){
       $rating = om_arrayLookup($frac_ratings_formatted, $frac_count, 2, 0, TRUE);
       $message = om_arrayLookup($messages_formatted, $rating, 2, 0, TRUE);
     } else {
+      $rating = 0;
       $message = 'This FRAC group is considered low-risk. No maximum recommended for resistance management.';
     }
     return array('rating' => $rating, 'message' => $message);
@@ -118,7 +119,6 @@ function om_agman_frac_alert($dh_adminreg_feature) {
   $phi_ts = NULL;
   $ts_event = dh_timeseries_enforce_singularity($values, 'singular');
   $plugin = dh_variables_getPlugins($ts_event);
-  dpm($ts_event,'ts_event');
   $alerts = $plugin->checkFracStatus($ts_event, $dh_adminreg_feature);
   dpm($alerts, 'alerts on save');
 }
