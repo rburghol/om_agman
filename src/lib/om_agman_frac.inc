@@ -110,7 +110,8 @@ function om_agman_frac_assess($frac, $frac_count){
 // END om_agman_frac_assess() 
 // ************************************
 
-function om_agman_frac_alert($dh_adminreg_feature) {
+function om_agman_frac_alert($dh_adminreg_feature, $threshold = 2) {
+  $rating_dsm = array(1 => 'status', 2 => 'warning', 3 => 'error');
   $values = array(
     'entity_type' => 'dh_adminreg_feature',
     'featureid' => $dh_adminreg_feature->adminid,
@@ -121,7 +122,16 @@ function om_agman_frac_alert($dh_adminreg_feature) {
   $plugin = dh_variables_getPlugins($ts_event);
   $plugin->load_event_info($dh_adminreg_feature);
   $alerts = $plugin->checkFracStatus($ts_event, $dh_adminreg_feature);
-  dpm($alerts, 'alerts on save');
+  foreach ($alerts as $frac => $info) {
+    foreach ($info as $rating => $details) {
+      if ($rating >= $threshold) {
+        $f_msg = "FRAC $frac has $num uses on blocks: " . implode(", ", $details['blocks']);
+        $f_msg .= "\n " . $details['message'];
+        drupal_set_message($f_msg, $rating_dsm[$rating], FALSE);
+      }
+    }
+  }
+  //dpm($alerts, 'alerts on save');
 }
 
 ?>
