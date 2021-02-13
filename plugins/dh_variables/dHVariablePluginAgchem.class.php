@@ -549,7 +549,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       $chem_fracs = om_model_getSetProperty($frac_info, 'name', FALSE);
       //dpm($chem_fracs,'chem frac prop');
       $frac_plugin = dh_variables_getPlugins($chem_fracs);
-      $c_fracs = explode(',', $frac_plugin->getCodeList($chem));
+      $c_fracs = explode(',', $frac_plugin->getCodeList($chem_fracs));
       $feature->event_fracs = array_unique( $feature->event_fracs + $c_fracs );
       // load base linked props info
       $chem_pi = array(
