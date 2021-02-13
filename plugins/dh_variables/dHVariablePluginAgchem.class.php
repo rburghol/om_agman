@@ -1,5 +1,6 @@
 <?php
 module_load_include('inc', 'dh', 'plugins/dh.display');
+module_load_include('inc', 'om_agman', 'src/lib/om_agman_frac');
 
 class dHVariablePluginEfficacy extends dHVariablePluginDefault {
   
@@ -536,15 +537,18 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $feature->phi_chems = array(); // chem w/limiting PHI
     $feature->phi_info = 'unknown'; // chem w/limiting PHI
     $feature->agchem_spray_vol_gal = $vol_prop;
-    $feature->phi_ts = $feature->enddate;
-    $feature->phi_chems = array(); // chem w/limiting PHI
-    $feature->phi_info = 'unknown'; // chem w/limiting PHI
+    $feature->event_fracs = array(); // list of fracs
     // REI Defaults
     $feature->rei_ts = $feature->enddate;
     $feature->rei_chems = array(); // chem w/limiting PHI
     $feature->rei_info = 'unknown'; // chem w/limiting PHI
     foreach ($feature->chems as $cix => $cheminfo) {
       $chem = entity_load_single('dh_adminreg_feature', $cheminfo['adminid']);
+      // load fracs for this chem 
+      $frac_info = array('featureid' => $chem->adminid, 'entity_type'=>'dh_adminreg_feature', 'propname' => 'FRAC Codes');
+      $chem_fracs = om_model_getSetProperty($frac_info, 'name', FALSE);
+      dpm($chem_fracs,'chem frac [prop');
+      // load base linked props info
       $chem_pi = array(
         'featureid' => $cheminfo['eref_id'],
         'entity_type' => 'field_link_to_registered_agchem',
@@ -621,6 +625,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $this->load_event_info($feature);
     $this->setBlockPHI($entity, $feature);
     $this->setBlockREI($entity, $feature);
+    $this->checkFracStatus($entity, $feature);
     // Add additional plumbing to copy relevant data to this event and to the linked TS events for each block.
     // must include smart handling for blocks that have been removed from the event 
     // since linked events are a sub-type of linked event master class, we have a reference to the original event 
@@ -635,6 +640,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     //$this->load_event_info($feature);
     //$this->setBlockPHI($feature);
     //$this->setBlockREI($feature);
+  }
+  
+  public function checkFracStatus($entity, $feature) {
+    // @todo: 
   }
   
   public function setBlockREI(&$feature) {
