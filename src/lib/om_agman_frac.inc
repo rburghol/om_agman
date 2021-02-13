@@ -120,6 +120,7 @@ function om_agman_frac_alert($dh_adminreg_feature) {
   $phi_ts = NULL;
   $ts_event = dh_get_timeseries($values, 'singular');
   $plugin = dh_variables_getPlugins($ts_event);
+  dpm($ts_event,'ts_event');
   //$alerts = $plugin->checkFracStatus($ts_event, $dh_adminreg_feature);
   dpm($alerts, 'alerts on save');
 }
