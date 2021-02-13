@@ -115,6 +115,8 @@ function om_agman_frac_alert($dh_adminreg_feature) {
     'featureid' => $dh_adminreg_feature->adminid,
     'varkey' => 'agchem_application_event'
   );
+  dpm($values,'vals');
+  dpm($dh_adminreg_feature,'vals');
   $phi_ts = NULL;
   $ts_event = dh_get_timeseries($values, 'singular');
   $plugin = dh_variables_getPlugins($ts_event);
