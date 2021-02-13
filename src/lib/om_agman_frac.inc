@@ -125,8 +125,13 @@ function om_agman_frac_alert($dh_adminreg_feature, $threshold = 2) {
   foreach ($alerts as $frac => $info) {
     foreach ($info as $rating => $details) {
       if ($rating >= $threshold) {
+        if (count($details['blocks']) > 1) {
+          $btense = 'blocks';
+        } else {
+          $btense = 'block';
+        }
         $count = $details['count'];
-        $f_msg = "FRAC $frac has $count uses on blocks: " . implode(", ", $details['blocks']);
+        $f_msg = "FRAC $frac has $count uses on $btense: " . implode(", ", $details['blocks']);
         $f_msg .= "<br>" . $details['message'];
         drupal_set_message($f_msg, $rating_dsm[$rating], FALSE);
       }
