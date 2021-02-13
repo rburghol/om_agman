@@ -634,7 +634,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // because of the handling ot dh_entity_ts_event hooks, this gets called twice every save() of an adminreg feature.  
     // this causes the messages to be sent out twice, which is a UI/UX problem.
     // thus, calls to checkFracStatus must be done by request only.
-    $this->checkFracStatus($entity, $feature);
+    //$this->checkFracStatus($entity, $feature);
     // Add additional plumbing to copy relevant data to this event and to the linked TS events for each block.
     // must include smart handling for blocks that have been removed from the event 
     // since linked events are a sub-type of linked event master class, we have a reference to the original event 
@@ -655,8 +655,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // @todo:  
     // By frac and risk level, report all blocks at that risk level.
     // "Warning: FRAC 7, has 3 applications on Block 1, Block2, and Cab14. This can lead to problems. Please modify."
-  dpm($feature,'Admin Event');
-  dpm($entity,'ts_event');
+  //dpm($feature,'Admin Event');
+  //dpm($entity,'ts_event');
     $vineyard_id = $feature->vineyard->hydroid;
     $target_fracs = $feature->event_fracs;
     $date = dh_handletimestamp($feature->startdate);
@@ -689,7 +689,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         }
       }
     }
-    dpm($alerts,'alerts');
+    //dpm($alerts,'alerts');
     return($alerts);
   }
   
@@ -1033,8 +1033,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   
   public function renderWorkOrder(&$content, &$entity, $feature) { 
     // 
-    dpm($feature,'feature');
-    dpm($feature->chems,'chems');
+    //dpm($feature,'feature');
+    //dpm($feature->chems,'chems');
     // just for testing, this won't be included in the final work order.
     $this->checkFracStatus($entity, $feature);
     $content['general'] = array(
