@@ -674,7 +674,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $status = om_agman_frac_assess($frac, $frac_count);
         $rating = $status['rating'];
         $message = $status['message']; 
-        if ( $rating > 1 ) {
+        //if ( $rating > 1 ) {
+        if ( $rating >= 0 ) {
           if (!isset($alerts[$frac])) $alerts[$frac] = array();
           if (!isset($alerts[$frac][$rating])) $alerts[$frac][$rating] = array('blocks'=>array(), 'message' => '');
           $alerts[$frac][$rating]['blocks'][] = $block->name;
@@ -1027,6 +1028,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // 
     dpm($feature,'feature');
     dpm($feature->chems,'chems');
+    // just for testing, this won't be included in the final work order.
     $this->checkFracStatus($entity, $feature);
     $content['general'] = array(
       '#type' => 'container'
