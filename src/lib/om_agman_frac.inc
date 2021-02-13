@@ -132,7 +132,7 @@ function om_agman_frac_alert($dh_adminreg_feature, $threshold = 2) {
         }
         $count = $details['count'];
         $f_msg = "FRAC $frac has $count uses on $btense: " . implode(", ", $details['blocks']);
-        $f_msg .= "<br>" . $details['message'];
+        $f_msg .= "<br>" . t($details['message']);
         drupal_set_message($f_msg, $rating_dsm[$rating], FALSE);
       }
     }
