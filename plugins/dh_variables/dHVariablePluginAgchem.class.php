@@ -1027,6 +1027,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // 
     dpm($feature,'feature');
     dpm($feature->chems,'chems');
+    $this->checkFracStatus($entity, $feature);
     $content['general'] = array(
       '#type' => 'container'
     );
