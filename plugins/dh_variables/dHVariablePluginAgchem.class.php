@@ -676,10 +676,9 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $status = om_agman_frac_assess($frac, $frac_count);
         $rating = $status['rating'];
         $message = $status['message']; 
-        //if ( $rating > 1 ) {
-        if ( $rating >= 0 ) {
+        if ( $rating >= 1 ) {
           if (!isset($alerts[$frac])) $alerts[$frac] = array();
-          if (!isset($alerts[$frac][$rating])) $alerts[$frac][$rating] = array('blocks'=>array(), 'message' => '');
+          if (!isset($alerts[$frac][$rating])) $alerts[$frac][$rating] = array('blocks'=>array(), 'count' => $frac_count, 'message' => '');
           $alerts[$frac][$rating]['blocks'][] = $block->name;
           $alerts[$frac][$rating]['message'] = $message;
         }
