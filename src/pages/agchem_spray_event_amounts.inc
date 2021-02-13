@@ -100,12 +100,13 @@ function dh_sprayquan_form_save(&$form, &$form_state) {
   //   ** but note that entity_ui_form_sub... doesn't work 
   //      have to hand spin see dh.display.inc
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
-  dpm($dh_adminreg_feature,'pre save');
+  //dpm($dh_adminreg_feature,'pre save');
   $dh_adminreg_feature->save();
   // handle all the attached stuff
-  dpm($dh_adminreg_feature,'post save');
+  //dpm($dh_adminreg_feature,'post save');
   $src->dh_adminreg_feature = $dh_adminreg_feature;
   $src->submitForm($form, $form_state);
+  om_agman_frac_alert($dh_adminreg_feature);
   return $dh_adminreg_feature;
 }
 

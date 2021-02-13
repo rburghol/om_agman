@@ -105,9 +105,21 @@ function om_agman_frac_assess($frac, $frac_count){
     return array('rating' => $rating, 'message' => $message);
 }
 
-    // ************************************
-    // END om_agman_frac_assess() 
-    // ************************************
-// END FUNCTION LOADING
+// ************************************
+// END om_agman_frac_assess() 
+// ************************************
+
+function om_agman_frac_alert($dh_adminreg_feature) {
+  $values = array(
+    'entity_type' => 'dh_adminreg_feature',
+    'featureid' = $dh_adminreg_feature->adminid,
+    'varkey' => 'agchem_application_event'
+  );
+  $phi_ts = NULL;
+  $ts_event = dh_get_timeseries($values, 'singular');
+  $plugin = dh_variables_getPlugins($ts_event);
+  $alerts = $plugin->checkFracStatus($ts_event, $dh_adminreg_feature);
+  dpm($alerts, 'alerts on save');
+}
 
 ?>

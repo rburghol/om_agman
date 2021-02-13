@@ -631,7 +631,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $this->load_event_info($feature);
     $this->setBlockPHI($entity, $feature);
     $this->setBlockREI($entity, $feature);
-    $this->checkFracStatus($entity, $feature);
+    // because of the handling ot dh_entity_ts_event hooks, this gets called twice every save() of an adminreg feature.  
+    // this causes the messages to be sent out twice, which is a UI/UX problem.
+    // thus, calls to checkFracStatus must be done by request only.
+    //$this->checkFracStatus($entity, $feature);
     // Add additional plumbing to copy relevant data to this event and to the linked TS events for each block.
     // must include smart handling for blocks that have been removed from the event 
     // since linked events are a sub-type of linked event master class, we have a reference to the original event 
@@ -684,7 +687,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         }
       }
     }
-    dpm($alerts,'alerts');
+    return($alerts);
   }
   
   public function setBlockREI(&$feature) {
