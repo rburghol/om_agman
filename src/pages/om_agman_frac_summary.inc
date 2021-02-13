@@ -3,11 +3,11 @@ module_load_include('module', 'om_agman');
 $status = module_load_include('inc', 'om_agman', 'src/lib/om_agman_frac');
 // Get URL arguments
 $args = arg(); // this is a Drupal function that pulls things in that were passed like a/b/c
-//dpm($args,'args in via URL'); // provides debugging information -- comment out for production
+dpm($args,'args in via URL'); // provides debugging information -- comment out for production
 $ao = 0; // Argument Offset -- 0 if this is a page, and 2 if this is a node
 $vineyard_id = $args[$ao + 1];
 $block_id = count($args) > ($ao + 1) ? $args[$ao + 2] : 'all';
-//dsm("Searching for vineyard $vineyard_id and blocks $block_id");
+dsm("Searching for vineyard $vineyard_id and blocks $block_id");
 $u = drupal_get_query_parameters(); // this is a Drupal function that pulls things that were passed in like "a=100&b=200&c=300"
 if (isset($u['year'])) {
   $yr = $u['year'];
