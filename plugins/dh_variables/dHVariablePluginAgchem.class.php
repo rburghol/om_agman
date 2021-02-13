@@ -651,7 +651,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // By frac and risk level, report all blocks at that risk level.
     // "Warning: FRAC 7, has 3 applications on Block 1, Block2, and Cab14. This can lead to problems. Please modify."
     $vineyard_id = $feature->vineyard->hydroid;
-    $fracs = $feature->event_fracs;
+    $target_fracs = $feature->event_fracs;
     $date = dh_handletimestamp($feature->startdate);
     $yr = date('Y', $date);
     $startdate = $yr . '-01-01';
@@ -659,7 +659,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $alerts = array(); // keyed by frac, 
                        // [$frac][$rating] = array('blocks'=>array(), 'message' => '');
     foreach ($feature->block_entities as $block) {
-      $rez = om_agman_frac_count($block->hydroid, $vineyard_id, $startdate, $enddate, $target_fracs = array());
+      $rez = om_agman_frac_count($block->hydroid, $vineyard_id, $startdate, $enddate, $target_fracs);
       $row_count = 0;
       while ($row = $rez->fetchAssoc()) {
         if ($row_count == 0) {
