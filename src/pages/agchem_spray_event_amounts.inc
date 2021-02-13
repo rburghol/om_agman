@@ -211,7 +211,7 @@ if (isset($a[1])) {
     $elements = drupal_build_form('dh_sprayquan_form', $form_state);
     //$elements = entity_ui_get_bundle_add_form('dh_adminreg_feature', 'mnw_file');
     // entity_ui_get_form($entity_type, $entity, $op = 'edit', $form_state = array())
-    error_reporting(E_ALL);
+
     // just grab the regular form for proof of concept
     //$elements = entity_ui_get_form('dh_adminreg_feature', $lu, $op, $form_state);
     //dpm($elements,'form');

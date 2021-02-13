@@ -295,7 +295,7 @@ $elements = drupal_build_form('dh_app_plan_form', $form_state);
 //$elements = entity_ui_get_bundle_add_form('dh_adminreg_feature', 'facility');
 // entity_ui_get_form($entity_type, $entity, $op = 'edit', $form_state = array())
 
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 // just grab the regular form for proof of concept
 $form = drupal_render($elements);
 $link = implode("/",array($a[0],$a[1],$a[2],$a[3]));
