@@ -112,7 +112,7 @@ function om_agman_frac_assess($frac, $frac_count){
 function om_agman_frac_alert($dh_adminreg_feature) {
   $values = array(
     'entity_type' => 'dh_adminreg_feature',
-    'featureid' = $dh_adminreg_feature->adminid,
+    'featureid' => $dh_adminreg_feature->adminid,
     'varkey' => 'agchem_application_event'
   );
   $phi_ts = NULL;
