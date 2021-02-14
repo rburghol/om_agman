@@ -110,18 +110,54 @@ function om_agman_frac_assess($frac, $frac_count){
 // END om_agman_frac_assess() 
 // ************************************
 
-function om_agman_frac_alert($dh_adminreg_feature, $threshold = 2) {
-  $rating_dsm = array(1 => 'status', 2 => 'warning', 3 => 'error');
+
+function om_agman_group_frac_check($vineyard_id, $blocks, $startdate, $enddate, $target_fracs = array()) {
+  $alerts = array(); // keyed by frac, 
+                     // [$frac][$rating] = array('blocks'=>array(), 'message' => '');
+  foreach ($blocks as $block_id) {
+    $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, $target_fracs);
+    $row_count = 0;
+    while ($row = $rez->fetchAssoc()) {
+      if ($row_count == 0) {
+        echo "<strong>" . $row['block_name'] . "</strong><br>";
+        $row_count++;
+      }
+      $frac_count = $row['frac_app_count'];
+      $frac = empty(trim($row['material_frac'])) ? 'n/a' : $row['material_frac'];
+      $row['material_frac'] = $frac;
+      $block_name = $row['block_name'];
+      unset($row['block_name']);
+      
+      $status = om_agman_frac_assess($frac, $frac_count);
+      $rating = $status['rating'];
+      $message = $status['message']; 
+      if ( $rating >= 1 ) {
+        if (!isset($alerts[$frac])) $alerts[$frac] = array();
+        if (!isset($alerts[$frac][$rating])) $alerts[$frac][$rating] = array('blocks'=>array(), 'count' => $frac_count, 'message' => '');
+        $alerts[$frac][$rating]['blocks'][] = $block_name;
+        $alerts[$frac][$rating]['message'] = $message;
+      }
+    }
+  }
+  return $alerts;
+}
+
+function om_agman_event_frac_alerts($dh_adminreg_feature) {
   $values = array(
     'entity_type' => 'dh_adminreg_feature',
     'featureid' => $dh_adminreg_feature->adminid,
     'varkey' => 'agchem_application_event'
   );
-  $phi_ts = NULL;
   $ts_event = dh_timeseries_enforce_singularity($values, 'singular');
   $plugin = dh_variables_getPlugins($ts_event);
   $plugin->load_event_info($dh_adminreg_feature);
   $alerts = $plugin->checkFracStatus($ts_event, $dh_adminreg_feature);
+  return $alerts;
+}
+  
+
+function om_agman_show_formatted_frac_alerts($alerts, $threshold = 2) {
+  $rating_dsm = array(1 => 'status', 2 => 'warning', 3 => 'error');
   foreach ($alerts as $frac => $info) {
     foreach ($info as $rating => $details) {
       if ($rating >= $threshold) {

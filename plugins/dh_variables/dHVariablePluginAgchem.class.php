@@ -662,32 +662,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $yr = date('Y', $date);
     $startdate = $yr . '-01-01';
     $enddate = $yr . '-12-31';
-    $alerts = array(); // keyed by frac, 
-                       // [$frac][$rating] = array('blocks'=>array(), 'message' => '');
-    foreach ($feature->block_entities as $block) {
-      $rez = om_agman_frac_count($block->hydroid, $vineyard_id, $startdate, $enddate, $target_fracs);
-      $row_count = 0;
-      while ($row = $rez->fetchAssoc()) {
-        if ($row_count == 0) {
-          echo "<strong>" . $row['block_name'] . "</strong><br>";
-          $row_count++;
-        }
-        $frac_count = $row['frac_app_count'];
-        $frac = empty(trim($row['material_frac'])) ? 'n/a' : $row['material_frac'];
-        $row['material_frac'] = $frac;
-        unset($row['block_name']);
-        
-        $status = om_agman_frac_assess($frac, $frac_count);
-        $rating = $status['rating'];
-        $message = $status['message']; 
-        if ( $rating >= 1 ) {
-          if (!isset($alerts[$frac])) $alerts[$frac] = array();
-          if (!isset($alerts[$frac][$rating])) $alerts[$frac][$rating] = array('blocks'=>array(), 'count' => $frac_count, 'message' => '');
-          $alerts[$frac][$rating]['blocks'][] = $block->name;
-          $alerts[$frac][$rating]['message'] = $message;
-        }
-      }
-    }
+    $block_ids = array_keys($feature->block_entities); // may have to grab the IDs from the objects
+    $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, $target_fracs = array());
     //dpm($alerts,'alerts');
     return($alerts);
   }
