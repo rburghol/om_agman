@@ -32,7 +32,7 @@ if ($block_id == 'all') {
 //dpm($risky_frac,'risky');
 
 $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, array());
-dpm($alerts,'alerts');
+//dpm($alerts,'alerts');
 om_agman_show_formatted_frac_alerts($alerts, 1);
     
 // got through all blocks
