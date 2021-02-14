@@ -153,7 +153,7 @@ function om_agman_event_frac_alerts($dh_adminreg_feature) {
   
 
 function om_agman_show_formatted_frac_alerts($alerts, $threshold = 2) {
-  $rating_dsm = array(1 => 'status', 2 => 'warning', 3 => 'error');
+  $rating_dsm = array(0 => 'status', 1 => 'warning', 2 => 'error', 3 => 'error');
   foreach ($alerts as $frac => $info) {
     foreach ($info as $rating => $details) {
       if ($rating >= $threshold) {
