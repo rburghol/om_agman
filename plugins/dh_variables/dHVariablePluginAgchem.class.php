@@ -663,7 +663,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $startdate = $yr . '-01-01';
     $enddate = $yr . '-12-31';
     $block_ids = array_keys($feature->block_entities); // may have to grab the IDs from the objects
-    $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, $target_fracs = array());
+    $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, $target_fracs);
     //dpm($alerts,'alerts');
     return($alerts);
   }
