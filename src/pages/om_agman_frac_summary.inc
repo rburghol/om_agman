@@ -31,9 +31,12 @@ if ($block_id == 'all') {
 
 //dpm($risky_frac,'risky');
 
+$alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, array());
+om_agman_show_formatted_frac_alerts($alerts, 1);
+    
 // got through all blocks
 foreach ($block_ids as $block_id) {
-  $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, $target_fracs = array());
+  $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, array());
 
   //dpm($q,'q');
   // This formats the result for printing, this can stay as is more or less 
