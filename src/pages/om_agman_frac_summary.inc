@@ -43,6 +43,7 @@ foreach ($block_ids as $block_id) {
   $header = array("FRAC", 'Max/year', '# of Apps', 'Rating', 'Status');
   $data = array();
   $row_count = 0;
+  $label = '';
   while ($row = $rez->fetchAssoc()) {
     if ($row_count == 0) {
       $label = "Name: <strong>" . $row['block_name'] . "</strong><br>";
@@ -68,11 +69,8 @@ foreach ($block_ids as $block_id) {
     '#rows' => $data,
   );
   $output = render($display);
-  if (!empty($label)) {
-    echo $label;
-  }
   if (count($data) > 0) {
-    echo $output;
+    echo $label . $output;
   }
   echo "<hr>";
 }
