@@ -118,10 +118,6 @@ function om_agman_group_frac_check($vineyard_id, $blocks, $startdate, $enddate, 
     $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, $target_fracs);
     $row_count = 0;
     while ($row = $rez->fetchAssoc()) {
-      if ($row_count == 0) {
-        echo "<strong>" . $row['block_name'] . "</strong><br>";
-        $row_count++;
-      }
       $frac_count = $row['frac_app_count'];
       $frac = empty(trim($row['material_frac'])) ? 'n/a' : $row['material_frac'];
       $row['material_frac'] = $frac;
