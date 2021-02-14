@@ -46,7 +46,7 @@ foreach ($block_ids as $block_id) {
   $row_count = 0;
   while ($row = $rez->fetchAssoc()) {
     if ($row_count == 0) {
-      echo "<strong>" . $row['block_name'] . "</strong><br>";
+      echo "Name: <strong>" . $row['block_name'] . "</strong><br>";
       $row_count++;
     }
     $frac_count = $row['frac_app_count'];
