@@ -39,14 +39,13 @@ om_agman_show_formatted_frac_alerts($alerts, 1);
 foreach ($block_ids as $block_id) {
   $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, array());
 
-  dpm($rez,'rez');
   // This formats the result for printing, this can stay as is more or less 
   $header = array("FRAC", 'Max/year', '# of Apps', 'Rating', 'Status');
   $data = array();
   $row_count = 0;
   while ($row = $rez->fetchAssoc()) {
     if ($row_count == 0) {
-      echo "Name: <strong>" . $row['block_name'] . "</strong><br>";
+      $label = "Name: <strong>" . $row['block_name'] . "</strong><br>";
       $row_count++;
     }
     $frac_count = $row['frac_app_count'];
@@ -69,8 +68,12 @@ foreach ($block_ids as $block_id) {
     '#rows' => $data,
   );
   $output = render($display);
-
-  echo $output;
+  if (!empty($label)) {
+    echo $label;
+  }
+  if (count($data) > 0) {
+    echo $output;
+  }
   echo "<hr>";
 }
 ?>
