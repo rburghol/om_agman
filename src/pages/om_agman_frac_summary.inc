@@ -33,7 +33,7 @@ if ($block_id == 'all') {
 
 $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, array());
 //dpm($alerts,'alerts');
-om_agman_show_formatted_frac_alerts($alerts, 1);
+om_agman_show_formatted_frac_alerts($alerts, 0);
     
 // got through all blocks
 foreach ($block_ids as $block_id) {
