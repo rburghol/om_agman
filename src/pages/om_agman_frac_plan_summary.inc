@@ -31,6 +31,7 @@ $startdate = $yr . '-01-01';
 $enddate = $yr . '-12-31';
 
 $alerts = om_agman_group_frac_check($vineyard_id, $block_id, $startdate, $enddate, array());
+dpm($alerts, 'alert');
 $output = om_agman_show_formatted_frac_alerts($alerts, 2, 'table');
 if (strlen($output) > 0) {
   echo $output;
