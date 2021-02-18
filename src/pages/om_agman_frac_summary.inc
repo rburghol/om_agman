@@ -34,10 +34,12 @@ if ($block_id == 'all') {
 $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, array());
 //dpm($alerts,'alerts');
 om_agman_show_formatted_frac_alerts($alerts, 0);
-    
+
 // got through all blocks
 foreach ($block_ids as $block_id) {
   $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, array());
+  $alerts = om_agman_group_frac_check($vineyard_id, array($block_id), $startdate, $enddate, array());
+  om_agman_show_formatted_frac_alerts($alerts, 0, 'table');
 
   // This formats the result for printing, this can stay as is more or less 
   $header = array("FRAC", 'Max/year', '# of Apps', 'Rating', 'Status');

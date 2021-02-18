@@ -152,8 +152,11 @@ function om_agman_event_frac_alerts($dh_adminreg_feature) {
 }
   
 
-function om_agman_show_formatted_frac_alerts($alerts, $threshold = 2) {
+function om_agman_show_formatted_frac_alerts($alerts, $threshold = 2, $out = 'message') {
+  // $out = message, table, array (returns)
   $rating_dsm = array(0 => 'status', 1 => 'warning', 2 => 'error', 3 => 'error');
+  $out_array = array();
+  $table = array();
   foreach ($alerts as $frac => $info) {
     foreach ($info as $rating => $details) {
       if ($rating >= $threshold) {
@@ -165,9 +168,38 @@ function om_agman_show_formatted_frac_alerts($alerts, $threshold = 2) {
         $count = $details['count'];
         $f_msg = "FRAC $frac has $count uses on $btense: " . implode(", ", $details['blocks']);
         $f_msg .= "<br>" . t($details['message']);
-        drupal_set_message($f_msg, $rating_dsm[$rating], FALSE);
+        switch ($out) {
+          case 'array':
+          $out_array[] = array('frac'=>$frac, 'count'=>$count, 'rating'=>$rating, 'message'=>$f_msg);
+          break;
+          case 'table':
+          $out_array[] = array($frac, $count, $rating, $f_msg);
+          break;
+          
+          case 'message':
+          default:
+          drupal_set_message($f_msg, $rating_dsm[$rating], FALSE);
+          break;
+        }
       }
     }
+  }
+  switch ($out) {
+    case 'array':
+    return $out_array;
+    case 'table':
+    $header = array("FRAC", '# of Apps', 'Rating', 'Message');
+    $display = array(
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $out_array,
+    );
+    $output = render($display);
+    break;
+    
+    default:
+    return;
+    break;
   }
   //dpm($alerts, 'alerts on save');
 }
