@@ -37,44 +37,19 @@ om_agman_show_formatted_frac_alerts($alerts, 0);
 
 // got through all blocks
 foreach ($block_ids as $block_id) {
-  $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, array());
-  $alerts = om_agman_group_frac_check($vineyard_id, array($block_id), $startdate, $enddate, array());
-  $r1 = om_agman_show_formatted_frac_alerts($alerts, 0, 'table');
-dpm($r1,'new table');
-  echo $r1;
-  // This formats the result for printing, this can stay as is more or less 
-  $header = array("FRAC", 'Max/year', '# of Apps', 'Rating', 'Status');
-  $data = array();
-  $row_count = 0;
-  $label = '';
-  while ($row = $rez->fetchAssoc()) {
-    if ($row_count == 0) {
-      $label = "Name: <strong>" . $row['block_name'] . "</strong><br>";
-      $row_count++;
+  $block = entity_load_single('dh_feature', $block_id);
+  if (is_object($block)) {
+    $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, array());
+    $alerts = om_agman_group_frac_check($vineyard_id, array($block_id), $startdate, $enddate, array());
+    $output = om_agman_show_formatted_frac_alerts($alerts, 0, 'table');
+    $label = "Name: <strong>" . $block->name . "</strong><br>";
+    echo $label;
+    if (count($alerts) > 0) {
+      echo $output;
+    } else {
+      echo "No FRAC application alerts.";
     }
-    $frac_count = $row['frac_app_count'];
-    $frac = empty(trim($row['material_frac'])) ? 'n/a' : $row['material_frac'];
-    $row['material_frac'] = $frac;
-    unset($row['block_name']);
-    
-    $status = om_agman_frac_assess($frac, $frac_count);
-    $rating = $status['rating'];
-    $message = $status['message']; 
-    
-    $row['rating'] = $rating;
-    $row['message'] = $message;
-    $data[] = array_values($row);
+    echo "<hr>";
   }
-  //dpm($data,'data');
-  $display = array(
-    '#theme' => 'table',
-    '#header' => $header,
-    '#rows' => $data,
-  );
-  $output = render($display);
-  if (count($data) > 0) {
-    echo $label . $output;
-  }
-  echo "<hr>";
 }
 ?>
