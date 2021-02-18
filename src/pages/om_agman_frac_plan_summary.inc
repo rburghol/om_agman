@@ -8,7 +8,7 @@ $args = arg(); // this is a Drupal function that pulls things in that were passe
 $ao = 0; // Argument Offset -- 0 if this is a page, and 2 if this is a node
 $vineyard_id = $args[$ao + 1];
 $block_id = count($args) > ($ao + 1) ? $args[$ao + 2] : 'all';
-//dsm("Searching for vineyard $vineyard_id and blocks $block_id");
+dsm("Searching for vineyard $vineyard_id and blocks $block_id");
 $u = drupal_get_query_parameters(); // this is a Drupal function that pulls things that were passed in like "a=100&b=200&c=300"
 if (isset($u['year'])) {
   $yr = $u['year'];
