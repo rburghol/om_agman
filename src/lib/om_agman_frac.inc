@@ -194,8 +194,7 @@ function om_agman_show_formatted_frac_alerts($alerts, $threshold = 2, $out = 'me
       '#header' => $header,
       '#rows' => $out_array,
     );
-    $output = render($display);
-    return $output;
+    return $display;
     break;
     
     default:

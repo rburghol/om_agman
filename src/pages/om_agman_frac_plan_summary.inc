@@ -8,7 +8,7 @@ $args = arg(); // this is a Drupal function that pulls things in that were passe
 $ao = 0; // Argument Offset -- 0 if this is a page, and 2 if this is a node
 $vineyard_id = $args[$ao + 1];
 $block_id = count($args) > ($ao + 1) ? $args[$ao + 2] : 'all';
-dsm("Searching for vineyard $vineyard_id and blocks $block_id");
+//dsm("Searching for vineyard $vineyard_id and blocks $block_id");
 $u = drupal_get_query_parameters(); // this is a Drupal function that pulls things that were passed in like "a=100&b=200&c=300"
 if (isset($u['year'])) {
   $yr = $u['year'];
@@ -32,8 +32,9 @@ $enddate = $yr . '-12-31';
 
 $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, array());
 //dpm($alerts, 'alert');
-$output = om_agman_show_formatted_frac_alerts($alerts, 2, 'table');
-if (strlen($output) > 0) {
+$display = om_agman_show_formatted_frac_alerts($alerts, 2, 'table');
+if (count($display['rows']) > 0) {
+  $output = render($display);
   echo $output;
 }
 	

@@ -34,10 +34,11 @@ foreach ($block_ids as $block_id) {
   $block = entity_load_single('dh_feature', $block_id);
   if (is_object($block)) {
     $alerts = om_agman_group_frac_check($vineyard_id, array($block_id), $startdate, $enddate, array());
-    $output = om_agman_show_formatted_frac_alerts($alerts, 0, 'table');
+    $display = om_agman_show_formatted_frac_alerts($alerts, 0, 'table');
     $label = "Name: <strong>" . $block->name . "</strong><br>";
     echo $label;
-    if (count($alerts) > 0) {
+    if (count($display['rows']) > 0) {
+      $output = render($display);
       echo $output;
     } else {
       echo "No FRAC application alerts.";
