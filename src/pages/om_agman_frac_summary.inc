@@ -41,6 +41,7 @@ foreach ($block_ids as $block_id) {
   $alerts = om_agman_group_frac_check($vineyard_id, array($block_id), $startdate, $enddate, array());
   $r1 = om_agman_show_formatted_frac_alerts($alerts, 0, 'table');
 dpm($r1,'new table');
+  echo $r1;
   // This formats the result for printing, this can stay as is more or less 
   $header = array("FRAC", 'Max/year', '# of Apps', 'Rating', 'Status');
   $data = array();
