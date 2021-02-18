@@ -37,7 +37,7 @@ foreach ($block_ids as $block_id) {
     $display = om_agman_show_formatted_frac_alerts($alerts, 0, 'table');
     $label = "Name: <strong>" . $block->name . "</strong><br>";
     echo $label;
-    if (count($display['rows']) > 0) {
+    if (count($display['#rows']) > 0) {
       $output = render($display);
       echo $output;
     } else {
