@@ -157,9 +157,10 @@ function om_agman_show_formatted_frac_alerts($alerts, $threshold = 2, $out = 'me
   $rating_dsm = array(0 => 'status', 1 => 'warning', 2 => 'error', 3 => 'error');
   $out_array = array();
   $table = array();
+  dpm($alerts,'a');
   foreach ($alerts as $frac => $info) {
     foreach ($info as $rating => $details) {
-      if ($rating >= $threshold) {
+      if ( ($rating >= $threshold) or empty($rating)) {
         if (count($details['blocks']) > 1) {
           $btense = 'blocks';
         } else {
