@@ -111,7 +111,7 @@ function om_agman_frac_assess($frac, $frac_count){
 // ************************************
 
 
-function om_agman_group_frac_check($vineyard_id, $blocks, $startdate, $enddate, $target_fracs = array()) {
+function om_agman_group_frac_check($vineyard_id, $blocks, $startdate, $enddate, $target_fracs = array(), $threshold = 1) {
   $alerts = array(); // keyed by frac, 
                      // [$frac][$rating] = array('blocks'=>array(), 'message' => '');
   foreach ($blocks as $block_id) {
@@ -127,7 +127,7 @@ function om_agman_group_frac_check($vineyard_id, $blocks, $startdate, $enddate, 
       $status = om_agman_frac_assess($frac, $frac_count);
       $rating = $status['rating'];
       $message = $status['message']; 
-      if ( $rating >= 1 ) {
+      if ( $rating >= $threshold ) {
         if (!isset($alerts[$frac])) $alerts[$frac] = array();
         if (!isset($alerts[$frac][$rating])) $alerts[$frac][$rating] = array('blocks'=>array(), 'count' => $frac_count, 'message' => '');
         $alerts[$frac][$rating]['blocks'][] = $block_name;
@@ -157,7 +157,6 @@ function om_agman_show_formatted_frac_alerts($alerts, $threshold = 2, $out = 'me
   $rating_dsm = array(0 => 'status', 1 => 'warning', 2 => 'error', 3 => 'error');
   $out_array = array();
   $table = array();
-  dpm($alerts,'a');
   foreach ($alerts as $frac => $info) {
     foreach ($info as $rating => $details) {
       if ( ($rating >= $threshold) or empty($rating)) {
