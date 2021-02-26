@@ -233,9 +233,9 @@ class dHVariablePluginAgmanAction extends dHVariablePluginAgmanLocationEvent {
         'propcode_default' => '',
         'propvalue_default' => 0.0,
         'propname' => 'labor_hours',
-        'title' => 'Labor Hours',
-        '#title' => 'Labor Hours',
-        'varname' => 'Labor Hours',
+        'title' => 'Labor Hours', // this has no effect
+        '#title' => 'Labor Hours', // this has no effect
+        'varname' => 'Labor Hours', // But This!!!! This has an effect.
         'singularity' => 'name_singular',
         'featureid' => $entity->identifier(),
         'attach_method' => 'contained',
