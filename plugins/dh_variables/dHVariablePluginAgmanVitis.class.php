@@ -11,7 +11,7 @@ $class = ctools_plugin_get_class($plugin_def, 'handler');
 //  should show end time and mark as optional in case users want to track time spent
 
 
-class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
+class dHVariablePluginAgmanLocationEvent extends dHVariablePluginDefaultOM {
   // provides location management standardization
   // and some common functions like pct_list() handling
   // and content formatting
@@ -20,22 +20,7 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
   }
   
   public function getDefaults($entity, &$defaults = array()) {
-    //parent::getDefaults($entity, $defaults);
-    // Example:
-    /*
-    $defaults += array(
-      'berry_weight_g' => array(
-        'entity_type' => $entity->entityType(),
-        'propcode_default' => NULL,
-        'propvalue_default' => 0.0,
-        'propname' => 'Berry Weight',
-        'singularity' => 'name_singular',
-        'featureid' => $entity->identifier(),
-        'varkey' => 'berry_weight_g',
-        'varid' => dh_varkey2varid('berry_weight_g', TRUE),
-      ),
-    );
-    */
+    parent::getDefaults($entity, $defaults);
     return $defaults;
   }
   public function formRowEdit(&$rowform, $row) {
@@ -236,6 +221,38 @@ class dHVariablePluginAgmanAction extends dHVariablePluginDefaultOM {
       break;
     }
   }
+}
+
+class dHVariablePluginAgmanAction extends dHVariablePluginAgmanLocationEvent {
+  
+  public function getDefaults($entity, &$defaults = array()) {
+    parent::getDefaults($entity, $defaults);
+    $defaults += array(
+      'labor_hours' => array(
+        'entity_type' => $entity->entityType(),
+        'propcode_default' => '',
+        'propvalue_default' => 0.0,
+        'propname' => 'labor_hours',
+        'title' => 'Labor Hours',
+        'singularity' => 'name_singular',
+        'featureid' => $entity->identifier(),
+        'attach_method' => 'contained',
+        //'propcode_mode' => 'read_only',
+        'varkey' => 'om_class_Constant',
+        'varid' => dh_varkey2varid('om_class_Constant', TRUE),
+        'tissue_type' => 'leaf',
+        'vardesc' => 'Amount of worker time spent on activity',
+        //'block' => 'Leaf Samples',
+        '#weight' => 5,
+      ),
+    );
+    return $defaults;
+  }
+  
+}
+
+class dHVariablePluginAgmanObservation extends dHVariablePluginAgmanLocationEvent {
+  // tbd: make events that shouldn't have a labor hour component inherit this instead of Action (below0
 }
 
 class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
