@@ -141,7 +141,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
     );
     break;
   }
-  dpm($form, 'form');
+  //dpm($form, 'form');
   return $form;
 }
 
@@ -153,7 +153,7 @@ function dh_app_plan_form_submit_cancel($form, &$form_state) {
     //dpm($url);
     $form_state['redirect'] = $url;
   } else {
-    $url = $form_state['redirect'] ? $form_state['redirect'] : '';
+    $url = $form_state['redirect'] ? $form_state['redirect'] : 'ipm-facility-sprayplan';
     drupal_goto($url);
   }
 }
