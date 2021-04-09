@@ -351,7 +351,7 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginAgmanAction {
       '#markup' => "</table>",
     );
     
-    $hidden = array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle');
+    $hidden = array('pid', 'startdate', 'enddate', 'entity_type', 'bundle');
     foreach ($hidden as $hide_this) {
       $rowform[$hide_this]['#type'] = 'hidden';
     }
