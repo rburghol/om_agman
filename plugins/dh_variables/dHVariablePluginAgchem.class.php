@@ -252,7 +252,7 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginAgmanAction {
   
   public function __construct($conf = array()) {
     parent::__construct($conf);
-    $hidden = array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle');
+    $hidden = array('pid', 'startdate', 'enddate', 'entity_type', 'bundle');
     foreach ($hidden as $hide_this) {
       $this->property_conf_default[$hide_this]['hidden'] = 1;
     }
