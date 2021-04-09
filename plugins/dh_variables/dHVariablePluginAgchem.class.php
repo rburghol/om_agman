@@ -259,7 +259,7 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginAgmanAction {
   }
   
   public function hiddenFields() {
-    return array('tid', 'tsvalue', 'entity_type', 'bundle', 'varid', 'tsendtime');
+    return array('tid', 'entity_type', 'bundle', 'varid', 'tsendtime');
   }
 
   function process_npk($code) {
