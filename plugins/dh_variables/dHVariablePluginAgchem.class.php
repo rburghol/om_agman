@@ -1,6 +1,8 @@
 <?php
 module_load_include('inc', 'dh', 'plugins/dh.display');
 module_load_include('inc', 'om_agman', 'src/lib/om_agman_frac');
+$plugin_def = ctools_get_plugins('om_agman', 'dh_variables', 'dHVariablePluginAgmanAction');
+$class = ctools_plugin_get_class($plugin_def, 'handler');
 
 class dHVariablePluginEfficacy extends dHVariablePluginDefault {
   
@@ -242,7 +244,7 @@ class dHVariablePluginFRAC extends dHVariablePluginDefault {
   
 }
 
-class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
+class dHVariablePluginSimpleFertilizer extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
   //        handle in views - maybe a setting in the filter or jumplists itself?
   //  default: agchem_apply_fert_ee
