@@ -289,6 +289,7 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginAgmanAction {
   }
   
   public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row);
     // apply custom settings here
     //dpm($row,'row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
