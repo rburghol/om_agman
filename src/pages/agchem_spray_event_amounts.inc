@@ -137,7 +137,10 @@ function dh_app_plan_form_submit(&$form, &$form_state) {
     $url = $parms['finaldest'];
     drupal_goto($url);
   } else {
-    $url = implode('/', array('ipm-facility-sprayplan', om_agman_get_block_farmid($blockid), $blockid));
+    dpm($blockid, "Searching for the farm");
+    $farmid = om_agman_get_block_farmid($blockid);
+    $url = implode('/', array('ipm-facility-sprayplan', $farmid, $blockid));
+    dpm($farmid, "Found farm");
     drupal_goto($url);
   }
 }
