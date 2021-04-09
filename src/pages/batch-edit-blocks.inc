@@ -61,8 +61,8 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
           $area_prop->save();
           $plugin = dh_variables_getPlugins($area_prop);
           $feature->dh_areasqkm['und'][0]['value'] = $plugin->convertArea($area_prop->propvalue, 'ac', 'sqkm');
-          dpm($feature,"Saving");
-          dpm($record_group, "from record group");
+          //dpm($feature,"Saving");
+          //dpm($record_group, "from record group");
           entity_save('dh_feature', $feature);
           if (!empty($record_group['agman_plant'])) {
             $variety = array(
