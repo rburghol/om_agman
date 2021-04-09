@@ -124,7 +124,8 @@ function dh_sprayquan_form_return(&$form, &$form_state) {
     //dpm($url);
     $form_state['redirect'] = $url;
   } else {
-    $url = implode('/', array('ipm-home', $blockid));
+    $farmid = om_agman_get_block_farmid($blockid);
+    $url = implode('/', array('ipm-facility-sprayplan', $farmid));
     drupal_goto($url);
   }
 }
@@ -137,10 +138,8 @@ function dh_app_plan_form_submit(&$form, &$form_state) {
     $url = $parms['finaldest'];
     drupal_goto($url);
   } else {
-    dpm($blockid, "Searching for the farm");
     $farmid = om_agman_get_block_farmid($blockid);
-    $url = implode('/', array('ipm-facility-sprayplan', $farmid, $blockid));
-    dpm($farmid, "Found farm");
+    $url = implode('/', array('ipm-facility-sprayplan', $farmid));
     drupal_goto($url);
   }
 }
