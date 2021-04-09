@@ -257,6 +257,10 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginAgmanAction {
       $this->property_conf_default[$hide_this]['hidden'] = 1;
     }
   }
+  
+  public function hiddenFields() {
+    return array('tid', 'tsvalue', 'entity_type', 'bundle');
+  }
 
   function process_npk($code) {
     $keys = array('n', 'p', 'k');
