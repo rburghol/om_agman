@@ -259,7 +259,7 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginAgmanAction {
   }
   
   public function hiddenFields() {
-    return array('tid', 'tsvalue', 'entity_type', 'bundle');
+    return array('tid', 'tsvalue', 'entity_type', 'bundle', 'varid', 'tsendtime');
   }
 
   function process_npk($code) {
@@ -356,10 +356,6 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginAgmanAction {
       '#markup' => "</table>",
     );
     
-    $hidden = array('pid', 'startdate', 'enddate', 'entity_type', 'bundle');
-    foreach ($hidden as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
-    }
     //dpm($rowform,'raw form');
   }
   
