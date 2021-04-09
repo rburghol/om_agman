@@ -20,7 +20,7 @@ if (isset($u['year'])) {
 }
 
 // get all blocks wfor this vineyard if a specific block was NOT requested
-if ($block_id == 'all') {
+if (empty($block_id) or ($block_id == 'all') ) {
   $block_ids = dh_get_facility_mps($vineyard_id, 'landunit');
 } else {
   $block_ids = array($block_id);
