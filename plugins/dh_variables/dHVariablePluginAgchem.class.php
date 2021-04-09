@@ -1,7 +1,7 @@
 <?php
 module_load_include('inc', 'dh', 'plugins/dh.display');
 module_load_include('inc', 'om_agman', 'src/lib/om_agman_frac');
-$plugin_def = ctools_get_plugins('om_agman', 'dh_variables', 'dHVariablePluginAgmanAction');
+$plugin_def = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginAgmanAction');
 $class = ctools_plugin_get_class($plugin_def, 'handler');
 
 class dHVariablePluginEfficacy extends dHVariablePluginDefault {
