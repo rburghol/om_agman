@@ -4,16 +4,16 @@ $a = arg();
 // load farm
 $facility = entity_load_single('dh_feature', $a[1]);
 $facid = $a[1];
-$el =  = l(
-  "&nbsp;", 
+$el = l(
+  " ", 
   "ipm-edit-vineyard/edit/$facid&destination=ipm-facility-info/$facid",
-  array('class' => array('editlink'))
+  array('attributes' => array('class' => array('editlink')))
 );
 
 $dl = l(
-  "&nbsp;", 
+  " ", 
   "admin/content/dh_features/manage/$facid/delete",
-  array('class' => array('subtractlink'))
+  array('attributes' => array('class' => array('subtractlink')))
 );
-echo "Viewing: $facility$name " . $el . " " . $dl;
+echo "Viewing vineyard: $facility->name " . $el . " " . $dl;
 ?>
