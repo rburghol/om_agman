@@ -5,12 +5,6 @@
   module_load_include('module', 'dh');
   module_load_include('module', 'dh_adminreg');
   
-  // load agchem event specific stuff
-  ctools_include('plugins');
-  $plugins = ctools_get_plugins('om', 'om_components');
-  //dpm($plugins,'all plug');
-  $plugin = ctools_get_plugins('om', 'om_components', 'ObjectModelAgmanSprayAppEvent');
-  $class = ctools_plugin_get_class($plugin, 'handler');
   //dpm($plugin,'plug');
   // get the arguments from URL, they come in the form farm_hydroid/sub_page_name/event_adminid
   $a = arg();
@@ -24,6 +18,22 @@
     if (!is_object($plan)) {
       dsm( "There was a problem, event can not be found.");
     }
+    // load agchem event specific stuff
+    ctools_include('plugins');
+    $plugins = ctools_get_plugins('om', 'om_components');
+    //dpm($plugins,'all plug');
+    $plugin = ctools_get_plugins('om', 'om_components', 'ObjectModelAgmanSprayAppEvent');
+    $class = ctools_plugin_get_class($plugin, 'handler');
+    if ($class) {
+      $config = array();
+      $event_plugin = new $class($config);
+      //dpm($event_plugin,'app plugin object');
+      $event_plugin->dh_adminreg_feature = $plan;
+      $form = array();
+      $form_state = array();
+      $event_plugin->buildForm($form, $form_state);
+    }
+    dpm($event_plugin,'event_plugin');
     dpm($plan,'plan');
     if ($plan->fstatus == 'canceled') {
       $pre = "<s>Note: This event has been marked as canceled. ";
@@ -44,10 +54,10 @@
       dpm($ts,'ts');
     }
     if (is_object($ts)) {
-      $plugin = dh_variables_getPlugins($ts);
+      $ts_plugin = dh_variables_getPlugins($ts);
       $content = array();
-      $plugin->buildContent($content, $ts, 'full');
-      dpm($plugin,'plugin');
+      $ts_plugin->buildContent($content, $ts, 'full');
+      dpm($ts_plugin,'ts_plugin');
       dpm($content,'content');
       $output = drupal_render($content);
       echo $output;
