@@ -15,5 +15,5 @@ $dl = l(
   "admin/content/dh_features/manage/$facid/delete",
   array('attributes' => array('class' => array('subtractlink')))
 );
-echo "Viewing vineyard: $facility->name " . $el . " " . $dl;
+echo "Viewing: $facility->name " . $el . " " . $dl;
 ?>

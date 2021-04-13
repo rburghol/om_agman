@@ -14,15 +14,17 @@
   //dpm($plugin,'plug');
   // get the arguments from URL, they come in the form farm_hydroid/sub_page_name/event_adminid
   $a = arg();
-  if (!isset($a[3])) {
+  $pix = ($a[0] == 'node') ? 2 : 3; // use 3 for the page, 2 for a node during development
+  if (!isset($a[$pix])) {
      dsm( "There was a problem, event can not be found.");
   } else {
-    $planid = $a[3];
+    $planid = $a[$pix];
     // load existing prop for editing
     $plan = entity_load_single('dh_adminreg_feature', $planid);
     if (!is_object($plan)) {
       dsm( "There was a problem, event can not be found.");
     }
+    dpm($plan,'plan');
     if ($plan->fstatus == 'canceled') {
       $pre = "<s>Note: This event has been marked as canceled. ";
       $suf = "</s>";
@@ -30,6 +32,10 @@
     // which of this is correct? 'title' or 'markup'?
 
     // get ts event associated with this admin record 
+    // Note: Eventually the adminreg record will NOT contain all of the application stuff, just a link to the timeseries record. 
+    //       For now though, we need to work with both.
+    //       But we use the TimeSeries event to load the adminreg event since that is what is presented in all of the 
+    //       calendar and dashboard views, as it is easier to track only timeseries events temporally.
     $info = array('entity_type' => 'dh_adminreg_feature', 'featureid' => $planid, 'varkey' => 'agchem_application_event');
     $tsrecs = dh_get_timeseries($info, 'all');
     if (isset($tsrecs['dh_timeseries'])) {
