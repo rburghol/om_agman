@@ -71,7 +71,7 @@ function om_agman_material_query($criteria = array()) {
   }
   $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, pm.propvalue";
   $query .= " order by chem.name, br.propvalue, dm.propvalue, pm.propvalue ";
-  //dpm($query,'q');
+  dpm($query,'q');
   return $query;
 }
 
