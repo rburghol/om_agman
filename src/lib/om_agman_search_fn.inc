@@ -137,6 +137,9 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   while($chem_record = $agchem_result->fetchObject()) {
     $id = $chem_record->adminid;
     $count++;
+    if ($count == 1 ) {
+      dpm($chem_record,'chem');
+    }
     if ($chem_record->hydroid > 0) {
       $selected[$chem_record->adminid] = 1;
     }
