@@ -1,134 +1,14 @@
 <?php
 
 module_load_include('module', 'om_agman');
-
-function om_agman_material_query($farm_id, $show_all = TRUE, $criteria = array()) {
-$query = "select farm.hydroid, chem.adminid, chem.name, 
-  br.propvalue as br, 
-  dm.propvalue as dm,
-  pm.propvalue as pm,
-  array_accum(frac.propcode) as frac_codes
-from dh_adminreg_feature as chem 
-left outer join field_data_field_link_agchem_material as clink 
-on (
-  clink.field_link_agchem_material_target_id = chem.adminid
-  and clink.entity_id = $farm_id
-)
-left outer join dh_feature as farm 
-on (
-  farm.hydroid = clink.entity_id
-  and clink.entity_type = 'dh_feature' 
-) 
-left outer join dh_properties as br 
-on (
-  br.featureid = chem.adminid
-  and br.entity_type = 'dh_adminreg_feature'
-  and br.varid in (select hydroid from dh_variabledefinition where varkey = 'org_black_rot')
-)
-left outer join dh_properties as dm 
-on (
-  dm.featureid = chem.adminid
-  and dm.entity_type = 'dh_adminreg_feature'
-  and dm.varid in (select hydroid from dh_variabledefinition where varkey = 'org_downy_mildew')
-)
-left outer join dh_properties as pm 
-on (
-  pm.featureid = chem.adminid
-  and pm.entity_type = 'dh_adminreg_feature'
-  and pm.varid in (select hydroid from dh_variabledefinition where varkey = 'org_powdery_mildew')
-)
-left outer join dh_properties as frac
-on (
-  frac.featureid = chem.adminid
-  and frac.entity_type = 'dh_adminreg_feature'
-  and frac.varid in (select hydroid from dh_variabledefinition where varkey = 'agchem_frac')
-)
-where 
-chem.ftype in ('insecticide', 'fungicide', 'herbicide', 'fertilizer', 'pesticide', 'other') ";
-if (!$show_all) {
-  $query .= " and farm.hydroid is not null ";
-}
-if (isset($criteria['frac'])) {
-  $query .= " and chem.adminid in (" ;
-  $query .= "   select featureid from dh_properties where   ";
-  $query .= "   entity_type = 'dh_adminreg_feature' ";
-  $query .= "   and varid in (select hydroid from dh_variabledefinition where varkey = 'agchem_frac') ";
-  $query .= "   and propcode = '" . $criteria['frac']['value'] . "' ";
-  $query .= " ) ";
-}
-$query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, pm.propvalue";
-return $query;
-}
-
-function om_agman_material_search_opts($farm_id) {
-  $query = om_agman_material_query($farm_id); // see https://github.com/rburghol/om_agman/issues/240
-  $agchem_result = db_query($query);
-  $opts = array();
-  $selected = array();
-
-  while($chem_record = $agchem_result->fetchObject()) {
-    $id = $chem_record->adminid;
-    if ($chem_record->hydroid > 0) {
-      $selected[$chem_record->adminid] = 1;
-    }
-    $chem_record->frac_codes = trim($chem_record->frac_codes,'{}');
-    //dpm($chem_record);
-    $valkeys = array(
-      'REI'=>'agchem_rei', 
-      'PHI' => 'agchem_phi', 
-    );
-    $codekeys = array(
-      'PM' => 'pm', 
-      'DM' => 'dm', 
-      'Ph' => 'ph', 
-      'BR' => 'br', 
-      'Bot' => 'bot'
-    );
-
-    // BEGIN - tableselect
-    $opts[$id] = array(
-      'label' => $chem_record->name . ' ' . $chem_record->ftype, 
-    );
-    $opts[$id]['REI'] = $chem_record->rei;
-    $opts[$id]['PHI'] = $chem_record->phi;
-    $opts[$id]['FRAC'] = $chem_record->frac_codes;
-
-    foreach ($codekeys as $label => $key) {
-      $opts[$id][$label] = $chem_record->{$key};
-    }
-    $delim = '';
-    // we now have a frac aggregator which saves as a short propcode
-    // END - tableselect
-  }
-  //dpm($opts,'opts');
-
-  $element = array(
-    '#type' => 'tableselect',
-    '#options' => $opts,
-    '#default_value' => $selected,
-    '#required' => TRUE,
-    '#multiple' => TRUE,
-  );
-  $element['#empty'] = t('No content available.');
-  $element['#required'] = TRUE;
-  $element['#header'] = array(
-    'label' => 'Material', 
-    'REI'=>'REI', 
-    'PHI' => 'PHI', 
-    'FRAC' => 'FRAC', 
-    'PM' => 'PM', 
-    'DM' => 'DM', 
-    'Ph' => 'Ph', 
-    'BR' => 'BR', 
-    'Bot' => 'Bot'
-  );
-  return $element;
-}
+module_load_include('inc', 'om_agman', 'src/lib/om_agman_search_fn');
 
 function om_agman_material_search_form($form, &$form_state, $farm_id) {
-dpm($farm_id, 'farm id');
-dpm($form_state,'form state post-build');
-
+//dpm($farm_id, 'farm id');
+  //dpm($form_state,'form to om_agman_material_search_form');
+  //if ($form_state['input']['op'] == 'Search') {
+  //  dpm($form_state['input'],'Searching');
+  //}
   $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginFRAC');
   $class = ctools_plugin_get_class($plugin, 'handler');
   //dpm($plugin,'plug');
@@ -139,45 +19,144 @@ dpm($form_state,'form state post-build');
     $src->formRowEdit($arr, $empty_object);
     $frac_opts = $arr['propcode'];
   }
-  $form['fracs'] = $frac_opts;
-  $form['fracs']['#title'] = 'Filter by FRAC';
-  
-  $form['chems'] = om_agman_material_search_opts($farm_id);
+  $form['frac'] = $frac_opts;
+  $form['frac']['#title'] = 'Filter by FRAC';
+  $form['name'] = array(
+    '#title' => t('Material Name'),
+    '#type' => 'textfield',
+    '#default_value' => '',
+    '#description' => t('Search for material with name containing the entered text.'),
+    '#required' => FALSE,
+    '#size' => 30,
+  );  
+
+  $form['ai'] = array(
+    '#title' => t('Active Ingredient'),
+    '#type' => 'textfield',
+    '#default_value' => '',
+    '#description' => t('Search for material with active ingredient name containing the entered text.'),
+    '#required' => FALSE,
+    '#size' => 30,
+  );  
+  // retrieve an efficacy rating property to use plugin to format the search drop-down
 
   $form['actions'] = array('#type' => 'actions');
-
+  
+  // type 'button' does not submit.
+  // This is useful in that it also does not call a rebuild,
+  // but it does send values to the form that can be used to alter the query results.
+  // preserving the state for the next step.
   $form['actions']['search'] = array(
-    '#type' => 'submit',
+    '#type' => 'button',
+    #'#type' => 'submit',
     '#value' => t('Search'),
-    '#weight' => 45,
+    '#weight' => 1,
     '#limit_validation_errors' => array(),
     '#submit' => array('om_agman_material_search_search')
   );
   $form['actions']['cancel'] = array(
     '#type' => 'submit',
     '#value' => t('Cancel'),
-    '#weight' => 45,
+    '#weight' => 3,
     '#limit_validation_errors' => array(),
     '#submit' => array('om_agman_material_search_cancel')
   );
   $form['actions']['save'] = array(
     '#type' => 'submit',
-    '#value' => t('Save'),
-    '#weight' => 40,
+    '#value' => t('Add Selected to Inventory'),
+    '#weight' => 2,
     '#submit' => array('om_agman_material_search_save')
   );
+  $criteria['farm_id'] = array('value' => $farm_id);
+  if (!empty($form_state['input']['frac'])) {
+    $criteria['frac'] = array('value' => $form_state['input']['frac']);
+  }
+  if (!empty($form_state['input']['ai'])) {
+    $criteria['ai'] = array('value' => $form_state['input']['ai']);
+  }
+  if (!empty($form_state['input']['name'])) {
+    $criteria['name'] = array('value' => $form_state['input']['name']);
+  }
+  // 
+  $new_chems = array();
+  if (isset($form_state['input']['chems'])) {
+    $sel_chems = array_values(array_filter($form_state['input']['chems']));
+    //dpm($sel_chems,'selected chems');
+    $farm = entity_load_single('dh_feature', $farm_id);
+    $farm_chems = $farm->field_link_agchem_material['und'];
+    $farm_chems = array_column($farm_chems, 'target_id');
+    //dpm($farm_chems,'farm chems');
+    $new_chems = array_diff($sel_chems, $farm_chems);
+    //dpm($new_chems, 'new_chems');
+  }
+  $form['farm_id'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $farm_id,
+  );
+  $form['chems'] = om_agman_material_search_opts($farm_id, 'select', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the header
+  $form['actions']['#weight'] = 1;
+  $form['chems']['#weight'] = 10;
   
   return $form;
 }
 
 
 function om_agman_material_search_search($form, &$form_state) {
-dpm($form_state,'form state on search');
-dpm($_POST,'post args');
+  //dpm($form_state,'form state on search');
+  //dpm($_POST,'post args');
+  $a = arg();
+  $path = implode("/", $a);
+  foreach ( array('frac', 'ai', 'name') as $crit) {
+    $params[$crit] = $form_state['input'][$crit];
+  }
+  //dpm($params,"search_search params");
+  drupal_goto($path, array('query' => $params));
+
+  #  $form_state['rebuild'] = FALSE;
+  return TRUE;
+}
+
+
+function om_agman_material_search_next($form, &$form_state) {
+dpm($form_state,'form state on next');
+//dpm($form_state,'form state on search');
+//dpm($_POST,'post args');
+  $form_state['rebuild'] = TRUE;
+  // do we stash selected items in a state variable somehow?  Or think of this as a simple find a chem, save it. Move on. 
+  return TRUE;
+}
+
+function om_agman_material_search_prev($form, &$form_state) {
+//dpm($form_state,'form state on search');
+dpm($form_state,'form state on prev');
+//dpm($_POST,'post args');
+  $form_state['rebuild'] = TRUE;
   return TRUE;
 }
 
 function om_agman_material_search_save($form, &$form_state) {
+  // make this a simple work flow where we confirm that the user wants to do this with an entirely different page.  
+  // this will simplify handling. Also, it will allow us to warn the user if they are *removing* a chem from their
+  // inventory that has planned applications.
+  //dpm($form_state,'form state on save');
+  // grab chems, and send to a next form for confirmation that we wish to add them 
+  $sel_chems = array_values(array_filter($form_state['values']['chems']));
+  dpm($sel_chems,'selected chems');
+  $farm = entity_load_single('dh_feature', $form_state['values']['farm_id']);
+  $farm_chems = $farm->field_link_agchem_material['und'];
+  $farm_chems = array_column($farm_chems, 'target_id');
+  dpm($farm_chems,'farm chems');
+  $new_chems = array_diff($sel_chems, $farm_chems);
+  dpm($new_chems, 'new_chems');
+  // got to the review and save page 
+  $a = arg();
+  $path = implode("/", $a);
+  $params = array();
+  foreach ( $new_chems as $chem_id) {
+    $params['chems'][] = $chem_id;
+  }
+  //dpm($params,"search_search params");
+  drupal_goto($path, array('query' => $params));
   return TRUE;
 }
 
@@ -192,15 +171,16 @@ function om_agman_material_search_cancel($form, &$form_state) {
   drupal_goto($url);
 }
 
-
+//dsm("from the top");
 $farm_id = 146;
 $form_state = array();
 $form_state['build_info']['args'] = array($farm_id);
 form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
+//dpm($form_state,'post form_load_include');
 $elements = drupal_build_form('om_agman_material_search_form', $form_state);
 
 //drupal_get_form('om_agman_material_search_form')
-dpm($elements, 'form');
+//dpm($elements, 'form');
 echo drupal_render($elements);
 
 ?>
