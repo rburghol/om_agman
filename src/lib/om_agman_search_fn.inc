@@ -3,7 +3,6 @@
 
 function om_agman_material_query($criteria = array()) {
   
-  /*
   $farm_id = isset($criteria['farm_id']) ? $criteria['farm_id']['value'] : -1;
   //dpm($criteria,'criteria');
   $query = "select farm.hydroid, chem.adminid, chem.name, 
@@ -55,9 +54,10 @@ function om_agman_material_query($criteria = array()) {
   )
   where 
   chem.ftype in ('insecticide', 'fungicide', 'herbicide', 'fertilizer', 'pesticide', 'other') ";
-  if (isset($criteria['linked'] and ($criteria['linked'] === TRUE))) {
+  if (isset($criteria['linked']) and ($criteria['linked'] === TRUE)) {
     $query .= " and farm.hydroid is not null ";
   }
+  
   if (isset($criteria['frac'])) {
     $query .= " and chem.adminid in (" ;
     $query .= "   select featureid from dh_properties where   ";
@@ -66,7 +66,6 @@ function om_agman_material_query($criteria = array()) {
     $query .= "   and propcode = '" . $criteria['frac']['value'] . "' ";
     $query .= " ) ";
   }
-  */
   if (isset($criteria['chems'])) {
     $query .= " and chem.adminid in (" . implode(",", $criteria['chems']['value']) . " ) ";
   }
