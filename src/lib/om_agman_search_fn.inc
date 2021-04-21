@@ -139,7 +139,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     $count++;
     if ($count == 1 ) {
       dpm($chem_record,'chem');
-    }n
+    }
     if ($chem_record->hydroid > 0) {
       $selected[$chem_record->adminid] = 1;
     }
