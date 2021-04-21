@@ -68,6 +68,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#submit' => array('om_agman_material_search_save')
   );
   $criteria['farm_id'] = array('value' => $farm_id);
+  
   if (!empty($form_state['input']['frac'])) {
     $criteria['frac'] = array('value' => $form_state['input']['frac']);
   }
@@ -93,7 +94,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#type' => 'hidden',
     '#default_value' => $farm_id,
   );
-  $form['chems'] = om_agman_material_search_opts($farm_id, 'select', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the header
+  //$form['chems'] = om_agman_material_search_opts('select', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the header
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
   

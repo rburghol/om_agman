@@ -72,6 +72,7 @@ function om_agman_material_query($criteria = array()) {
   return $query;
 }
 
+/*
 function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $page_size = 25, $page = 1) {
   // $mode = 
   //   select - to be used as a selector, so show all options 
@@ -218,8 +219,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       );
     break;
   }
-/*  
-*/
+  
 //dpm($count,'count');
   $element['#empty'] = t('No content available.');
   $element['#required'] = TRUE;
@@ -237,5 +237,6 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   );
   return $element;
 }
+*/
 
 ?>
