@@ -4,7 +4,7 @@
 function om_agman_material_query($criteria = array()) {
   
   $farm_id = isset($criteria['farm_id']) ? $criteria['farm_id']['value'] : -1;
-  dpm($criteria,'criteria');
+  //dpm($criteria,'criteria');
   $query = "select farm.hydroid, chem.adminid, chem.name, 
     br.propvalue as br, 
     dm.propvalue as dm,
@@ -78,6 +78,7 @@ function om_agman_material_query($criteria = array()) {
 
 function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $page_size = 25, $page = 1) {
   // $mode = 
+  //   current - shows a farms current chems 
   //   select - to be used as a selector, so show all options 
   //   confirm - just use the values that are passed in view criteria['chems']
   //   search - same as select, except do not include check boxes. Use -1 as $farm_id 
@@ -88,6 +89,12 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     // tbd: enable sql side filtering if performance gains cab be had? 
     case 'confirm':
       $sql_criteria = $criteria;
+    break;
+    
+    case 'current':
+      $sql_criteria = array();
+      $sql_criteria['farm_id'] = $criteria['farm_id'];
+      $sql_criteria['linked'] = TRUE;
     break;
     
     default:
@@ -111,7 +118,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     $eff_abbrevs = $eff->effAbbrev();
     $eff_full = $eff->effFull();
   } else {
-    $ea = array(
+    $eff_abbrevs = array(
       '' => 'U',
       1 => 'E',
       2 => 'G',
@@ -121,7 +128,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       6 => 'N',
       7 => 'Lab',
     );
-    $f = array(
+    $eff_full = array(
       '' => 'Unknown',
       1 => 'Excellent',
       2 => 'Good',
@@ -137,9 +144,6 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   while($chem_record = $agchem_result->fetchObject()) {
     $id = $chem_record->adminid;
     $count++;
-    if ($count == 1 ) {
-      dpm($chem_record,'chem');
-    }
     if ($chem_record->hydroid > 0) {
       $selected[$chem_record->adminid] = 1;
     }
