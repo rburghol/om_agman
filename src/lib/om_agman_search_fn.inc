@@ -10,7 +10,7 @@ function om_agman_material_query($criteria = array()) {
   $query .="  dm.propvalue as dm, ";
   $query .="  pm.propvalue as pm, ";
   $query .="  array_accum(frac.propcode) as frac_codes, ";
-  $query .="  array_accum(ai.propname) as ai, ";
+  $query .="  array_accum(ai.propname) as ai ";
   $query .="from dh_adminreg_feature as chem  ";
   $query .="left outer join field_data_field_link_agchem_material as clink 
   on (
