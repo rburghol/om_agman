@@ -5,10 +5,10 @@
 module_load_include('module', 'om_agman');
 module_load_include('inc', 'om_agman', 'src/lib/om_agman_search_fn');
 
-function om_agman_material_search_form($form, &$form_state, $farm_id) {
+function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginFRAC');
   $class = ctools_plugin_get_class($plugin, 'handler');
-  //dpm($plugin,'plug');
+  dpm($plugin,'plug');
   $config = array();
   if ($class) {
     $src = new $class($config);
@@ -49,14 +49,14 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#value' => t('Search'),
     '#weight' => 1,
     '#limit_validation_errors' => array(),
-    '#submit' => array('om_agman_material_search_search')
+    '#submit' => array('om_agman_material_explore_search')
   );
   $form['actions']['reset'] = array(
     '#type' => 'submit',
     '#value' => t('Reset Form'),
     '#weight' => 3,
     '#limit_validation_errors' => array(),
-    '#submit' => array('om_agman_material_search_cancel')
+    '#submit' => array('om_agman_material_explore_cancel')
   );
   $criteria['farm_id'] = array('value' => -1);
   
@@ -72,7 +72,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   // 
   $new_chems = array();
   
-  $form['chems'] = om_agman_material_search_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the header
+  $form['chems'] = om_agman_material_explore_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the header
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
   
@@ -80,7 +80,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
 }
 
 
-function om_agman_material_search_search($form, &$form_state) {
+function om_agman_material_explore_search($form, &$form_state) {
   //dpm($form_state,'form state on search');
   //dpm($_POST,'post args');
   $a = arg();
@@ -96,7 +96,7 @@ function om_agman_material_search_search($form, &$form_state) {
 }
 
 
-function om_agman_material_search_next($form, &$form_state) {
+function om_agman_material_explore_next($form, &$form_state) {
 dpm($form_state,'form state on next');
 //dpm($form_state,'form state on search');
 //dpm($_POST,'post args');
@@ -105,7 +105,7 @@ dpm($form_state,'form state on next');
   return TRUE;
 }
 
-function om_agman_material_search_prev($form, &$form_state) {
+function om_agman_material_explore_prev($form, &$form_state) {
 //dpm($form_state,'form state on search');
 dpm($form_state,'form state on prev');
 //dpm($_POST,'post args');
@@ -114,13 +114,8 @@ dpm($form_state,'form state on prev');
 }
 
 
-function om_agman_material_search_cancel($form, &$form_state) {
-  $parms = drupal_get_query_parameters();
-  if (isset($parms['finaldest'])) {
-    $url = $parms['finaldest'];
-  } else {
-    $url = implode('/', array('ipm-material-search'));
-  }
+function om_agman_material_explore_cancel($form, &$form_state) {
+  $url = 'ipm-material-search';
   drupal_goto($url);
 }
 
@@ -131,9 +126,9 @@ $form_state = array();
 $form_state['build_info']['args'] = array($farm_id);
 form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
 //dpm($form_state,'post form_load_include');
-$elements = drupal_build_form('om_agman_material_search_form', $form_state);
+$elements = drupal_build_form('om_agman_material_explore_form', $form_state);
 
-//drupal_get_form('om_agman_material_search_form')
+//drupal_get_form('om_agman_material_explore_form')
 //dpm($elements, 'form');
 echo drupal_render($elements);
 
