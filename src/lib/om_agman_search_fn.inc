@@ -254,14 +254,12 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     
     default:
       $element = array(
-        '#prefix' => t('Records marked with ** are already linked to your farm.'),
         '#type' => 'tableselect',
         '#options' => $opts,
         '#default_value' => $selected,
         '#required' => TRUE,
         '#multiple' => TRUE,
         '#size' => 25,
-        '#suffix' => t('Records marked with ** are already linked to your farm.'),
       );
     break;
   }

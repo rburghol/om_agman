@@ -95,6 +95,8 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#default_value' => $farm_id,
   );
   $form['chems'] = om_agman_material_search_opts('select', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the header
+  $form['chems']['#prefix'] = t('Records marked with ** are already linked to your farm.');
+  $form['chems']['#suffix'] = t('Records marked with ** are already linked to your farm.');
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
   
