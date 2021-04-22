@@ -123,9 +123,7 @@ function om_agman_material_explore_cancel($form, &$form_state) {
 $a = arg();
 $farm_id = -1;
 $form_state = array();
-echo "Search PAge";
 
-/*
 $form_state['build_info']['args'] = array($farm_id);
 form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
 //dpm($form_state,'post form_load_include');
@@ -134,5 +132,5 @@ $elements = drupal_build_form('om_agman_material_explore_form', $form_state);
 //drupal_get_form('om_agman_material_explore_form')
 //dpm($elements, 'form');
 echo drupal_render($elements);
-*/
+
 ?>
