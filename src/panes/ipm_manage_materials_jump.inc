@@ -31,5 +31,5 @@ $targets[$urls['search']] = '**Search for New Materials (new)';
 $targets[$urls['inventory']] = 'Update Inventory';
 $targets[$urls['purchasing']] = 'Estimate Purchasing';
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
-echo "Go To:" . drupal_render($output);
+echo "<b>Go To:</b>" . drupal_render($output);
 ?>
