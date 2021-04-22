@@ -71,8 +71,8 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   }
   // 
   $new_chems = array();
-  dpm($criteria,' cret');
-  $form['chems'] = om_agman_material_search_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the header
+  $form['chems'] = om_agman_material_search_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the 
+  dpm($form['chems'],' chems table');
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
   
