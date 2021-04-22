@@ -26,7 +26,7 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
     '#required' => FALSE,
     '#size' => 30,
   );  
-
+/*
   $form['ai'] = array(
     '#title' => t('Active Ingredient'),
     '#type' => 'textfield',
@@ -75,7 +75,7 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   $form['chems'] = om_agman_material_explore_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the header
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
-  
+*/
   return $form;
 }
 
