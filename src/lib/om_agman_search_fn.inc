@@ -196,6 +196,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     //      form values if their checkbox would be selected.  This could be done on rebuild
     //      without negatively impacting the form integrity.
     // don't filter on query, use hiding instead
+    // NOTE: When in normal table mode (not tableselect) this hiding does not appear to work.  Instead we filter in SQL
     // ****************************
     // FILTER DISPLAY
     // ****************************

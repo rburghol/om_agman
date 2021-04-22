@@ -8,7 +8,7 @@ module_load_include('inc', 'om_agman', 'src/lib/om_agman_search_fn');
 function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginFRAC');
   $class = ctools_plugin_get_class($plugin, 'handler');
-  dpm($plugin,'plug');
+  //dpm($plugin,'plug');
   $config = array();
   if ($class) {
     $src = new $class($config);
@@ -72,7 +72,7 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   // 
   $new_chems = array();
   $form['chems'] = om_agman_material_search_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the 
-  dpm($form['chems'],' chems table');
+  //dpm($form['chems'],' chems table');
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
   

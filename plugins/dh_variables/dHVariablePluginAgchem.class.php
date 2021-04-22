@@ -8,7 +8,7 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
   
   public function effAbbrev() {
     return array(
-      '' => 'U',
+      '' => '--',
       1 => 'E',
       2 => 'G',
       3 => 'G_F',
