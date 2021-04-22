@@ -64,7 +64,7 @@ function om_agman_material_review_save($form, &$form_state) {
   $new_chems = array_diff($sel_chems, $farm_chems);
   dpm($new_chems, 'new_chems');
   foreach ($new_chems as $chem_id) {
-    $farm->field_link_agchem_material['und'][$chem_id] = array('target_id' => $chem_id);
+    $farm->field_link_agchem_material['und'][] = array('target_id' => $chem_id);
   }
   $farm->save();
   // got to the review and save page 

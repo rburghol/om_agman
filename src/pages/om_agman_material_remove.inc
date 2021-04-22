@@ -50,11 +50,13 @@ function om_agman_material_remove_save($form, &$form_state) {
   $sel_chems = array_values(array_filter($form_state['values']['chems']));
   $farm = entity_load_single('dh_feature', $form_state['values']['farm_id']);
   dpm($sel_chems, 'sel_chems to remove');
-  foreach ($sel_chems as $chem_id) {
-    if (isset($farm->field_link_agchem_material['und'][$chem_id])) {
-      unset($farm->field_link_agchem_material['und'][$chem_id]);
+  
+  foreach ($farm->field_link_agchem_material['und'] as $key => $ref) {
+    if (in_array($farm->field_link_agchem_material['und'][$key]['target_id'], $sel_chems)) {
+      unset($farm->field_link_agchem_material['und'][$key]);
     }
   }
+  dpm($farm,'farm');
   $farm->save();
   // got to the review and save page 
   if (isset($parms['finaldest'])) {
@@ -76,13 +78,13 @@ function om_agman_material_remove_cancel($form, &$form_state) {
   drupal_goto($url);
 }
 
-$remove_chems = array();
 $parms = drupal_get_query_parameters();
-$chems = $parms['chems'];
+$remove_chems = $parms['chems'];
+$remove_chems = is_array($remove_chems) ? $remove_chems : array($remove_chems);
 //dsm("from the top");
 $farm_id = 146;
 $form_state = array();
-$form_state['build_info']['args'] = array($farm_id, $chems);
+$form_state['build_info']['args'] = array($farm_id, $remove_chems);
 form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
 //dpm($form_state,'post form_load_include');
 $elements = drupal_build_form('om_agman_material_remove_form', $form_state);
