@@ -149,6 +149,10 @@ function om_agman_material_search_save($form, &$form_state) {
   //dpm($farm_chems,'farm chems');
   $new_chems = array_diff($sel_chems, $farm_chems);
   //dpm($new_chems, 'new_chems');
+  if (count($new_chems) == 0) {
+    drupal_set_message("You must select at least one new material.");
+    return TRUE;
+  }
   // got to the review and save page 
   $a = arg();
   $path = implode("/", array('ipm-facility-materials', $a[1], 'add'));
