@@ -17,6 +17,7 @@ if (count($a) <= 1) {
 $urls = array(
   'list' => url(implode('/', array($a[0], $a[1]))),
   'materials' => url(implode('/', array($a[0], $a[1], 'select'))),
+  'materials' => url(implode('/', array($a[0], $a[1], 'search'))),
   'inventory' => url(implode('/', array($a[0], $a[1], 'inventory'))),
   'purchasing' => url(implode('/', array($a[0], $a[1], 'purchasing'))),
 );
@@ -26,6 +27,7 @@ $options = array(
 );
 $targets[$urls['list']] = 'List Materials';
 $targets[$urls['materials']] = 'Manage Materials';
+$targets[$urls['search']] = '**Search for New Materials (new)';
 $targets[$urls['inventory']] = 'Update Inventory';
 $targets[$urls['purchasing']] = 'Estimate Purchasing';
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
