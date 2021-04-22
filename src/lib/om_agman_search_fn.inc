@@ -148,7 +148,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       $selected[$chem_record->adminid] = 1;
     }
     $chem_record->frac_codes = implode(', ', array_unique(explode(',', trim($chem_record->frac_codes,'{}'))));
-    $chem_record->ai = implode(', ', array_unique(explode(',', trim(trim(strtolower($chem_record->ai),'{}'), '"'))));
+    $chem_record->ai = implode(', ', array_unique(explode(',', str_replace('"', "", trim(strtolower($chem_record->ai),'{}')))));
     //dpm($chem_record);
     $valkeys = array(
       'REI'=>'agchem_rei', 
