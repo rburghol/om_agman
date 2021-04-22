@@ -173,7 +173,8 @@ function om_agman_material_search_cancel($form, &$form_state) {
 }
 
 //dsm("from the top");
-$farm_id = 146;
+$a = arg();
+$farm_id = $a[1];
 $form_state = array();
 $form_state['build_info']['args'] = array($farm_id);
 form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
