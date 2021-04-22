@@ -5,14 +5,14 @@ function om_agman_material_query($criteria = array()) {
   
   $farm_id = isset($criteria['farm_id']) ? $criteria['farm_id']['value'] : -1;
   //dpm($criteria,'criteria');
-  $query = "select farm.hydroid, chem.adminid, chem.name, 
-    br.propvalue as br, 
-    dm.propvalue as dm,
-    pm.propvalue as pm,
-    array_accum(frac.propcode) as frac_codes,
-    array_accum(ai.propname) as ai
-  from dh_adminreg_feature as chem 
-  left outer join field_data_field_link_agchem_material as clink 
+  $query = "select farm.hydroid, chem.adminid, chem.name, ";
+  $query .="  br.propvalue as br,  ";
+  $query .="  dm.propvalue as dm, ";
+  $query .="  pm.propvalue as pm, ";
+  $query .="  array_accum(frac.propcode) as frac_codes, ";
+  $query .="  array_accum(ai.propname) as ai, ";
+  $query .="from dh_adminreg_feature as chem  ";
+  $query .="left outer join field_data_field_link_agchem_material as clink 
   on (
     clink.field_link_agchem_material_target_id = chem.adminid
     and clink.entity_id = $farm_id
@@ -41,15 +41,15 @@ function om_agman_material_query($criteria = array()) {
     and pm.varid in (select hydroid from dh_variabledefinition where varkey = 'org_powdery_mildew')
   )";
   
-  if (isset($criteria['eff_org'])) {
+  if (isset($criteria['target_org'])) {
     // track target organism and efficacy
-    $eff_org = $criteria['eff_org']['value'];
+    $target_org = $criteria['target_org']['value'];
     $query .= " 
-      left outer join dh_properties as eff_chem 
+      left outer join dh_properties as target_org 
       on (
-        eff_chem.featureid = chem.adminid
-        and eff_chem.entity_type = 'dh_adminreg_feature'
-        and eff_chem.varid in (select hydroid from dh_variabledefinition where varkey = '$eff_org')
+        target_org.featureid = chem.adminid
+        and target_org.entity_type = 'dh_adminreg_feature'
+        and target_org.varid in (select hydroid from dh_variabledefinition where varkey = '$target_org')
       )";
   }
   
