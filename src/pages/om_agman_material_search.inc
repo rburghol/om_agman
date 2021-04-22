@@ -150,7 +150,7 @@ function om_agman_material_search_save($form, &$form_state) {
   $new_chems = array_diff($sel_chems, $farm_chems);
   //dpm($new_chems, 'new_chems');
   if (count($new_chems) == 0) {
-    drupal_set_message("You must select at least one new material.");
+    drupal_set_message("You must select at least one new material.", 'warning');
     return TRUE;
   }
   // got to the review and save page 
