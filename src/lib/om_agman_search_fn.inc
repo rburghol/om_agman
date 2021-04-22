@@ -199,12 +199,21 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       }
     }
     // If this is the search mode, we are looking for chems that do NOT have a link,
-    // So we hide those that are already part of this farm 
     if ($mode == 'select') {
+      if ($chem_record->hydroid > 0) {
+        $opts[$id]['label'] = "**" . $opts[$id]['label'];
+      }
+      
+      // Now disabled 
+      // We tried to hide those that are already part of this farm 
+      // disabled. This caused confusion where there was a similar chem name and it created the impression that the user was missing a chem
+      // so we are showing these again.  It might be better to warn the users at the top of the page, or other that 
       // if it is NOT linked, it will not have a hydroid, so we know any that DO have a hydroid are to be hidden
+      /*
       if ($chem_record->hydroid > 0) {
         $opts[$id]['#attributes'] = array('style' => 'display: none');
       }
+      */
     }
     // ****************************
     // END - FILTER DISPLAY
@@ -228,12 +237,14 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     
     default:
       $element = array(
+        '#prefix' => t('Records marked with ** are already linked to your farm.'),
         '#type' => 'tableselect',
         '#options' => $opts,
         '#default_value' => $selected,
         '#required' => TRUE,
         '#multiple' => TRUE,
         '#size' => 25,
+        '#suffix' => t('Records marked with ** are already linked to your farm.'),
       );
     break;
   }
