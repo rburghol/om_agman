@@ -198,6 +198,14 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
         $opts[$id]['#attributes'] = array('style' => 'display: none');
       }
     }
+    // If this is the search mode, we are looking for chems that do NOT have a link,
+    // So we hide those that are already part of this farm 
+    if ($mode == 'search') {
+      // if it is NOT linked, it will not have a hydroid, so we know any that DO have a hydroid are to be hidden
+      if ($chem_record->hydroid > 0) {
+        $opts[$id]['#attributes'] = array('style' => 'display: none');
+      }
+    }
     // ****************************
     // END - FILTER DISPLAY
     // ****************************
