@@ -91,6 +91,10 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       $sql_criteria = $criteria;
     break;
     
+    case 'search':
+      $sql_criteria = $criteria;
+    break;
+    
     case 'current':
       $sql_criteria = array();
       $sql_criteria['farm_id'] = $criteria['farm_id'];
