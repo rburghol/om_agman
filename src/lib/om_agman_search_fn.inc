@@ -58,6 +58,19 @@ function om_agman_material_query($criteria = array()) {
     $query .= " and farm.hydroid is not null ";
   }
   
+  if (isset($criteria['name'])) {
+    $query .= " and chem.name ilike '%" . $criteria['name']['value'] . "%'"; ;
+  }
+  
+  if (isset($criteria['ai'])) {
+    $query .= " and chem.adminid in (" ;
+    $query .= "   select featureid from dh_properties where   ";
+    $query .= "   entity_type = 'dh_adminreg_feature' ";
+    $query .= "   and varid in (select hydroid from dh_variabledefinition where varkey = 'agchem_ai') ";
+    $query .= "   and propcode ilike '%" . $criteria['ai']['value'] . "%' ";
+    $query .= " ) ";
+  }
+  
   if (isset($criteria['frac'])) {
     $query .= " and chem.adminid in (" ;
     $query .= "   select featureid from dh_properties where   ";
