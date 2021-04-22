@@ -90,14 +90,14 @@ function om_agman_material_review_cancel($form, &$form_state) {
 $new_chems = array();
 $parms = drupal_get_query_parameters();
 $chems = $parms['chems'];
-if (empty($chems)) {
-  drupal_set_message("No new material selected.");
-  $url = implode('/', array("ipm-facility-materials", $a[1], 'search'));
-  drupal_goto($url);
-}
 //dsm("from the top");
 $a = arg();
 $farm_id = $a[1];
+if (empty($chems)) {
+  drupal_set_message("No new material selected.");
+  $url = implode('/', array("ipm-facility-materials", $farm_id, 'search'));
+  drupal_goto($url);
+}
 $form_state = array();
 $form_state['build_info']['args'] = array($farm_id, $chems);
 form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
