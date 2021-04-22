@@ -39,8 +39,21 @@ function om_agman_material_query($criteria = array()) {
     pm.featureid = chem.adminid
     and pm.entity_type = 'dh_adminreg_feature'
     and pm.varid in (select hydroid from dh_variabledefinition where varkey = 'org_powdery_mildew')
-  )
-  left outer join dh_properties as frac
+  )";
+  
+  if (isset($criteria['eff_org'])) {
+    // track target organism and efficacy
+    $eff_org = $criteria['eff_org']['value'];
+    $query .= " 
+      left outer join dh_properties as eff_chem 
+      on (
+        eff_chem.featureid = chem.adminid
+        and eff_chem.entity_type = 'dh_adminreg_feature'
+        and eff_chem.varid in (select hydroid from dh_variabledefinition where varkey = '$eff_org')
+      )";
+  }
+  
+  $query .= " left outer join dh_properties as frac
   on (
     frac.featureid = chem.adminid
     and frac.entity_type = 'dh_adminreg_feature'
