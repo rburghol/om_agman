@@ -151,7 +151,7 @@ function om_agman_material_search_save($form, &$form_state) {
   dpm($new_chems, 'new_chems');
   // got to the review and save page 
   $a = arg();
-  $path = implode("/", array('ipm-facility-materials', $a[1], 'add');
+  $path = implode("/", array('ipm-facility-materials', $a[1], 'add'));
   $params = array();
   foreach ( $new_chems as $chem_id) {
     $params['chems'][] = $chem_id;
