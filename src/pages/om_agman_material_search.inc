@@ -28,6 +28,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#description' => t('Search for material with name containing the entered text.'),
     '#required' => FALSE,
     '#size' => 30,
+    '#empty_option' => '- All FRACs - ',
   );  
 
   $form['ai'] = array(

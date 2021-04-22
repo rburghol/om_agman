@@ -112,7 +112,6 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   //$query = om_agman_material_query($farm_id, $show_all, $criteria); // see https://github.com/rburghol/om_agman/issues/240
   // filter on the display side 
   switch($mode) {
-    // tbd: enable sql side filtering if performance gains cab be had? 
     case 'confirm':
       $sql_criteria = $criteria;
     break;
