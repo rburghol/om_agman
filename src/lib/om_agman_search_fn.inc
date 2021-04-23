@@ -91,6 +91,9 @@ function om_agman_material_query($criteria = array()) {
   if (isset($criteria['linked']) and ($criteria['linked'] === TRUE)) {
     $query .= " and farm.hydroid is not null ";
   }
+  if (isset($criteria['phi'])) {
+    $query .= " and phi.propvalue <= " . intval($criteria['phi']['value']);
+  }
   if (isset($criteria['ftype'])) {
     $query .= " and chem.ftype = '" . $criteria['ftype']['value'] . "'";
   }
