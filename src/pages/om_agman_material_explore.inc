@@ -115,6 +115,8 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   //dpm($form['chems'],' chems table');
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
+  $form['chems']['#prefix'] .= t('The superscript <sup>PMG</sup> indicates that this material is reviewed in the Pest Management Guide.');
+  $form['chems']['#suffix'] .= t('The superscript <sup>PMG</sup> indicates that this material is reviewed in the Pest Management Guide.');
   
   return $form;
 }
