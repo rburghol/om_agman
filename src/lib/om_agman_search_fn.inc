@@ -255,6 +255,11 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
         $opts[$id]['#attributes'] = array('style' => 'display: none');
       }
     }
+    if (isset($criteria['ftype'])) {
+      if (strpos(strtolower($chem_record->ftype), strtolower($criteria['ftype']['value'])) === FALSE) {
+        $opts[$id]['#attributes'] = array('style' => 'display: none');
+      }
+    }
     if (isset($criteria['phi'])) {
       if (intval($chem_record->phi) > intval($criteria['phi']['value'])) {
         $opts[$id]['#attributes'] = array('style' => 'display: none');

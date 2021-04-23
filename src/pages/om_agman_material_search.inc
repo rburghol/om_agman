@@ -19,6 +19,20 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     $src->formRowEdit($arr, $empty_object);
     $frac_opts = $arr['propcode'];
   }
+  $ftype_options = array('fungicide', 'herbicide', 'insecticide', 'fertilizer', 'other');
+  $ftype_options = array_combine($ftype_options, $ftype_options);
+  //dpm($phi_options,'phi');
+  $form['ftype'] = array(
+    '#title' => t('Material Type'),
+    '#type' => 'select',
+    '#default_value' => array(),
+    '#options' => $ftype_options,
+    '#description' => t('Search for material type (fungicide, herbicide, etc.'),
+    '#required' => FALSE,
+    '#multiple' => FALSE,
+    '#empty_option' => '- Any -',
+    '#size' => 1,
+  );  
   $form['frac'] = $frac_opts;
   $form['frac']['#title'] = 'Filter by FRAC';
   $form['frac']['#empty_option'] = '- All FRACs - ';
@@ -99,6 +113,9 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   }
   if (!empty($form_state['input']['phi'])) {
     $criteria['phi'] = array('value' => $form_state['input']['phi']);
+  }
+  if (!empty($form_state['input']['ftype'])) {
+    $criteria['ftype'] = array('value' => $form_state['input']['ftype']);
   }
   // 
   // 
