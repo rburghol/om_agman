@@ -246,6 +246,10 @@ class dHVariablePluginFRAC extends dHVariablePluginDefault {
     $entity->propname = 'frac:' . $entity->propcode;
     return parent::update($entity);
   }
+  public function save(&$entity) {
+    $entity->propname = 'frac:' . $entity->propcode;
+    return parent::save($entity);
+  }
   
 }
 
