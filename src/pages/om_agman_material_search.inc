@@ -43,6 +43,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   
   $phi_options = array_merge(range(0,14), range(21,63,7));
   $phi_options = array_combine($phi_options, $phi_options);
+  dpm($phi_options,'phi');
   $form['phi'] = array(
     '#title' => t('Pre-Harvest Interval (PHI)'),
     '#select' => 'select',
