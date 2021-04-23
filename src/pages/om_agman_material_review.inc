@@ -54,7 +54,7 @@ function om_agman_material_review_save($form, &$form_state) {
   // make this a simple work flow where we confirm that the user wants to do this with an entirely different page.  
   // this will simplify handling. Also, it will allow us to warn the user if they are *removing* a chem from their
   // inventory that has planned applications.
-  //dpm($form_state,'form state on save');
+  dpm($form_state,'form state on save');
   // grab chems, and send to a next form for confirmation that we wish to add them 
   $parms = drupal_get_query_parameters();
   $sel_chems = array_values(array_filter($form_state['values']['chems']));
