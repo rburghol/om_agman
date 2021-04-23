@@ -36,6 +36,25 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
     '#size' => 30,
   );  
   // retrieve an efficacy rating property to use plugin to format the search drop-down
+  
+  $phi_options = array_merge(range(0,14), range(21,63,7));
+  $phi_options = array_combine($phi_options, $phi_options);
+  array_walk($phi_options, function(&$value, $index){
+    $value .= ' days';
+  });
+  //dpm($phi_options,'phi');
+  $form['phi'] = array(
+    '#title' => t('Pre-Harvest Interval (PHI)'),
+    '#type' => 'select',
+    '#default_value' => array(),
+    '#options' => $phi_options,
+    '#description' => t('Search for material with pre=hearvest interval less than the select value.'),
+    '#required' => FALSE,
+    '#multiple' => FALSE,
+    '#suffix' => 'days',
+    '#empty_option' => '- No Limit -',
+    '#size' => 1,
+  );  
 
   $form['actions'] = array('#type' => 'actions');
   
