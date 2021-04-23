@@ -9,37 +9,58 @@ function om_agman_material_query($criteria = array()) {
   $query .="  br.propvalue as br,  ";
   $query .="  dm.propvalue as dm, ";
   $query .="  pm.propvalue as pm, ";
+  $query .="  bot.propvalue as bot, ";
+  $query .="  rei.propvalue as rei, ";
+  $query .="  phi.propvalue as phi, ";
   $query .="  array_accum(frac.propcode) as frac_codes, ";
   $query .="  array_accum(ai.propname) as ai ";
   $query .="from dh_adminreg_feature as chem  ";
-  $query .="left outer join field_data_field_link_agchem_material as clink 
-  on (
-    clink.field_link_agchem_material_target_id = chem.adminid
-    and clink.entity_id = $farm_id
-  )
-  left outer join dh_feature as farm 
-  on (
-    farm.hydroid = clink.entity_id
-    and clink.entity_type = 'dh_feature' 
-  ) 
-  left outer join dh_properties as br 
-  on (
-    br.featureid = chem.adminid
-    and br.entity_type = 'dh_adminreg_feature'
-    and br.varid in (select hydroid from dh_variabledefinition where varkey = 'org_black_rot')
-  )
-  left outer join dh_properties as dm 
-  on (
-    dm.featureid = chem.adminid
-    and dm.entity_type = 'dh_adminreg_feature'
-    and dm.varid in (select hydroid from dh_variabledefinition where varkey = 'org_downy_mildew')
-  )
-  left outer join dh_properties as pm 
-  on (
-    pm.featureid = chem.adminid
-    and pm.entity_type = 'dh_adminreg_feature'
-    and pm.varid in (select hydroid from dh_variabledefinition where varkey = 'org_powdery_mildew')
-  )";
+  $query .="left outer join field_data_field_link_agchem_material as clink ";
+  $query .="  on (";
+  $query .="    clink.field_link_agchem_material_target_id = chem.adminid";
+  $query .="    and clink.entity_id = $farm_id";
+  $query .="  )";
+  $query .="  left outer join dh_feature as farm ";
+  $query .="  on (";
+  $query .="    farm.hydroid = clink.entity_id";
+  $query .="    and clink.entity_type = 'dh_feature' ";
+  $query .="  ) ";
+  $query .="  left outer join dh_properties as br ";
+  $query .="  on (";
+  $query .="    br.featureid = chem.adminid";
+  $query .="    and br.entity_type = 'dh_adminreg_feature'";
+  $query .="    and br.varid in (select hydroid from dh_variabledefinition where varkey = 'org_black_rot')";
+  $query .="  )";
+  $query .="  left outer join dh_properties as dm ";
+  $query .="  on (";
+  $query .="    dm.featureid = chem.adminid";
+  $query .="    and dm.entity_type = 'dh_adminreg_feature'";
+  $query .="    and dm.varid in (select hydroid from dh_variabledefinition where varkey = 'org_downy_mildew')";
+  $query .="  )";
+  $query .="  left outer join dh_properties as pm ";
+  $query .="  on (";
+  $query .="    pm.featureid = chem.adminid";
+  $query .="    and pm.entity_type = 'dh_adminreg_feature'";
+  $query .="    and pm.varid in (select hydroid from dh_variabledefinition where varkey = 'org_powdery_mildew')";
+  $query .="  )";
+  $query .="  left outer join dh_properties as bot ";
+  $query .="  on (";
+  $query .="    bot.featureid = chem.adminid";
+  $query .="    and bot.entity_type = 'dh_adminreg_feature'";
+  $query .="    and bot.varid in (select hydroid from dh_variabledefinition where varkey = 'org_botrytis')";
+  $query .="  )";
+  $query .="  left outer join dh_properties as rei ";
+  $query .="  on (";
+  $query .="    rei.featureid = chem.adminid";
+  $query .="    and rei.entity_type = 'dh_adminreg_feature'";
+  $query .="    and rei.varid in (select hydroid from dh_variabledefinition where varkey = 'agchem_rei')";
+  $query .="  )";
+  $query .="  left outer join dh_properties as phi ";
+  $query .="  on (";
+  $query .="    phi.featureid = chem.adminid";
+  $query .="    and phi.entity_type = 'dh_adminreg_feature'";
+  $query .="    and phi.varid in (select hydroid from dh_variabledefinition where varkey = 'agchem_phi')";
+  $query .="  )";
   
   if (isset($criteria['target_org'])) {
     // track target organism and efficacy
@@ -69,6 +90,9 @@ function om_agman_material_query($criteria = array()) {
   chem.ftype in ('insecticide', 'fungicide', 'herbicide', 'fertilizer', 'pesticide', 'other') ";
   if (isset($criteria['linked']) and ($criteria['linked'] === TRUE)) {
     $query .= " and farm.hydroid is not null ";
+  }
+  if (isset($criteria['ftype'])) {
+    $query .= " and chem.ftype = '" . $criteria['ftype']['value'] . "'";
   }
   
   if (isset($criteria['name'])) {
