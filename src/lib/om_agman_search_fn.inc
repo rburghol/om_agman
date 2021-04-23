@@ -119,7 +119,7 @@ function om_agman_material_query($criteria = array()) {
   if (isset($criteria['chems'])) {
     $query .= " and chem.adminid in (" . implode(",", $criteria['chems']['value']) . " ) ";
   }
-  $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, pm.propvalue";
+  $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
   $query .= " order by chem.name, br.propvalue, dm.propvalue, pm.propvalue ";
   //dpm($query,'q');
   return $query;
