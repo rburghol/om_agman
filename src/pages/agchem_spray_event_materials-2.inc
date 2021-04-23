@@ -141,17 +141,16 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
     '#description' => t('A unique machine-readable name for this model type. It must only contain lowercase letters, numbers, and underscores.'),
   );
 
-  //field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form, $form_state);
+  field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form, $form_state);
   // now, adjust the block ids form to show only those for this vineyard.
   $dh_adminreg_feature->farmid = property_exists($dh_adminreg_feature, 'farmid') ? $dh_adminreg_feature->farmid : FALSE;
-  dpm($dh_adminreg_feature,'feature');
+  dpm($form['dh_link_feature_submittal'],'field attach form version');
   $event_blocks = $dh_adminreg_feature->dh_link_feature_submittal['und'];
   $event_blocks = array_column($event_blocks, 'target_id');
   $event_blocks = array_combine($event_blocks, $event_blocks);
   $block_select = om_agman_form_block_select2($dh_adminreg_feature->farmid, $event_blocks);
-  $form['dh_link_feature_submittal'] = $block_select;
  dpm($block_select, 'selector');
-  dpm($form,'form');
+  $form['dh_link_feature_submittal'] = $block_select;
 /*
   // Add the chemical selector / material options for this farm
   $fname = 'field_link_to_registered_agchem';
@@ -230,6 +229,7 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   // load the object
+  dpm($form_state['values'],'fs vals');
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
   // replace this with faster plumbing?
   /*
