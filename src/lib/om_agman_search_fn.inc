@@ -12,6 +12,7 @@ function om_agman_material_query($criteria = array()) {
   $query .="  bot.propvalue as bot, ";
   $query .="  rei.propvalue as rei, ";
   $query .="  phi.propvalue as phi, ";
+  $query .="  max(pmg.propcode) as pmg, ";
   $query .="  array_accum(frac.propcode) as frac_codes, ";
   $query .="  array_accum(ai.propname) as ai ";
   $query .="from dh_adminreg_feature as chem  ";
