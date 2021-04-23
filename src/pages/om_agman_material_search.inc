@@ -53,7 +53,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#required' => FALSE,
     '#suffix' => 'days',
     '#empty_option' => '- No Limit -',
-    '#size' => 30,
+    '#size' => 1,
   );  
 
   $form['actions'] = array('#type' => 'actions');
@@ -115,7 +115,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   $form['chems']['#suffix'] = t('Records marked with ** are already linked to your farm.');
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
-  
+  dpm($form,'form');
   return $form;
 }
 
