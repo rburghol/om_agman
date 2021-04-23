@@ -220,8 +220,9 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
 
     // BEGIN - tableselect
     $opts[$id] = array(
-      'label' => $chem_record->name . ' ' . $chem_record->ftype, 
+      'label' => $chem_record->name, 
     );
+    $opts[$id]['ftype'] = $chem_record->ftype;
     $opts[$id]['AI'] = $chem_record->ai;
     $opts[$id]['REI'] = $chem_record->rei;
     $opts[$id]['PHI'] = $chem_record->phi;
@@ -319,6 +320,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   $element['#required'] = TRUE;
   $element['#header'] = array(
     'label' => 'Material', 
+    'ftype'=>'Type', 
     'AI'=>'Active Ingredient(s)', 
     'REI'=>'REI', 
     'PHI' => 'PHI', 
