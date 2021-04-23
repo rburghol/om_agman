@@ -228,14 +228,8 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       'Bot' => 'bot'
     );
 
-    // BEGIN - tableselect
-    $opts[$id] = array(
-      'label' => $chem_record->name, 
-    );
-    if ($count == 1) {
-      dpm($chem_record,'chem');
-    }      
-    $opts[$id]['label'] .= ($chem_record->pmg == 'PMG') ? $opts[$id]['label'] . "<sup>PMG</sup>" : $opts[$id]['label'];
+    // BEGIN - tableselect  
+    $opts[$id]['label'] .= ($chem_record->pmg == 'PMG') ? $chem_record->name . "<sup>PMG</sup>" : $chem_record->name;
     $opts[$id]['ftype'] = $chem_record->ftype;
     $opts[$id]['AI'] = $chem_record->ai;
     $opts[$id]['REI'] = $chem_record->rei;
