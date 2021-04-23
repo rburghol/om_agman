@@ -88,6 +88,9 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   if (!empty($form_state['input']['name'])) {
     $criteria['name'] = array('value' => $form_state['input']['name']);
   }
+  if (!empty($form_state['input']['phi'])) {
+    $criteria['phi'] = array('value' => $form_state['input']['phi']);
+  }
   // 
   $new_chems = array();
   $form['chems'] = om_agman_material_search_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the 

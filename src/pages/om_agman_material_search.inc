@@ -98,6 +98,10 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   if (!empty($form_state['input']['name'])) {
     $criteria['name'] = array('value' => $form_state['input']['name']);
   }
+  if (!empty($form_state['input']['phi'])) {
+    $criteria['phi'] = array('value' => $form_state['input']['phi']);
+  }
+  // 
   // 
   $new_chems = array();
   if (isset($form_state['input']['chems'])) {
