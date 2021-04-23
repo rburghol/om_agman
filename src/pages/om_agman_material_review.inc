@@ -70,7 +70,7 @@ function om_agman_material_review_save($form, &$form_state) {
   $farm->save();
   // got to the review and save page 
   if (isset($parms['finaldest'])) {
-    $url = $parms['finaldest'];s
+    $url = $parms['finaldest'];
   } else {
     $url = implode('/', array('ipm-facility-materials'));
   }
