@@ -186,11 +186,11 @@ function om_agman_material_search_save($form, &$form_state) {
   //dpm($form_state,'form state on save');
   // grab chems, and send to a next form for confirmation that we wish to add them 
   $sel_chems = array_values(array_filter($form_state['values']['chems']));
-  //dpm($sel_chems,'selected chems');
+  dpm($sel_chems,'selected chems');
   $farm = entity_load_single('dh_feature', $form_state['values']['farm_id']);
   $farm_chems = $farm->field_link_agchem_material['und'];
   $farm_chems = array_column($farm_chems, 'target_id');
-  //dpm($farm_chems,'farm chems');
+  dpm($farm_chems,'farm chems');
   $new_chems = array_diff($sel_chems, $farm_chems);
   //dpm($new_chems, 'new_chems');
   if (count($new_chems) == 0) {
