@@ -107,6 +107,8 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   if (!empty($form_state['input']['ftype'])) {
     $criteria['ftype'] = array('value' => $form_state['input']['ftype']);
   }
+  // Only show PMG in this form.
+  $criteria['pmg'] = array('value' => 'PMG');
   // 
   $new_chems = array();
   $form['chems'] = om_agman_material_search_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the 

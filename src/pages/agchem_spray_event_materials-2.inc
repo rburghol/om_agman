@@ -7,7 +7,10 @@ module_load_include('module', 'om_agman');
 module_load_include('inc', 'om_agman', 'src/lib/om_agman_search_fn');
 
 
-function om_agman_form_block_select2($farmid, $values = array()) {
+function om_agman_form_block_select2($entity) {
+  // selected options are in event_blocks
+  $event_blocks = $entity->dh_link_feature_submittal['und'];
+  $event_blocks = array_column($event_blocks, 'target_id');
   $element = array(
     '#type' => 'container',
     '#attributes' => array(
@@ -23,35 +26,54 @@ function om_agman_form_block_select2($farmid, $values = array()) {
     'und' => array(),
     '#access' => TRUE
   );
-  //dpm($farmid,"farm id");
+  dpm($entity,'entity');
+  //dpm($entity->farmid,"farm id");
+  $element['und']['#entity'] = $entity;
+  $element['und']['#entity_type'] = $entity->entityType();
+  $element['und']['#bundle'] = $entity->bundle;
+  $element['und']['#field_name'] = 'dh_link_feature_submittal';
+  $element['und']['#language'] = 'und';
+  $element['und']['#multiple'] = TRUE;
+  $element['und']['#required'] = FALSE;
+  $element['und']['#delta'] = 0;
   $element['und']['#empty'] = t('None Selected.');
   $element['und']['#type'] = 'tableselect';
-  $element['und']['#field_name'] = 'dh_link_feature_submittal';
   $element['und']['#value_key'] = 'target_id';
   $element['und']['#columns'] = array('target_id');
-  $element['und']['#default_value'] = $defaults;
+  $element['und']['#after_build'] = array(
+    0 => 'field_form_element_after_build'
+  );
+  $element['und']['#element_validate'] = array(
+    0 => 'options_field_widget_validate'
+  );
   $element['und']['#header'] = array(
     'label' => 'Block', 
   );
+  // Now populate
+  $deftable = array();
+  //dpm($element,'block select element');
+  //dpm($def,'block select #default_value');
+  foreach ($event_blocks as $selopt ) {
+    $deftable[$selopt] = 1;
+  }
+  $element['und']['#default_value'] = $deftable;
   $opts = array();
-  // get vineyard blocks
-  if ($farmid) {
-    $blockids = dh_get_facility_mps($farmid, 'landunit');
-    if (count($blockids) > 0) {
-      $q = db_query("select hydroid, name from {dh_feature} where hydroid IN (:blocklist) order by name", array(':blocklist' => $blockids));
+  // get vineyard blocks for all options
+  $farm = entity_load_single('dh_feature', $entity->farmid);
+  $element['und']['#prefix'] = "<b>" . t('Blocks to Spray at ') . $farm->name . "</b>";
+  if ($entity->farmid) {
+    $all_blockids = dh_get_facility_mps($entity->farmid, 'landunit');
+    if (count($all_blockids) > 0) {
+      $q = db_query("select hydroid, name from {dh_feature} where hydroid IN (:blocklist) order by name", array(':blocklist' => $all_blockids));
       foreach ($q as $block) {
         $id = $block->hydroid;
         $opts[$id]['label'] .= $block->name;
       }
     }
   }
-  $farm = entity_load_single('dh_feature', $farmid);
-  $element['und']['#prefix'] = "<b>" . t('Blocks to Spray at ') . $farm->name . "</b>";
   // dpm($element,'el');
   // END - tableselect
   $element['und']['#options'] = $opts;
-  $element['und']['#value'] = $values;
-  $element['und']['#default_value'] = array_combine($blockids, $blockids);
   
   return $element;
 }
@@ -74,6 +96,10 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
       '#default_value' => $dh_adminreg_feature->adminid,
     );  
   }
+  // NOTICE: These must be in place if entity reference select fields are to be handled correctly, or, one has to call field_attach_form()
+  $form['#entity'] = $dh_adminreg_feature;
+  $form['#entity_type'] = $dh_adminreg_feature->entityType();
+  $form['#bundle'] = $dh_adminreg_feature->bundle;
 
   $form['name'] = array(
     '#title' => t('Plan Name'),
@@ -141,16 +167,16 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
     '#description' => t('A unique machine-readable name for this model type. It must only contain lowercase letters, numbers, and underscores.'),
   );
 
-  field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form, $form_state);
-  // now, adjust the block ids form to show only those for this vineyard.
-  $dh_adminreg_feature->farmid = property_exists($dh_adminreg_feature, 'farmid') ? $dh_adminreg_feature->farmid : FALSE;
-  dpm($form['dh_link_feature_submittal'],'field attach form version');
-  $event_blocks = $dh_adminreg_feature->dh_link_feature_submittal['und'];
-  $event_blocks = array_column($event_blocks, 'target_id');
-  $event_blocks = array_combine($event_blocks, $event_blocks);
-  $block_select = om_agman_form_block_select2($dh_adminreg_feature->farmid, $event_blocks);
+  $block_select = om_agman_form_block_select2($dh_adminreg_feature);
  dpm($block_select, 'selector');
   $form['dh_link_feature_submittal'] = $block_select;
+// dpm($form, 'form');
+  //$dh_adminreg_feature->farmid = property_exists($dh_adminreg_feature, 'farmid') ? $dh_adminreg_feature->farmid : FALSE;
+  //field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form, $form_state);
+  // now, adjust the block ids form to show only those for this vineyard.
+  //om_agman_form_block_select($form['dh_link_feature_submittal'], $dh_adminreg_feature->farmid);
+  //dpm($form['dh_link_feature_submittal'],'field attach form version');
+  //dpm($form, 'form after faf');
 /*
   // Add the chemical selector / material options for this farm
   $fname = 'field_link_to_registered_agchem';
@@ -163,6 +189,11 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   $form[$fname] = $search_chems; // pass in new_chems to this widget to highlight them in the 
   $form[$fname]['#title'] = 'Select Registered Spray Materials to Include for this Farm';
   
+  
+  $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];
+  om_agman_agchem_materials_select($dh_adminreg_feature->farmid, $form, $fname, 'ipm_block_select_formulary', 'page_1', 'dh_adminreg_feature_field_data_field_link_agchem_material_ad');
+  $form['data']['#tree'] = TRUE;
+  */
   $hiddens = array(
     'dh_link_admin_submittal_pr', 
     //'dh_link_feature_submittal', 
@@ -173,11 +204,6 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
       $form[$hidethis]['#type'] = 'hidden';
     }
   }
-  
-  $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];
-  om_agman_agchem_materials_select($dh_adminreg_feature->farmid, $form, $fname, 'ipm_block_select_formulary', 'page_1', 'dh_adminreg_feature_field_data_field_link_agchem_material_ad');
-  $form['data']['#tree'] = TRUE;
-  */
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',

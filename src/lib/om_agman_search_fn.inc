@@ -61,6 +61,12 @@ function om_agman_material_query($criteria = array()) {
   $query .="    and phi.entity_type = 'dh_adminreg_feature'";
   $query .="    and phi.varid in (select hydroid from dh_variabledefinition where varkey = 'agchem_phi')";
   $query .="  )";
+  $query .="  left outer join dh_properties as pmg ";
+  $query .="  on (";
+  $query .="    pmg.featureid = chem.adminid";
+  $query .="    and pmg.entity_type = 'dh_adminreg_feature'";
+  $query .="    and pmg.varid in (select hydroid from dh_variabledefinition where varkey = 'ipm_vt_pmg_material')";
+  $query .="  )";
   
   if (isset($criteria['target_org'])) {
     // track target organism and efficacy
@@ -100,6 +106,9 @@ function om_agman_material_query($criteria = array()) {
   
   if (isset($criteria['name'])) {
     $query .= " and chem.name ilike '%" . $criteria['name']['value'] . "%'"; ;
+  }
+  if (isset($criteria['pmg'])) {
+    $query .= " and pmg.propcode ilike '%" . $criteria['pmg']['value'] . "%'"; ;
   }
   
   if (isset($criteria['ai'])) {
