@@ -232,7 +232,9 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     $opts[$id] = array(
       'label' => $chem_record->name, 
     );
-    
+    if ($count == 1) {
+      dpm($chem_record,'chem');
+    }      
     $opts[$id]['label'] .= ($chem_record->pmg == 'PMG') ? $opts[$id]['label'] . "<sup>PMG</sup>" : $opts[$id]['label'];
     $opts[$id]['ftype'] = $chem_record->ftype;
     $opts[$id]['AI'] = $chem_record->ai;
