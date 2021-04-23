@@ -32,6 +32,7 @@ function om_agman_material_remove_form($form, &$form_state, $farm_id, $remove_ch
     '#type' => 'hidden',
     '#default_value' => $farm_id,
   );
+  dpm($form,'form');
   $form['chems'] = om_agman_material_search_opts('confirm', $criteria, $remove_chems); // pass in remove_chems to this widget to highlight them in the header
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
