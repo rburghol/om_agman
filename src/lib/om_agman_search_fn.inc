@@ -5,7 +5,7 @@ function om_agman_material_query($criteria = array()) {
   
   $farm_id = isset($criteria['farm_id']) ? $criteria['farm_id']['value'] : -1;
   //dpm($criteria,'criteria');
-  $query = "select farm.hydroid, chem.adminid, chem.name, ";
+  $query = "select farm.hydroid, chem.adminid, chem.name, chem.ftype, ";
   $query .="  br.propvalue as br,  ";
   $query .="  dm.propvalue as dm, ";
   $query .="  pm.propvalue as pm, ";
