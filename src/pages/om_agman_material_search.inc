@@ -47,7 +47,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   $form['phi'] = array(
     '#title' => t('Pre-Harvest Interval (PHI)'),
     '#select' => 'select',
-    '#default_value' => '',
+    '#default_value' => array(),
     '#options' => $phi_options,
     '#description' => t('Search for material with pre=hearvest interval less than the select value.'),
     '#required' => FALSE,
