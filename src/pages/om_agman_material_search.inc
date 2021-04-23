@@ -55,7 +55,6 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#description' => t('Search for material with pre=hearvest interval less than the select value.'),
     '#required' => FALSE,
     '#multiple' => FALSE,
-    '#suffix' => 'days',
     '#empty_option' => '- No Limit -',
     '#size' => 1,
   );  
