@@ -32,7 +32,7 @@ function om_agman_material_remove_form($form, &$form_state, $farm_id, $remove_ch
     '#type' => 'hidden',
     '#default_value' => $farm_id,
   );
-  dpm($form,'form');
+  //dpm($form,'form');
   $form['chems'] = om_agman_material_search_opts('confirm', $criteria, $remove_chems); // pass in remove_chems to this widget to highlight them in the header
   $form['actions']['#weight'] = 1;
   $form['chems']['#weight'] = 10;
@@ -50,14 +50,14 @@ function om_agman_material_remove_save($form, &$form_state) {
   $parms = drupal_get_query_parameters();
   $sel_chems = array_values(array_filter($form_state['values']['chems']));
   $farm = entity_load_single('dh_feature', $form_state['values']['farm_id']);
-  dpm($sel_chems, 'sel_chems to remove');
+  //dpm($sel_chems, 'sel_chems to remove');
   
   foreach ($farm->field_link_agchem_material['und'] as $key => $ref) {
     if (in_array($farm->field_link_agchem_material['und'][$key]['target_id'], $sel_chems)) {
       unset($farm->field_link_agchem_material['und'][$key]);
     }
   }
-  dpm($farm,'farm');
+  //dpm($farm,'farm');
   $farm->save();
   // got to the review and save page 
   if (isset($parms['finaldest'])) {
