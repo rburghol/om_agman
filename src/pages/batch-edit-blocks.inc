@@ -203,6 +203,13 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       '#submit' => array('om_multiple_landunit_form_save_another')
       // @todo: do this as ajax
     );
+    $form['actions']['cancel'] = array(
+      '#type' => 'submit',
+      '#value' => t('Cancel'),
+      '#weight' => 50,
+      '#submit' => array('om_multiple_landunit_form_cancel')
+      // @todo: do this as ajax
+    );
   }
 }
 
