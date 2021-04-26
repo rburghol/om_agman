@@ -188,9 +188,9 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   // that drupal formapi reports when we do that (it is a security feature but there must be a safe way around it)
   // since the filter is base on the varkey, but the easiest property join returns the varid, we do a quick query to retrieve the varid 
   // for use later in our filters
-  $target_varid = FALSE;
+  $target_org_id = FALSE;
   if (isset($criteria['target_org'])) {
-    $target_varid = dh_varkey2varid($criteria['target_org']['value'], TRUE); // the TRUE here asks to just return a single integer varid 
+    $target_org_id = dh_varkey2varid($criteria['target_org']['value'], TRUE); // the TRUE here asks to just return a single integer varid 
   }
   $opts = array();
   $selected = array();
@@ -298,8 +298,8 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     // see rant above about using "6" as the "no effect" indicator.
     if (isset($criteria['target_org']) and property_exists($chem_record, 'target_org_id')) {
       if ( 
-        (intval($chem_record->target_org_id) != intval($target_varid))
-        or (intval($chem_record->target_org_id)  == 6)
+        (intval($chem_record->target_org_id) != intval($target_org_id))
+        or (intval($chem_record->target_org_eff)  == 6)
       ) {
         $opts[$id]['#attributes'] = array('style' => 'display: none');
       }
