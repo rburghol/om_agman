@@ -174,13 +174,13 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     case 'current':
       $sql_criteria = array();
       $sql_criteria['farm_id'] = $criteria['farm_id'];
-      $sql_criteria['target_org'] = $criteria['target_org'];
       $sql_criteria['linked'] = TRUE;
     break;
     
     default:
       $sql_criteria = array();
       $sql_criteria['farm_id'] = $criteria['farm_id'];
+      $sql_criteria['target_org'] = $criteria['target_org'];
     break;
   }
   $query = om_agman_material_query($sql_criteria); // see https://github.com/rburghol/om_agman/issues/240
