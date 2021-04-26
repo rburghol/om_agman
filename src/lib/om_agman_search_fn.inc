@@ -152,7 +152,7 @@ function om_agman_material_query($criteria = array()) {
   if (isset($criteria['target_eff'])) {
     $query .= " and target_org.propvalue >= " . $criteria['target_eff']['value'];
   }
-  $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
+  $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, ph.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
   $query .= " order by chem.name, br.propvalue, dm.propvalue, pm.propvalue ";
   dpm($query,'q');
   dpm($criteria,'criteria');
