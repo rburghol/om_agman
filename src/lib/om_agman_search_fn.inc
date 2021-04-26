@@ -13,9 +13,13 @@ function om_agman_material_query($criteria = array()) {
   $query .="  rei.propvalue as rei, ";
   $query .="  phi.propvalue as phi, ";
   $query .="  max(pmg.propcode) as pmg, ";
-  if (isset($criteria['target_org'])) {
-    $query .="  target_org.varid as target_org_id, ";
-  }
+  // this will work for any target org since when we use the target org filter
+  // it will only select one anyhow.  Otherwise, this will select the lowest varid target org
+  // but that's ok since it won't be usd. This is a bit hinky, and it only is needed because 
+  // we are struggling to make this SQL deliver all results to the browser to maintain compliance 
+  // with correct formAPI useage.  Maybe there is a better way?
+  $query .="  min(target_org.varid) as target_org_id, ";
+  $query .="  min(target_org.propvalue) as target_org_eff, ";
   $query .="  array_accum(frac.propcode) as frac_codes, ";
   $query .="  array_accum(ai.propname) as ai ";
   $query .="from dh_adminreg_feature as chem  ";
@@ -71,20 +75,13 @@ function om_agman_material_query($criteria = array()) {
   $query .="    and pmg.entity_type = 'dh_adminreg_feature'";
   $query .="    and pmg.varid in (select hydroid from dh_variabledefinition where varkey = 'ipm_vt_pmg_material')";
   $query .="  )";
-  
-  if (isset($criteria['target_org'])) {
-    // track target organism and efficacy
-    $target_org = $criteria['target_org']['value'];
-    $query .= " 
-      left outer join dh_properties as target_org 
-      on (
-        target_org.featureid = chem.adminid
-        and target_org.entity_type = 'dh_adminreg_feature'
-        and target_org.varid = '$target_org'
-      )
-    ";
-  }
-  
+  $query .= " left outer join dh_properties as target_org ";
+  $query .= " on (";
+  $query .= "   target_org.featureid = chem.adminid";
+  $query .= "   and target_org.entity_type = 'dh_adminreg_feature'";
+  $query .= "   and target_org.varid in (select hydroid from dh_variabledefinition where vocabulary = 'fungal_pathogens')";
+  $query .= "   and target_org.propvalue is not null ";
+  $query .= " )";  
   $query .= " left outer join dh_properties as frac
   on (
     frac.featureid = chem.adminid
