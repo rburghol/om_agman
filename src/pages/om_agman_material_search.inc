@@ -60,7 +60,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
       '#title' => t('Filter by Target Organism'),
       '#type' => 'select',
       '#default_value' => array(),
-      '#options' => $ftype_options,
+      '#options' => $target_orgs,
       '#description' => t('Search for materials that are labelled for a specific organism.'),
       '#required' => FALSE,
       '#multiple' => FALSE,
