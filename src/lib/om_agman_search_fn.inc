@@ -81,9 +81,9 @@ function om_agman_material_query($criteria = array()) {
   $tvid = isset($criteria['target_org']) ? $criteria['target_org']['value'] : 'show_nothing_at_all';
   $query .= " left outer join dh_properties as target_org ";
   $query .= " on (";
-  $query .= "   target_org.featureid = chem.adminid";
-  $query .= "   and target_org.entity_type = 'dh_adminreg_feature'";
-  $query .= "   and target_org.varid in (select hydroid from dh_variabledefinition where varkey = ' " . $criteria['target_org']['value']  . ")";
+  $query .= "   target_org.featureid = chem.adminid ";
+  $query .= "   and target_org.entity_type = 'dh_adminreg_feature' ";
+  $query .= "   and target_org.varid in (select hydroid from dh_variabledefinition where varkey = '" . $criteria['target_org']['value']  . "')";
   $query .= "   and target_org.propvalue is not null ";
   // if we ask for target org, we must make sure the efficacy is between 1 and 7, but is NOT equal to 6 (N for none)
   // this use of 6 is bullshit data modeling.  It should be zero.  We will need to make this amendment to the database via SQL
