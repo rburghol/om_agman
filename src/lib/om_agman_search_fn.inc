@@ -189,7 +189,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   // since the filter is base on the varkey, but the easiest property join returns the varid, we do a quick query to retrieve the varid 
   // for use later in our filters
   $target_varid = FALSE;
-  isset($criteria['target_org']) {
+  if (isset($criteria['target_org'])) {
     $target_varid = dh_varkey2varid($criteria['target_org']['value'], TRUE); // the TRUE here asks to just return a single integer varid 
   }
   $opts = array();
