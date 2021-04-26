@@ -154,8 +154,8 @@ function om_agman_material_query($criteria = array()) {
   }
   $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, ph.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
   $query .= " order by chem.name, br.propvalue, dm.propvalue, pm.propvalue ";
-  dpm($query,'q');
-  dpm($criteria,'criteria');
+  //dpm($query,'q');
+  //dpm($criteria,'criteria');
   return $query;
 }
 
@@ -202,7 +202,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   if (isset($criteria['target_org'])) {
     $target_org_id = dh_varkey2varid($criteria['target_org']['value'], TRUE); // the TRUE here asks to just return a single integer varid 
   }
-  dpm($target_org_id,' target varid');
+  //dpm($target_org_id,' target varid');
   $opts = array();
   $selected = array();
   // Get formatting for 
@@ -316,8 +316,8 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       }
     }
     if ($count == 1) {
-      dpm($chem_record,'record');
-      dpm($criteria,'criteria');
+      //dpm($chem_record,'record');
+      //dpm($criteria,'criteria');
     }
     // If this is the search mode, we are looking for chems that do NOT have a link,
     if ($mode == 'select') {
