@@ -13,6 +13,9 @@ function om_agman_material_query($criteria = array()) {
   $query .="  rei.propvalue as rei, ";
   $query .="  phi.propvalue as phi, ";
   $query .="  max(pmg.propcode) as pmg, ";
+  if (isset($criteria['target_org'])) {
+    $query .="  target_org.varid as target_org_id, ";
+  }
   $query .="  array_accum(frac.propcode) as frac_codes, ";
   $query .="  array_accum(ai.propname) as ai ";
   $query .="from dh_adminreg_feature as chem  ";
@@ -145,8 +148,8 @@ function om_agman_material_query($criteria = array()) {
   }
   $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
   $query .= " order by chem.name, br.propvalue, dm.propvalue, pm.propvalue ";
-  dpm($query,'q');
-  dpm($criteria,'criteria');
+  //dpm($query,'q');
+  //dpm($criteria,'criteria');
   return $query;
 }
 
@@ -283,6 +286,16 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     }
     if (isset($criteria['phi'])) {
       if (intval($chem_record->phi) > intval($criteria['phi']['value'])) {
+        $opts[$id]['#attributes'] = array('style' => 'display: none');
+      }
+    }
+    // this is just presence, efficacy is separate
+    // see rant above about using "6" as the "no effect" indicator.
+    if (isset($criteria['target_org']) and property_exists($chem_record, 'target_org_id')) {
+      if ( 
+        (intval($chem_record->target_org_id) != intval($criteria['target_org']['value']))
+        or (intval($chem_record->target_org_id)  == 6)
+      ) {
         $opts[$id]['#attributes'] = array('style' => 'display: none');
       }
     }
