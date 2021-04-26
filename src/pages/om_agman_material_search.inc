@@ -52,7 +52,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   $class = ctools_plugin_get_class($plugin, 'handler');
   //dpm($plugin,'plug');
   $config = array();
-  /*
+  
   if ($class) {
     $src = new $class($config);
     $target_orgs = $src->incidentCodes();
@@ -70,7 +70,6 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   } else {
     watchdog("Cannot get list if target organisms.  Check system.");
   }
-  */
   
   $form['ai'] = array(
     '#title' => t('Active Ingredient'),
