@@ -133,8 +133,15 @@ function om_agman_material_query($criteria = array()) {
   if (isset($criteria['chems'])) {
     $query .= " and chem.adminid in (" . implode(",", $criteria['chems']['value']) . " ) ";
   }
+  // if we ask for target org, we must make sure the efficacy is between 1 and 7, but is NOT equal to 6 (N for none)
+  // this use of 6 is bullshit data modeling.  It should be zero.  We will need to make this amendment to the database via SQL
+  // some time soon.  But for now, we filter here, then later if we have an efficacy minimum, it will throw a >= that should still 
+  // be compatible with this query logic.
+  if (isset($criteria['target_org'])) {
+    $query .= " and (target_org.propvalue >= 1 and propvalue <> 6) "; ;
+  }
   if (isset($criteria['target_eff'])) {
-    $query .= " and target_org.propvalue <= " . $criteria['target_eff']['value'];
+    $query .= " and target_org.propvalue >= " . $criteria['target_eff']['value'];
   }
   $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
   $query .= " order by chem.name, br.propvalue, dm.propvalue, pm.propvalue ";
