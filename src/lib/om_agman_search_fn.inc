@@ -9,6 +9,7 @@ function om_agman_material_query($criteria = array()) {
   $query .="  br.propvalue as br,  ";
   $query .="  dm.propvalue as dm, ";
   $query .="  pm.propvalue as pm, ";
+  $query .="  ph.propvalue as ph, ";
   $query .="  bot.propvalue as bot, ";
   $query .="  rei.propvalue as rei, ";
   $query .="  phi.propvalue as phi, ";
@@ -56,6 +57,12 @@ function om_agman_material_query($criteria = array()) {
   $query .="    bot.featureid = chem.adminid";
   $query .="    and bot.entity_type = 'dh_adminreg_feature'";
   $query .="    and bot.varid in (select hydroid from dh_variabledefinition where varkey = 'org_botrytis')";
+  $query .="  )";
+  $query .="  left outer join dh_properties as ph ";
+  $query .="  on (";
+  $query .="    ph.featureid = chem.adminid";
+  $query .="    and ph.entity_type = 'dh_adminreg_feature'";
+  $query .="    and ph.varid in (select hydroid from dh_variabledefinition where varkey = 'org_phomopsis')";
   $query .="  )";
   $query .="  left outer join dh_properties as rei ";
   $query .="  on (";
