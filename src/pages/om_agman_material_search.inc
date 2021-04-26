@@ -19,6 +19,8 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     $src->formRowEdit($arr, $empty_object);
     $frac_opts = $arr['propcode'];
   }
+  
+  
   $ftype_options = array('fungicide', 'herbicide', 'insecticide', 'fertilizer', 'other');
   $ftype_options = array_combine($ftype_options, $ftype_options);
   //dpm($phi_options,'phi');
@@ -45,6 +47,29 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#size' => 30,
   );  
 
+  // get target organisms
+  $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginIPMDisease');
+  $class = ctools_plugin_get_class($plugin, 'handler');
+  //dpm($plugin,'plug');
+  $config = array();
+  if ($class) {
+    $src = new $class($config);
+    $target_orgs = $src->incidentCodes();
+    $form['target_org'] = array(
+      '#title' => t('Filter by Target Organism'),
+      '#type' => 'select',
+      '#default_value' => array(),
+      '#options' => $ftype_options,
+      '#description' => t('Search for materials that are labelled for a specific organism.'),
+      '#required' => FALSE,
+      '#multiple' => FALSE,
+      '#empty_option' => '- Any -',
+      '#size' => 1,
+    );  
+  } else {
+    watchdog("Cannot get list if target organisms.  Check system.");
+  }
+  
   $form['ai'] = array(
     '#title' => t('Active Ingredient'),
     '#type' => 'textfield',

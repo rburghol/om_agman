@@ -77,8 +77,9 @@ function om_agman_material_query($criteria = array()) {
       on (
         target_org.featureid = chem.adminid
         and target_org.entity_type = 'dh_adminreg_feature'
-        and target_org.varid in (select hydroid from dh_variabledefinition where varkey = '$target_org')
-      )";
+        and target_org.varid = '$target_org'
+      )
+    ";
   }
   
   $query .= " left outer join dh_properties as frac
@@ -131,6 +132,9 @@ function om_agman_material_query($criteria = array()) {
   }
   if (isset($criteria['chems'])) {
     $query .= " and chem.adminid in (" . implode(",", $criteria['chems']['value']) . " ) ";
+  }
+  if (isset($criteria['target_eff'])) {
+    $query .= " and target_org.propvalue <= " . $criteria['target_eff']['value']);
   }
   $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
   $query .= " order by chem.name, br.propvalue, dm.propvalue, pm.propvalue ";
