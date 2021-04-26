@@ -192,6 +192,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   if (isset($criteria['target_org'])) {
     $target_org_id = dh_varkey2varid($criteria['target_org']['value'], TRUE); // the TRUE here asks to just return a single integer varid 
   }
+  dpm($target_org_id,' target varid');
   $opts = array();
   $selected = array();
   // Get formatting for 
