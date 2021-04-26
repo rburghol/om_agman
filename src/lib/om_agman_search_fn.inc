@@ -183,7 +183,15 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   $query = om_agman_material_query($sql_criteria); // see https://github.com/rburghol/om_agman/issues/240
   //dpm($query,'q');
   $agchem_result = db_query($query);
-  
+  // target orgs
+  // this is a crap[py work around because we cant figure out how to dynamically update form select options without triggering the "illegal value"
+  // that drupal formapi reports when we do that (it is a security feature but there must be a safe way around it)
+  // since the filter is base on the varkey, but the easiest property join returns the varid, we do a quick query to retrieve the varid 
+  // for use later in our filters
+  $target_varid;
+  isset($criteria['target_org']) {
+    $target_varid = dh_varkey2varid($criteria['target_org']['value'], TRUE); // the TRUE here asks to just return a single integer varid 
+  }
   $opts = array();
   $selected = array();
   // Get formatting for 
@@ -290,7 +298,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     // see rant above about using "6" as the "no effect" indicator.
     if (isset($criteria['target_org']) and property_exists($chem_record, 'target_org_id')) {
       if ( 
-        (intval($chem_record->target_org_id) != intval($criteria['target_org']['value']))
+        (intval($chem_record->target_org_id) != intval($target_varid))
         or (intval($chem_record->target_org_id)  == 6)
       ) {
         $opts[$id]['#attributes'] = array('style' => 'display: none');
