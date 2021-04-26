@@ -89,7 +89,7 @@ function om_agman_material_query($criteria = array()) {
   // this use of 6 is bullshit data modeling.  It should be zero.  We will need to make this amendment to the database via SQL
   // some time soon.  But for now, we filter here, then later if we have an efficacy minimum, it will throw a >= that should still 
   // be compatible with this query logic. 
-  $query .= " and (target_org.propvalue >= 1 and propvalue <> 6) "; ;
+  $query .= " and (target_org.propvalue >= 1 and target_org.propvalue <> 6) "; ;
   $query .= " )";  
   $query .= " left outer join dh_properties as frac
   on (
