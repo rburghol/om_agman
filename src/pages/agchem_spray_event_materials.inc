@@ -141,7 +141,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
     );
     break;
   }
-  dpm($form, 'form');
+  //dpm($form, 'form');
   return $form;
 }
 
@@ -153,7 +153,7 @@ function dh_app_plan_form_submit_cancel($form, &$form_state) {
     //dpm($url);
     $form_state['redirect'] = $url;
   } else {
-    $url = $form_state['redirect'] ? $form_state['redirect'] : '';
+    $url = $form_state['redirect'] ? $form_state['redirect'] : 'ipm-facility-sprayplan';
     drupal_goto($url);
   }
 }
@@ -295,7 +295,6 @@ $elements = drupal_build_form('dh_app_plan_form', $form_state);
 //$elements = entity_ui_get_bundle_add_form('dh_adminreg_feature', 'facility');
 // entity_ui_get_form($entity_type, $entity, $op = 'edit', $form_state = array())
 
-error_reporting(E_ALL);
 // just grab the regular form for proof of concept
 $form = drupal_render($elements);
 $link = implode("/",array($a[0],$a[1],$a[2],$a[3]));

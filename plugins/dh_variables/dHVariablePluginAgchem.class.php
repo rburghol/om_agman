@@ -1,11 +1,14 @@
 <?php
 module_load_include('inc', 'dh', 'plugins/dh.display');
+module_load_include('inc', 'om_agman', 'src/lib/om_agman_frac');
+$plugin_def = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginAgmanAction');
+$class = ctools_plugin_get_class($plugin_def, 'handler');
 
 class dHVariablePluginEfficacy extends dHVariablePluginDefault {
   
   public function effAbbrev() {
     return array(
-      '' => 'U',
+      '' => '--',
       1 => 'E',
       2 => 'G',
       3 => 'G_F',
@@ -235,13 +238,22 @@ class dHVariablePluginFRAC extends dHVariablePluginDefault {
     }
   }
   
+  public function insert(&$entity) {
+    $entity->propname = 'frac:' . $entity->propcode;
+    return parent::insert($entity);
+  }
+  public function update(&$entity) {
+    $entity->propname = 'frac:' . $entity->propcode;
+    return parent::update($entity);
+  }
   public function save(&$entity) {
+    $entity->propname = 'frac:' . $entity->propcode;
     return parent::save($entity);
   }
   
 }
 
-class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
+class dHVariablePluginSimpleFertilizer extends dHVariablePluginAgmanAction {
   // @todo: enable t() for varkey, for example, this is easy, but need to figure out how to 
   //        handle in views - maybe a setting in the filter or jumplists itself?
   //  default: agchem_apply_fert_ee
@@ -249,10 +261,14 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
   
   public function __construct($conf = array()) {
     parent::__construct($conf);
-    $hidden = array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle');
+    $hidden = array('pid', 'startdate', 'enddate', 'entity_type', 'bundle');
     foreach ($hidden as $hide_this) {
       $this->property_conf_default[$hide_this]['hidden'] = 1;
     }
+  }
+  
+  public function hiddenFields() {
+    return array('tid', 'entity_type', 'bundle', 'varid', 'tsendtime');
   }
 
   function process_npk($code) {
@@ -282,6 +298,7 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
   }
   
   public function formRowEdit(&$rowform, $row) {
+    parent::formRowEdit($rowform, $row);
     // apply custom settings here
     //dpm($row,'row');
     $varinfo = $row->varid ? dh_vardef_info($row->varid) : FALSE;
@@ -348,10 +365,6 @@ class dHVariablePluginSimpleFertilizer extends dHVariablePluginDefault {
       '#markup' => "</table>",
     );
     
-    $hidden = array('pid', 'startdate', 'enddate', 'featureid', 'entity_type', 'bundle');
-    foreach ($hidden as $hide_this) {
-      $rowform[$hide_this]['#type'] = 'hidden';
-    }
     //dpm($rowform,'raw form');
   }
   
@@ -536,15 +549,24 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $feature->phi_chems = array(); // chem w/limiting PHI
     $feature->phi_info = 'unknown'; // chem w/limiting PHI
     $feature->agchem_spray_vol_gal = $vol_prop;
-    $feature->phi_ts = $feature->enddate;
-    $feature->phi_chems = array(); // chem w/limiting PHI
-    $feature->phi_info = 'unknown'; // chem w/limiting PHI
+    $feature->event_fracs = array(); // list of fracs
     // REI Defaults
     $feature->rei_ts = $feature->enddate;
     $feature->rei_chems = array(); // chem w/limiting PHI
     $feature->rei_info = 'unknown'; // chem w/limiting PHI
     foreach ($feature->chems as $cix => $cheminfo) {
       $chem = entity_load_single('dh_adminreg_feature', $cheminfo['adminid']);
+      // load fracs for this chem 
+      $frac_info = array('featureid' => $chem->adminid, 'entity_type'=>'dh_adminreg_feature', 'propname' => 'FRAC Codes');
+      $chem_fracs = om_model_getSetProperty($frac_info, 'name', FALSE);
+      //dpm($chem_fracs,'chem frac prop');
+      $frac_plugin = dh_variables_getPlugins($chem_fracs);
+      if (is_object($frac_plugin)) {
+        $c_fracs = explode(',', $frac_plugin->getCodeList($chem_fracs));
+        //dpm($c_fracs,'fracs');
+        $feature->event_fracs = array_unique( array_merge($feature->event_fracs, $c_fracs ) );
+      }
+      // load base linked props info
       $chem_pi = array(
         'featureid' => $cheminfo['eref_id'],
         'entity_type' => 'field_link_to_registered_agchem',
@@ -621,6 +643,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     $this->load_event_info($feature);
     $this->setBlockPHI($entity, $feature);
     $this->setBlockREI($entity, $feature);
+    // because of the handling ot dh_entity_ts_event hooks, this gets called twice every save() of an adminreg feature.  
+    // this causes the messages to be sent out twice, which is a UI/UX problem.
+    // thus, calls to checkFracStatus must be done by request only.
+    //$this->checkFracStatus($entity, $feature);
     // Add additional plumbing to copy relevant data to this event and to the linked TS events for each block.
     // must include smart handling for blocks that have been removed from the event 
     // since linked events are a sub-type of linked event master class, we have a reference to the original event 
@@ -635,6 +661,23 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     //$this->load_event_info($feature);
     //$this->setBlockPHI($feature);
     //$this->setBlockREI($feature);
+  }
+  
+  public function checkFracStatus($entity, $feature) {
+    // Performs summary of FRAC useage pertinent to the chems in this event.
+    // Groups by frac and risk level, report all blocks at that risk level.
+    // "Warning: FRAC 7, has 3 applications on Block 1, Block2, and Cab14. This can lead to problems. Please modify."
+    // @ todo: move the grouping/formatting functions into om_agman_frac.inc 
+    $vineyard_id = $feature->vineyard->hydroid;
+    $target_fracs = $feature->event_fracs;
+    $date = dh_handletimestamp($feature->startdate);
+    $yr = date('Y', $date);
+    $startdate = $yr . '-01-01';
+    $enddate = $yr . '-12-31';
+    $block_ids = array_keys($feature->block_entities); // may have to grab the IDs from the objects
+    $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, $target_fracs);
+    //dpm($alerts,'alerts');
+    return($alerts);
   }
   
   public function setBlockREI(&$feature) {
@@ -658,7 +701,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       'enddate' => $phi_date,
       'propcode' => $chems,
     );
-    error_log("Saving phi " . print_r($phi_prop_info,1));
+    //error_log("Saving phi " . print_r($phi_prop_info,1));
     $phi_prop = dh_properties_enforce_singularity($phi_prop_info, 'singular', TRUE);
     if ( ($feature->fstatus == 'post_harvest') or empty($feature->phi_date) ) {
       if ($phi_prop) {
@@ -734,7 +777,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $block_phi_ts->tscode = $phi_event_prop->propcode; 
         $block_phi_ts->tsvalue = $block_phi_event->featureid; // this is the adminid of the limiting event 
         $block_phi_ts->save();
-        dsm("Recording PHI event for block $fe->name on " . date('Y-m-d',$block_phi_ts->tsendtime));
+        //dsm("Recording PHI event for block $fe->name on " . date('Y-m-d',$block_phi_ts->tsendtime));
       } else {
         // @todo: Somewhere later in the routine, look for blocks that have been removed from this event.
         //        and update their PHIs
@@ -977,8 +1020,10 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
   
   public function renderWorkOrder(&$content, &$entity, $feature) { 
     // 
-    dpm($feature,'feature');
-    dpm($feature->chems,'chems');
+    //dpm($feature,'feature');
+    //dpm($feature->chems,'chems');
+    // just for testing, this won't be included in the final work order.
+    $this->checkFracStatus($entity, $feature);
     $content['general'] = array(
       '#type' => 'container'
     );

@@ -43,6 +43,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
             $record_group['bundle'] = 'landunit';
             $feature = entity_create('dh_feature', $record_group);
             drupal_set_message("Created block $feature->name");
+            $feature->save();
           }
         } else {
           // load the entity
@@ -61,6 +62,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
           $plugin = dh_variables_getPlugins($area_prop);
           $feature->dh_areasqkm['und'][0]['value'] = $plugin->convertArea($area_prop->propvalue, 'ac', 'sqkm');
           //dpm($feature,"Saving");
+          //dpm($record_group, "from record group");
           entity_save('dh_feature', $feature);
           if (!empty($record_group['agman_plant'])) {
             $variety = array(
@@ -199,6 +201,13 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       '#value' => t('Save & Add Another'),
       '#weight' => 40,
       '#submit' => array('om_multiple_landunit_form_save_another')
+      // @todo: do this as ajax
+    );
+    $form['actions']['cancel'] = array(
+      '#type' => 'submit',
+      '#value' => t('Cancel'),
+      '#weight' => 50,
+      '#submit' => array('om_multiple_landunit_form_cancel')
       // @todo: do this as ajax
     );
   }

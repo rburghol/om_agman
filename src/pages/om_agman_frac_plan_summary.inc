@@ -1,4 +1,5 @@
-<?php  
+<?php
+// this will sho high risk FRACs, if they exist in this plan.
 module_load_include('module', 'om_agman');
 $status = module_load_include('inc', 'om_agman', 'src/lib/om_agman_frac');
 // Get URL arguments
@@ -18,32 +19,26 @@ if (isset($u['year'])) {
   }
 }
 
-// set up date range from year passed in
-$startdate = $yr . '-01-01';
-$enddate = $yr . '-12-31';
-
 // get all blocks wfor this vineyard if a specific block was NOT requested
-if ($block_id == 'all') {
+if (empty($block_id) or ($block_id == 'all') ) {
   $block_ids = dh_get_facility_mps($vineyard_id, 'landunit');
 } else {
   $block_ids = array($block_id);
 }
 
-// got through all blocks
-foreach ($block_ids as $block_id) {
-  $block = entity_load_single('dh_feature', $block_id);
-  if (is_object($block)) {
-    $alerts = om_agman_group_frac_check($vineyard_id, array($block_id), $startdate, $enddate, array(), 0);
-    $display = om_agman_show_formatted_frac_alerts($alerts, 0, 'table');
-    $label = "Name: <strong>" . $block->name . "</strong><br>";
-    echo $label;
-    if (count($display['#rows']) > 0) {
-      $output = render($display);
-      echo $output;
-    } else {
-      echo "No FRAC application alerts.";
-    }
-    echo "<hr>";
-  }
+// set up date range from year passed in
+$startdate = $yr . '-01-01';
+$enddate = $yr . '-12-31';
+
+$alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, array());
+//dpm($alerts, 'alert');
+$display = om_agman_show_formatted_frac_alerts($alerts, 2, 'table');
+echo "<h3>High Risk FRAC Warnings:</h3>";
+if (count($display['#rows']) > 0) {
+  $output = render($display);
+  echo $output;
+} else {
+  echo "None.";
 }
+	
 ?>

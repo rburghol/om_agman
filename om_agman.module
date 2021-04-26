@@ -310,7 +310,7 @@ function om_vitis_varieties($string) {
   $q .= " and propname ilike '%$string%' ";
   $q .= " group by propname ";
   $q .= " order by propname ";
-  error_log($q);
+  //error_log($q);
   $result = db_query($q);
   $matches = $result->fetchAllKeyed();
 
@@ -341,7 +341,7 @@ function om_active_ingredient_ac($string) {
   $q .= " and propcode ilike '%$string%' ";
   $q .= " group by propcode ";
   $q .= " order by propcode ";
-  error_log($q);
+  //error_log($q);
   $result = db_query($q);
   $matches = $result->fetchAllKeyed();
 
@@ -406,7 +406,7 @@ function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug 
   $q .= " and phprop.enddate = max_phi.phi_date ";
   if ($debug) {
     dsm($q);
-    error_log("$q");
+    //error_log("$q");
   } 
   $result = db_query($q);
   foreach ($result as $record) {
@@ -899,7 +899,6 @@ function om_agman_application_materials_form () {
   //$elements = entity_ui_get_bundle_add_form('dh_adminreg_feature', 'facility');
   // entity_ui_get_form($entity_type, $entity, $op = 'edit', $form_state = array())
 
-  error_reporting(E_ALL);
   // just grab the regular form for proof of concept
   $form = drupal_render($elements);
   $link = implode("/",array($a[0],$a[1],$a[2],$a[3]));

@@ -81,11 +81,10 @@ function dh_sprayquan_form_submit_delete(&$form, &$form_state) {
 }
 
 function dh_sprayquan_form_save(&$form, &$form_state) {
-  dpm(t('This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.'), NULL, 'warning');
+  //dpm(t('This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.'), NULL, 'warning');
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   ctools_include('plugins');
-  //dpm($form_state, 'form state submitted');
   $class = ctools_plugin_load_class('om', 'om_components', 'ObjectModelAgmanSprayAppEvent', 'handler');
   $src = new $class($config);
   $o = $src->DefineOptions(); // @todo: all functions and variables need to be camelCase not CamelCase - classes are CamelCase
@@ -100,10 +99,14 @@ function dh_sprayquan_form_save(&$form, &$form_state) {
   //   ** but note that entity_ui_form_sub... doesn't work 
   //      have to hand spin see dh.display.inc
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
+  //dpm($dh_adminreg_feature,'pre save');
   $dh_adminreg_feature->save();
   // handle all the attached stuff
+  //dpm($dh_adminreg_feature,'post save');
   $src->dh_adminreg_feature = $dh_adminreg_feature;
   $src->submitForm($form, $form_state);
+  $alerts = om_agman_event_frac_alerts($dh_adminreg_feature);
+  om_agman_show_formatted_frac_alerts($alerts, 1);
   return $dh_adminreg_feature;
 }
 
@@ -121,7 +124,8 @@ function dh_sprayquan_form_return(&$form, &$form_state) {
     //dpm($url);
     $form_state['redirect'] = $url;
   } else {
-    $url = implode('/', array('ipm-home', $blockid));
+    $farmid = om_agman_get_block_farmid($blockid);
+    $url = implode('/', array('ipm-facility-sprayplan', $farmid));
     drupal_goto($url);
   }
 }
@@ -134,7 +138,8 @@ function dh_app_plan_form_submit(&$form, &$form_state) {
     $url = $parms['finaldest'];
     drupal_goto($url);
   } else {
-    $url = implode('/', array('ipm-facility-sprayplan', om_agman_get_block_farmid($blockid), $blockid));
+    $farmid = om_agman_get_block_farmid($blockid);
+    $url = implode('/', array('ipm-facility-sprayplan', $farmid));
     drupal_goto($url);
   }
 }
@@ -208,7 +213,7 @@ if (isset($a[1])) {
     $elements = drupal_build_form('dh_sprayquan_form', $form_state);
     //$elements = entity_ui_get_bundle_add_form('dh_adminreg_feature', 'mnw_file');
     // entity_ui_get_form($entity_type, $entity, $op = 'edit', $form_state = array())
-    error_reporting(E_ALL);
+
     // just grab the regular form for proof of concept
     //$elements = entity_ui_get_form('dh_adminreg_feature', $lu, $op, $form_state);
     //dpm($elements,'form');

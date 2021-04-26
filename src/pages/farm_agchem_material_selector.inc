@@ -210,7 +210,6 @@ if (is_numeric($vid)) {
     //$elements = entity_ui_get_bundle_add_form('dh_feature', 'facility');
     // entity_ui_get_form($entity_type, $entity, $op = 'edit', $form_state = array())
 
-    error_reporting(E_ALL);
     // just grab the regular form for proof of concept
     $form = drupal_render($elements);
     echo $form;

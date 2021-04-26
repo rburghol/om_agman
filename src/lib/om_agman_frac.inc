@@ -74,40 +74,134 @@ function om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, $tar
 // later we may have allow a custom set of warnings for agiven hem, but these are defaults and ALL will use them for now
 // ************************************
 function om_agman_frac_assess($frac, $frac_count){
-   $frac_ratings = array(
-    array('0', '0'),
-    array('2', '1'),
-    array('3', '2'),
-    array('4', '3'),
-    array('1000', '3')
-    );
-    $frac_ratings_formatted = om_formatCSVMatrix($frac_ratings, 1,  'OK', 0);
+  $frac_ratings = array(
+  array('0', '0'),
+  array('2', '1'),
+  array('3', '2'),
+  array('4', '3'),
+  array('1000', '3')
+  );
+  $frac_ratings_formatted = om_formatCSVMatrix($frac_ratings, 1,  'OK', 0);
 
-    $messages = array(
-    array('0', 'OK. Less than max recommended seasonal applications.'),
-    array('1', 'Equal to max recommended seasonal applications. No more applications recommended.'),
-    array('2', 'You have used the same FRAC with medium or high risk of fungicide resistance 3 times, please revise your schedule.'),
-    array('3', 'You have used the same FRAC with medium or high risk of fungicide resistance 4 times, this type of practice significantly increases the risk of resistance development.')
-    );
-    $messages_formatted = om_formatCSVMatrix($messages, 1,  'OK', 0);
+  $messages = array(
+  array('0', 'OK. Less than max recommended seasonal applications.'),
+  array('1', 'Equal to max recommended seasonal applications. No more applications recommended.'),
+  array('2', 'You have used the same FRAC with medium or high risk of fungicide resistance 3 times, please revise your schedule.'),
+  array('3', 'You have used the same FRAC with medium or high risk of fungicide resistance 4 times, this type of practice significantly increases the risk of resistance development.')
+  );
+  $messages_formatted = om_formatCSVMatrix($messages, 1,  'OK', 0);
 
-    $risky_frac = range( 1, 50);
-    unset($risky_frac[array_search(33, $risky_frac)]);
-    unset($risky_frac[array_search(44, $risky_frac)]);
-    $message = '';
-    //if (is_numeric(substr($frac,0,1))) $message = om_arrayLookup($messages_formatted, $rating, 2, 0, TRUE);
-    if (in_array($frac, $risky_frac)) {
-      $rating = om_arrayLookup($frac_ratings_formatted, $frac_count, 2, 0, TRUE);
-      $message = om_arrayLookup($messages_formatted, $rating, 2, 0, TRUE);
-    } else {
-      $message = 'This FRAC group is considered low-risk. No maximum recommended for resistance management.';
-    }
-    return array('rating' => $rating, 'message' => $message);
+  $risky_frac = range( 1, 50);
+  unset($risky_frac[array_search(33, $risky_frac)]);
+  unset($risky_frac[array_search(44, $risky_frac)]);
+  $message = '';
+  //if (is_numeric(substr($frac,0,1))) $message = om_arrayLookup($messages_formatted, $rating, 2, 0, TRUE);
+  if (in_array($frac, $risky_frac)) {
+    $rating = om_arrayLookup($frac_ratings_formatted, $frac_count, 2, 0, TRUE);
+    $message = om_arrayLookup($messages_formatted, $rating, 2, 0, TRUE);
+  } else {
+    $rating = 0;
+    $message = 'This FRAC group is considered low-risk. No maximum recommended for resistance management.';
+  }
+  return array('rating' => $rating, 'count' => $frac_count, 'message' => $message);
 }
 
-    // ************************************
-    // END om_agman_frac_assess() 
-    // ************************************
-// END FUNCTION LOADING
+// ************************************
+// END om_agman_frac_assess() 
+// ************************************
+
+
+function om_agman_group_frac_check($vineyard_id, $blocks, $startdate, $enddate, $target_fracs = array(), $threshold = 1) {
+  $alerts = array(); // keyed by frac, 
+                     // [$frac][$rating] = array('blocks'=>array(), 'message' => '');
+  foreach ($blocks as $block_id) {
+    $rez = om_agman_frac_count($block_id, $vineyard_id, $startdate, $enddate, $target_fracs);
+    $row_count = 0;
+    while ($row = $rez->fetchAssoc()) {
+      $frac_count = $row['frac_app_count'];
+      $frac = empty(trim($row['material_frac'])) ? 'n/a' : $row['material_frac'];
+      $row['material_frac'] = $frac;
+      $block_name = $row['block_name'];
+      unset($row['block_name']);
+      
+      $status = om_agman_frac_assess($frac, $frac_count);
+      $rating = $status['rating'];
+      $message = $status['message']; 
+      if ( $rating >= $threshold ) {
+        if (!isset($alerts[$frac])) $alerts[$frac] = array();
+        if (!isset($alerts[$frac][$rating])) $alerts[$frac][$rating] = array('blocks'=>array(), 'count' => $frac_count, 'message' => '');
+        $alerts[$frac][$rating]['blocks'][] = $block_name;
+        $alerts[$frac][$rating]['message'] = $message;
+      }
+    }
+  }
+  return $alerts;
+}
+
+function om_agman_event_frac_alerts($dh_adminreg_feature) {
+  $values = array(
+    'entity_type' => 'dh_adminreg_feature',
+    'featureid' => $dh_adminreg_feature->adminid,
+    'varkey' => 'agchem_application_event'
+  );
+  $ts_event = dh_timeseries_enforce_singularity($values, 'singular');
+  $plugin = dh_variables_getPlugins($ts_event);
+  $plugin->load_event_info($dh_adminreg_feature);
+  $alerts = $plugin->checkFracStatus($ts_event, $dh_adminreg_feature);
+  return $alerts;
+}
+  
+
+function om_agman_show_formatted_frac_alerts($alerts, $threshold = 2, $out = 'message') {
+  // $out = message, table, array (returns)
+  $rating_dsm = array(0 => 'status', 1 => 'warning', 2 => 'error', 3 => 'error');
+  $out_array = array();
+  $table = array();
+  foreach ($alerts as $frac => $info) {
+    foreach ($info as $rating => $details) {
+      if ( ($rating >= $threshold) or empty($rating)) {
+        if (count($details['blocks']) > 1) {
+          $btense = 'blocks';
+        } else {
+          $btense = 'block';
+        }
+        $count = $details['count'];
+        $f_msg = "FRAC $frac has $count uses on $btense: " . implode(", ", $details['blocks']);
+        $f_msg .= "<br>" . t($details['message']);
+        switch ($out) {
+          case 'array':
+          $out_array[] = array('frac'=>$frac, 'count'=>$count, 'rating'=>$rating, 'message'=>$f_msg);
+          break;
+          case 'table':
+          $out_array[] = array($frac, $count, $rating, $f_msg);
+          break;
+          
+          case 'message':
+          default:
+          drupal_set_message($f_msg, $rating_dsm[$rating], FALSE);
+          break;
+        }
+      }
+    }
+  }
+  switch ($out) {
+    case 'array':
+    return $out_array;
+    case 'table':
+    $header = array("FRAC", '# of Apps', 'Rating', 'Message');
+    $display = array(
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $out_array,
+    );
+    return $display;
+    break;
+    
+    default:
+    return;
+    break;
+  }
+  //dpm($alerts, 'alerts on save');
+}
 
 ?>
