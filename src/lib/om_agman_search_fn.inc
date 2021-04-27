@@ -19,10 +19,30 @@ function om_agman_material_query($criteria = array()) {
   // but that's ok since it won't be usd. This is a bit hinky, and it only is needed because 
   // we are struggling to make this SQL deliver all results to the browser to maintain compliance 
   // with correct formAPI useage.  Maybe there is a better way?
-  $query .="  min(target_org.varid) as target_org_id, ";
+  $query .="  min(target_org.varid) as target_org_id, "; // tbd: this data model could be made to handle any and all organisms (weeds, insects too) by ditching the varid = pathogen-variable-id for a custom entity link property 
   $query .="  min(target_org.propvalue) as target_org_eff, ";
   $query .="  array_accum(frac.propcode) as frac_codes, ";
   $query .="  array_accum(ai.propname) as ai ";
+  // tbd: we could do searching 2 different, ($filter_in_sql = true or False) by reporting in a field if this is a match
+  //      and then deciding whether or not to filter on "match" or not in an external query like so:
+  //   select * from (
+  //      select farm.hydroid, chem.name, ..., 
+  //      CASE 
+  //   if (isset($criteria['target_frac']) {
+  //      WHEN target_frac IS NOT NULL THEN 1
+  //   }
+  //   if (isset($criteria['target_org']) {
+  //      WHEN target_org IS NOT NULL THEN 1
+  //    }
+  //   if (isset($criteria['rei']) {
+  //      WHEN rei IS NOT NULL THEN 1
+  //    }
+  //    ELSE 0 AS search_match
+  //    ... (more sql)
+  //   ) as foo 
+  //  if ($filter_in_sql) {
+  //   WHERE search_match is not null
+  //  }
   $query .="from dh_adminreg_feature as chem  ";
   $query .="left outer join field_data_field_link_agchem_material as clink ";
   $query .="  on (";
@@ -137,7 +157,7 @@ function om_agman_material_query($criteria = array()) {
     $query .= "   and propcode ilike '%" . $criteria['ai']['value'] . "%' ";
     $query .= " ) ";
   }
-  
+  // could this be used in a "report match" type query, with the target frac as a separate additional join?
   if (isset($criteria['frac'])) {
     $query .= " and chem.adminid in (" ;
     $query .= "   select featureid from dh_properties where   ";
@@ -193,16 +213,19 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   $query = om_agman_material_query($sql_criteria); // see https://github.com/rburghol/om_agman/issues/240
   //dpm($query,'q');
   $agchem_result = db_query($query);
-  // target orgs
-  // this is a crap[py work around because we cant figure out how to dynamically update form select options without triggering the "illegal value"
-  // that drupal formapi reports when we do that (it is a security feature but there must be a safe way around it)
-  // since the filter is base on the varkey, but the easiest property join returns the varid, we do a quick query to retrieve the varid 
-  // for use later in our filters
-  $target_org_id = FALSE;
-  if (isset($criteria['target_org'])) {
-    $target_org_id = dh_varkey2varid($criteria['target_org']['value'], TRUE); // the TRUE here asks to just return a single integer varid 
-  }
-  //dpm($target_org_id,' target varid');
+  $element_header = array(
+    'label' => 'Material', 
+    'ftype'=>'Type', 
+    'AI'=>'Active Ingredient(s)', 
+    'REI'=>'REI', 
+    'PHI' => 'PHI', 
+    'FRAC' => 'FRAC', 
+    'PM' => 'PM', 
+    'DM' => 'DM', 
+    'Ph' => 'Ph', 
+    'BR' => 'BR', 
+    'Bot' => 'Bot'
+  );
   $opts = array();
   $selected = array();
   // Get formatting for 
@@ -236,6 +259,33 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       7 => 'Labelled',
     );
   }
+  $valkeys = array(
+    'REI'=>'agchem_rei', 
+    'PHI' => 'agchem_phi', 
+  );
+  $codekeys = array(
+    'PM' => 'pm', 
+    'DM' => 'dm', 
+    'Ph' => 'ph', 
+    'BR' => 'br', 
+    'Bot' => 'bot'
+  );
+  // target orgs
+  // this is a crap[py work around because we cant figure out how to dynamically update form select options without triggering the "illegal value"
+  // that drupal formapi reports when we do that (it is a security feature but there must be a safe way around it)
+  // since the filter is base on the varkey, but the easiest property join returns the varid, we do a quick query to retrieve the varid 
+  // for use later in our filters
+  $target_org_id = FALSE;
+  if (isset($criteria['target_org'])) {
+    $target_org_var = dh_vardef_info($criteria['target_org']['value']); 
+    $target_org_id = $target_org_var->hydroid; 
+    $target_org_name = $target_org_var->varname; 
+    if (!in_array($target_org_var->varkey, array('org_black_rot', 'org_downy_mildew', 'org_phomopsis', 'org_powdery_mildew', 'org_botrytis'))) {
+      $element_header['target'] = $target_org_name;
+      $codekeys[$target_org_name] = 'target_org_eff';
+    }
+  }
+  //dpm($target_org_id,' target varid');
   //dpm($eff_abbrevs,'abbrevs');
   $count = 0;
   while($chem_record = $agchem_result->fetchObject()) {
@@ -247,17 +297,6 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     $chem_record->frac_codes = implode(', ', array_unique(explode(',', trim($chem_record->frac_codes,'{}'))));
     $chem_record->ai = implode(', ', array_unique(explode(',', str_replace('"', "", trim(strtolower($chem_record->ai),'{}')))));
     //dpm($chem_record);
-    $valkeys = array(
-      'REI'=>'agchem_rei', 
-      'PHI' => 'agchem_phi', 
-    );
-    $codekeys = array(
-      'PM' => 'pm', 
-      'DM' => 'dm', 
-      'Ph' => 'ph', 
-      'BR' => 'br', 
-      'Bot' => 'bot'
-    );
 
     // BEGIN - tableselect  
     $opts[$id]['label'] .= ($chem_record->pmg == 'PMG') ? $chem_record->name . "<sup>PMG</sup>" : $chem_record->name;
@@ -371,19 +410,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
 //dpm($count,'count');
   $element['#empty'] = t('No content available.');
   $element['#required'] = TRUE;
-  $element['#header'] = array(
-    'label' => 'Material', 
-    'ftype'=>'Type', 
-    'AI'=>'Active Ingredient(s)', 
-    'REI'=>'REI', 
-    'PHI' => 'PHI', 
-    'FRAC' => 'FRAC', 
-    'PM' => 'PM', 
-    'DM' => 'DM', 
-    'Ph' => 'Ph', 
-    'BR' => 'BR', 
-    'Bot' => 'Bot'
-  );
+  $element['#header'] = $element_header;
   return $element;
 }
 
