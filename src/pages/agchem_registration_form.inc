@@ -74,6 +74,11 @@ function agchem_registration_form($form, &$form_state, $dh_adminreg_feature = nu
   // reformat attached fields
   $form['dh_link_admin_reg_issuer']['und']['#title'] = 'Registering Authority';
   $form['dh_link_admin_reg_issuer']['und']['#multiple'] = FALSE;
+  global $user;
+  dpm($user,'user');
+//  if (!in_array('administrator', 'IPM Admin'), $user->roles) {
+  //  // restrict options to user-defined if not an admin 
+  //}
   $form['registration_id']['und'][0]['value']['#required'] = TRUE;
   $form['registration_id']['und'][0]['value']['#description'] = t('The id issued by the reulatory authority, or in the case of a user-defined material, or non-registered, a unique identifier (for user-defined this can be the same as material name).');
   //dpm($dh_adminreg_feature,'feature');
