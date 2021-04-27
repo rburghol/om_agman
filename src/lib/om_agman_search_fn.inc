@@ -312,6 +312,9 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
         dpm($eff_abbrevs[$chem_record->{$key}], $label . ' and ' .$key);
       }
     }
+    if ($count == 1) {
+      dpm($opts[$id], 'final record');
+    }
     // TBD: for paging, we could use the following style override to hide the items
     //      that are NOT on the current page.  Hidden items DO get returned as selected 
     //      form values if their checkbox would be selected.  This could be done on rebuild
