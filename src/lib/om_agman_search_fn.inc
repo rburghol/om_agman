@@ -388,7 +388,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     // we now have a frac aggregator which saves as a short propcode
     // END - tableselect
   }
-  //dpm($opts,'opts');
+  dpm($opts,'opts');
   
   switch ($mode) {
     case 'search': 
