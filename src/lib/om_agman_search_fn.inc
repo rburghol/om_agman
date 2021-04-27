@@ -281,11 +281,11 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     $target_org_id = $target_org_var->hydroid; 
     $target_org_name = $target_org_var->varname; 
     if (!in_array($target_org_var->varkey, array('org_black_rot', 'org_downy_mildew', 'org_phomopsis', 'org_powdery_mildew', 'org_botrytis'))) {
-      $element_header['target'] = $target_org_name;
+      $element_header[$target_org_name] = $target_org_name;
       $codekeys[$target_org_name] = 'target_org_eff';
     }
   }
-  dpm($target_org_id,' target varid');
+  //dpm($target_org_id,' target varid');
   //dpm($eff_abbrevs,'abbrevs');
   $count = 0;
   while($chem_record = $agchem_result->fetchObject()) {
@@ -358,7 +358,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       }
     }
     if ($count == 1) {
-      dpm($chem_record,'record');
+      //dpm($chem_record,'record');
       //dpm($criteria,'criteria');
     }
     // If this is the search mode, we are looking for chems that do NOT have a link,
@@ -379,7 +379,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       */
     }
     if ($count == 1) {
-      dpm($opts[$id], 'final record');
+      //dpm($opts[$id], 'final record');
     }
     // ****************************
     // END - FILTER DISPLAY
@@ -417,7 +417,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
   $element['#empty'] = t('No content available.');
   $element['#required'] = TRUE;
   $element['#header'] = $element_header;
-  dpm($element,'element');
+  //dpm($element,'element');
   return $element;
 }
 
