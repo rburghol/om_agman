@@ -9,15 +9,40 @@ function om_agman_material_query($criteria = array()) {
   $query .="  br.propvalue as br,  ";
   $query .="  dm.propvalue as dm, ";
   $query .="  pm.propvalue as pm, ";
+  $query .="  ph.propvalue as ph, ";
   $query .="  bot.propvalue as bot, ";
   $query .="  rei.propvalue as rei, ";
   $query .="  phi.propvalue as phi, ";
   $query .="  max(pmg.propcode) as pmg, ";
-  if (isset($criteria['target_org'])) {
-    $query .="  target_org.varid as target_org_id, ";
-  }
+  // this will work for any target org since when we use the target org filter
+  // it will only select one anyhow.  Otherwise, this will select the lowest varid target org
+  // but that's ok since it won't be usd. This is a bit hinky, and it only is needed because 
+  // we are struggling to make this SQL deliver all results to the browser to maintain compliance 
+  // with correct formAPI useage.  Maybe there is a better way?
+  $query .="  min(target_org.varid) as target_org_id, "; // tbd: this data model could be made to handle any and all organisms (weeds, insects too) by ditching the varid = pathogen-variable-id for a custom entity link property 
+  $query .="  min(target_org.propvalue) as target_org_eff, ";
   $query .="  array_accum(frac.propcode) as frac_codes, ";
   $query .="  array_accum(ai.propname) as ai ";
+  // tbd: we could do searching 2 different, ($filter_in_sql = true or False) by reporting in a field if this is a match
+  //      and then deciding whether or not to filter on "match" or not in an external query like so:
+  //   select * from (
+  //      select farm.hydroid, chem.name, ..., 
+  //      CASE 
+  //   if (isset($criteria['target_frac']) {
+  //      WHEN target_frac IS NOT NULL THEN 1
+  //   }
+  //   if (isset($criteria['target_org']) {
+  //      WHEN target_org IS NOT NULL THEN 1
+  //    }
+  //   if (isset($criteria['rei']) {
+  //      WHEN rei IS NOT NULL THEN 1
+  //    }
+  //    ELSE 0 AS search_match
+  //    ... (more sql)
+  //   ) as foo 
+  //  if ($filter_in_sql) {
+  //   WHERE search_match is not null
+  //  }
   $query .="from dh_adminreg_feature as chem  ";
   $query .="left outer join field_data_field_link_agchem_material as clink ";
   $query .="  on (";
@@ -53,6 +78,12 @@ function om_agman_material_query($criteria = array()) {
   $query .="    and bot.entity_type = 'dh_adminreg_feature'";
   $query .="    and bot.varid in (select hydroid from dh_variabledefinition where varkey = 'org_botrytis')";
   $query .="  )";
+  $query .="  left outer join dh_properties as ph ";
+  $query .="  on (";
+  $query .="    ph.featureid = chem.adminid";
+  $query .="    and ph.entity_type = 'dh_adminreg_feature'";
+  $query .="    and ph.varid in (select hydroid from dh_variabledefinition where varkey = 'org_phomopsis')";
+  $query .="  )";
   $query .="  left outer join dh_properties as rei ";
   $query .="  on (";
   $query .="    rei.featureid = chem.adminid";
@@ -71,20 +102,22 @@ function om_agman_material_query($criteria = array()) {
   $query .="    and pmg.entity_type = 'dh_adminreg_feature'";
   $query .="    and pmg.varid in (select hydroid from dh_variabledefinition where varkey = 'ipm_vt_pmg_material')";
   $query .="  )";
-  
-  if (isset($criteria['target_org'])) {
-    // track target organism and efficacy
-    $target_org = $criteria['target_org']['value'];
-    $query .= " 
-      left outer join dh_properties as target_org 
-      on (
-        target_org.featureid = chem.adminid
-        and target_org.entity_type = 'dh_adminreg_feature'
-        and target_org.varid = '$target_org'
-      )
-    ";
-  }
-  
+  // always include a target org, but if there was not one submitted, just join a null variable to have the value fields
+  // we will only filter on this in list mode here, but there is code in the form widget display to filter out on 
+  // efficacy. 
+  $tvid = isset($criteria['target_org']) ? $criteria['target_org']['value'] : 'show_nothing_at_all';
+  $query .= " left outer join dh_properties as target_org ";
+  $query .= " on (";
+  $query .= "   target_org.featureid = chem.adminid ";
+  $query .= "   and target_org.entity_type = 'dh_adminreg_feature' ";
+  $query .= "   and target_org.varid in (select hydroid from dh_variabledefinition where varkey = '" . $criteria['target_org']['value']  . "')";
+  $query .= "   and target_org.propvalue is not null ";
+  // if we ask for target org, we must make sure the efficacy is between 1 and 7, but is NOT equal to 6 (N for none)
+  // this use of 6 is bullshit data modeling.  It should be zero.  We will need to make this amendment to the database via SQL
+  // some time soon.  But for now, we filter here, then later if we have an efficacy minimum, it will throw a >= that should still 
+  // be compatible with this query logic. 
+  $query .= " and (target_org.propvalue >= 1 and target_org.propvalue <> 6) "; ;
+  $query .= " )";  
   $query .= " left outer join dh_properties as frac
   on (
     frac.featureid = chem.adminid
@@ -124,7 +157,7 @@ function om_agman_material_query($criteria = array()) {
     $query .= "   and propcode ilike '%" . $criteria['ai']['value'] . "%' ";
     $query .= " ) ";
   }
-  
+  // could this be used in a "report match" type query, with the target frac as a separate additional join?
   if (isset($criteria['frac'])) {
     $query .= " and chem.adminid in (" ;
     $query .= "   select featureid from dh_properties where   ";
@@ -136,17 +169,10 @@ function om_agman_material_query($criteria = array()) {
   if (isset($criteria['chems'])) {
     $query .= " and chem.adminid in (" . implode(",", $criteria['chems']['value']) . " ) ";
   }
-  // if we ask for target org, we must make sure the efficacy is between 1 and 7, but is NOT equal to 6 (N for none)
-  // this use of 6 is bullshit data modeling.  It should be zero.  We will need to make this amendment to the database via SQL
-  // some time soon.  But for now, we filter here, then later if we have an efficacy minimum, it will throw a >= that should still 
-  // be compatible with this query logic.
-  if (isset($criteria['target_org'])) {
-    $query .= " and (target_org.propvalue >= 1 and propvalue <> 6) "; ;
-  }
   if (isset($criteria['target_eff'])) {
     $query .= " and target_org.propvalue >= " . $criteria['target_eff']['value'];
   }
-  $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
+  $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, ph.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
   $query .= " order by chem.name, br.propvalue, dm.propvalue, pm.propvalue ";
   //dpm($query,'q');
   //dpm($criteria,'criteria');
@@ -181,12 +207,25 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     default:
       $sql_criteria = array();
       $sql_criteria['farm_id'] = $criteria['farm_id'];
+      $sql_criteria['target_org'] = $criteria['target_org'];
     break;
   }
   $query = om_agman_material_query($sql_criteria); // see https://github.com/rburghol/om_agman/issues/240
   //dpm($query,'q');
   $agchem_result = db_query($query);
-  
+  $element_header = array(
+    'label' => 'Material', 
+    'ftype'=>'Type', 
+    'AI'=>'Active Ingredient(s)', 
+    'REI'=>'REI', 
+    'PHI' => 'PHI', 
+    'FRAC' => 'FRAC', 
+    'PM' => 'PM', 
+    'DM' => 'DM', 
+    'Ph' => 'Ph', 
+    'BR' => 'BR', 
+    'Bot' => 'Bot'
+  );
   $opts = array();
   $selected = array();
   // Get formatting for 
@@ -220,6 +259,33 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       7 => 'Labelled',
     );
   }
+  $valkeys = array(
+    'REI'=>'agchem_rei', 
+    'PHI' => 'agchem_phi', 
+  );
+  $codekeys = array(
+    'PM' => 'pm', 
+    'DM' => 'dm', 
+    'Ph' => 'ph', 
+    'BR' => 'br', 
+    'Bot' => 'bot'
+  );
+  // target orgs
+  // this is a crap[py work around because we cant figure out how to dynamically update form select options without triggering the "illegal value"
+  // that drupal formapi reports when we do that (it is a security feature but there must be a safe way around it)
+  // since the filter is base on the varkey, but the easiest property join returns the varid, we do a quick query to retrieve the varid 
+  // for use later in our filters
+  $target_org_id = FALSE;
+  if (isset($criteria['target_org'])) {
+    $target_org_var = dh_vardef_info($criteria['target_org']['value']); 
+    $target_org_id = $target_org_var->hydroid; 
+    $target_org_name = $target_org_var->varname; 
+    if (!in_array($target_org_var->varkey, array('org_black_rot', 'org_downy_mildew', 'org_phomopsis', 'org_powdery_mildew', 'org_botrytis'))) {
+      $element_header[$target_org_name] = $target_org_name;
+      $codekeys[$target_org_name] = 'target_org_eff';
+    }
+  }
+  //dpm($target_org_id,' target varid');
   //dpm($eff_abbrevs,'abbrevs');
   $count = 0;
   while($chem_record = $agchem_result->fetchObject()) {
@@ -231,17 +297,6 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     $chem_record->frac_codes = implode(', ', array_unique(explode(',', trim($chem_record->frac_codes,'{}'))));
     $chem_record->ai = implode(', ', array_unique(explode(',', str_replace('"', "", trim(strtolower($chem_record->ai),'{}')))));
     //dpm($chem_record);
-    $valkeys = array(
-      'REI'=>'agchem_rei', 
-      'PHI' => 'agchem_phi', 
-    );
-    $codekeys = array(
-      'PM' => 'pm', 
-      'DM' => 'dm', 
-      'Ph' => 'ph', 
-      'BR' => 'br', 
-      'Bot' => 'bot'
-    );
 
     // BEGIN - tableselect  
     $opts[$id]['label'] .= ($chem_record->pmg == 'PMG') ? $chem_record->name . "<sup>PMG</sup>" : $chem_record->name;
@@ -253,6 +308,9 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
 
     foreach ($codekeys as $label => $key) {
       $opts[$id][$label] = $eff_abbrevs[$chem_record->{$key}];
+      if ($count == 1) {
+        //dpm($eff_abbrevs[$chem_record->{$key}], $label . ' and ' .$key);
+      }
     }
     // TBD: for paging, we could use the following style override to hide the items
     //      that are NOT on the current page.  Hidden items DO get returned as selected 
@@ -293,15 +351,15 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     // see rant above about using "6" as the "no effect" indicator.
     if (isset($criteria['target_org']) and property_exists($chem_record, 'target_org_id')) {
       if ( 
-        (intval($chem_record->target_org_id) != intval($criteria['target_org']['value']))
-        or (intval($chem_record->target_org_id)  == 6)
+        (intval($chem_record->target_org_id) != intval($target_org_id))
+        or (intval($chem_record->target_org_eff) == 6)
       ) {
         $opts[$id]['#attributes'] = array('style' => 'display: none');
       }
     }
     if ($count == 1) {
-      dpm($chem_record,'record');
-      dpm($criteria,'criteria');
+      //dpm($chem_record,'record');
+      //dpm($criteria,'criteria');
     }
     // If this is the search mode, we are looking for chems that do NOT have a link,
     if ($mode == 'select') {
@@ -319,6 +377,9 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
         $opts[$id]['#attributes'] = array('style' => 'display: none');
       }
       */
+    }
+    if ($count == 1) {
+      //dpm($opts[$id], 'final record');
     }
     // ****************************
     // END - FILTER DISPLAY
@@ -355,19 +416,8 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
 //dpm($count,'count');
   $element['#empty'] = t('No content available.');
   $element['#required'] = TRUE;
-  $element['#header'] = array(
-    'label' => 'Material', 
-    'ftype'=>'Type', 
-    'AI'=>'Active Ingredient(s)', 
-    'REI'=>'REI', 
-    'PHI' => 'PHI', 
-    'FRAC' => 'FRAC', 
-    'PM' => 'PM', 
-    'DM' => 'DM', 
-    'Ph' => 'Ph', 
-    'BR' => 'BR', 
-    'Bot' => 'Bot'
-  );
+  $element['#header'] = $element_header;
+  //dpm($element,'element');
   return $element;
 }
 

@@ -57,7 +57,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     $src = new $class($config);
     $target_orgs = $src->incidentCodes();
     $form['target_org'] = array(
-      '#title' => t('Filter by Target Organism'),
+      '#title' => t('Filter by Target Organism (fungicide only)'),
       '#type' => 'select',
       '#default_value' => array(),
       '#options' => $target_orgs,
@@ -68,7 +68,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
       '#size' => 1,
     );  
   } else {
-    watchdog("Cannot get list if target organisms.  Check system.");
+    watchdog("Cannot get list of target organisms.  Please report to system administrator.");
   }
   
   $form['ai'] = array(
