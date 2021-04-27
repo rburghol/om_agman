@@ -285,7 +285,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       $codekeys[$target_org_name] = 'target_org_eff';
     }
   }
-  //dpm($target_org_id,' target varid');
+  dpm($target_org_id,' target varid');
   //dpm($eff_abbrevs,'abbrevs');
   $count = 0;
   while($chem_record = $agchem_result->fetchObject()) {
@@ -309,7 +309,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     foreach ($codekeys as $label => $key) {
       $opts[$id][$label] = $eff_abbrevs[$chem_record->{$key}];
       if ($count == 1) {
-        dpm($eff_abbrevs[$chem_record->{$key}], $label . ' and ' .$key);
+        //dpm($eff_abbrevs[$chem_record->{$key}], $label . ' and ' .$key);
       }
     }
     // TBD: for paging, we could use the following style override to hide the items
@@ -352,12 +352,13 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     if (isset($criteria['target_org']) and property_exists($chem_record, 'target_org_id')) {
       if ( 
         (intval($chem_record->target_org_id) != intval($target_org_id))
-        or (intval($chem_record->target_org_eff)  == 6)
+        or (intval($chem_record->target_org_eff) == 6)
       ) {
         $opts[$id]['#attributes'] = array('style' => 'display: none');
       }
     }
     if ($count == 1) {
+      dpm($chem_record,'record');
       dpm($chem_record,'record');
       //dpm($criteria,'criteria');
     }
@@ -388,7 +389,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
     // we now have a frac aggregator which saves as a short propcode
     // END - tableselect
   }
-  dpm($opts,'opts');
+  //dpm($opts,'opts');
   
   switch ($mode) {
     case 'search': 
