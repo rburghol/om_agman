@@ -358,6 +358,7 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       }
     }
     if ($count == 1) {
+      dpm($target_org_id,' target varid');
       dpm($chem_record,'record');
       dpm($criteria,'criteria');
     }
