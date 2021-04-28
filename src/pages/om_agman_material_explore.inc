@@ -41,6 +41,29 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
     '#required' => FALSE,
     '#size' => 30,
   );  
+  // get target organisms
+  $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginIPMDisease');
+  $class = ctools_plugin_get_class($plugin, 'handler');
+  //dpm($plugin,'plug');
+  $config = array();
+  
+  if ($class) {
+    $src = new $class($config);
+    $target_orgs = $src->incidentCodes();
+    $form['target_org'] = array(
+      '#title' => t('Filter by Target Organism (fungicide only)'),
+      '#type' => 'select',
+      '#default_value' => array(),
+      '#options' => $target_orgs,
+      '#description' => t('Search for materials that are labelled for a specific organism.'),
+      '#required' => FALSE,
+      '#multiple' => FALSE,
+      '#empty_option' => '- Any -',
+      '#size' => 1,
+    );  
+  } else {
+    watchdog("Cannot get list of target organisms.  Please report to system administrator.");
+  }
 
   $form['ai'] = array(
     '#title' => t('Active Ingredient'),
