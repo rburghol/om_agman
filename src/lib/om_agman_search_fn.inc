@@ -146,7 +146,7 @@ function om_agman_material_query($criteria = array()) {
     $query .= " and chem.name ilike '%" . $criteria['name']['value'] . "%'"; ;
   }
   if (isset($criteria['pmg'])) {
-    $query .= " and pmg.propcode ilike '%" . $criteria['pmg']['value'] . "%'"; ;
+    $query .= " and pmg.propcode = '" . $criteria['pmg']['value'] . "'"; ;
   }
   
   if (isset($criteria['ai'])) {
