@@ -131,6 +131,9 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   if (!empty($form_state['input']['ftype'])) {
     $criteria['ftype'] = array('value' => $form_state['input']['ftype']);
   }
+  if (!empty($form_state['input']['target_org'])) {
+    $criteria['target_org'] = array('value' => $form_state['input']['target_org']);
+  }
   // Only show PMG in this form.
   $criteria['pmg'] = array('value' => 'PMG');
   // 
