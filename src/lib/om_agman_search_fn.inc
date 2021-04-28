@@ -174,7 +174,7 @@ function om_agman_material_query($criteria = array()) {
   }
   // TBD: this can be the method to easily unite this query to allow toggling between sql and display filtering
   //      For now, we only implement this for the target org as the other criteria are NOT passed in for the other modes (the other way of doing it)
-  if (isset($criteria['filter_mode']) and ($criteria['filter_mode'] == 'query')) {
+  if (isset($criteria['filter_mode']) and ($criteria['filter_mode']['value'] == 'query')) {
     $query .= " and target_org.varid is not null ";
   }
   $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, ph.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
