@@ -355,6 +355,9 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
         or (intval($chem_record->target_org_eff) == 6)
       ) {
         $opts[$id]['#attributes'] = array('style' => 'display: none');
+        if ($count <= 2) {
+          dpm($chem_record->name,'hiding');
+        }
       }
     }
     if ($count <= 2) {
