@@ -358,8 +358,8 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
       }
     }
     if ($count == 1) {
-      //dpm($chem_record,'record');
-      //dpm($criteria,'criteria');
+      dpm($chem_record,'record');
+      dpm($criteria,'criteria');
     }
     // If this is the search mode, we are looking for chems that do NOT have a link,
     if ($mode == 'select') {
