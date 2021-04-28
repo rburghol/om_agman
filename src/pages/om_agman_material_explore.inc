@@ -136,6 +136,7 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   }
   // Only show PMG in this form.
   $criteria['pmg'] = array('value' => 'PMG');
+  $criteria['filter_mode'] = array('value' => 'query');
   // 
   $new_chems = array();
   $form['chems'] = om_agman_material_search_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the 
