@@ -361,6 +361,8 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     //om_agman_form_block_select($form['dh_link_feature_submittal'], $this->dh_farm_feature->hydroid);
     // now we use this function and only include this one single field.
     $block_select = om_agman_form_block_select2($this->dh_adminreg_feature);
+    dpm($this->dh_adminreg_feature,'ar feature');
+    dpm($block_select, 'select box');
     $form['dh_link_feature_submittal'] = $block_select;
   
     $form['dh_link_feature_submittal']['#weight'] = 3;
