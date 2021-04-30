@@ -73,7 +73,7 @@
     // RWB - replace this:
     //om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
     //$form['dh_link_feature_submittal'] = $form_copy['dh_link_feature_submittal'];
-    //dpm($form,'form');
+    dpm($dh_adminreg_feature,'dh_adminreg_feature');
     // with THIS:
     $block_select = om_agman_form_block_select2($dh_adminreg_feature);
     $form['dh_link_feature_submittal'] = $block_select;
