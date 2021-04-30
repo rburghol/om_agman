@@ -360,6 +360,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     //field_attach_form('dh_adminreg_feature', $this->dh_adminreg_feature, $form, $form_state);
     //om_agman_form_block_select($form['dh_link_feature_submittal'], $this->dh_farm_feature->hydroid);
     // now we use this function and only include this one single field.
+    $this->dh_adminreg_feature->farmid = $this->dh_farm_feature->hydroid;
     $block_select = om_agman_form_block_select2($this->dh_adminreg_feature);
     dpm($this->dh_adminreg_feature,'ar feature');
     dpm($block_select, 'select box');
