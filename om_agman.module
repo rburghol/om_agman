@@ -136,6 +136,129 @@ function om_agman_form_block_select(&$element, $farmid = FALSE) {
   return $element;
 }
 
+
+function om_agman_form_material_select2($entity) {
+  $criteria = array(
+    'farm_id' => array('value' => $entity->farmid)
+  );
+  $checkboxes = om_agman_material_search_opts('current', $criteria);
+  //dpm($entity->farmid,"farm id");
+  $element = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'field-type-entityreference', 
+        'field-name-field-link-to-registered-agchem', 
+        'field-widget-options-buttons'
+      ),
+    ),
+    '#tree' => TRUE,
+    '#language' => 'und',
+    '#access' => TRUE
+  );
+  $element['und'] = $checkboxes;
+  $element['und']['#entity'] = $entity;
+  $element['und']['#entity_type'] = $entity->entityType();
+  $element['und']['#bundle'] = $entity->bundle;
+  $element['und']['#field_name'] = 'dh_link_feature_submittal';
+  $element['und']['#language'] = 'und';
+  $element['und']['#multiple'] = TRUE;
+  $element['und']['#required'] = FALSE;
+  $element['und']['#delta'] = 0;
+  $element['und']['#empty'] = t('None Selected.');
+  $element['und']['#type'] = 'tableselect';
+  $element['und']['#value_key'] = 'target_id';
+  $element['und']['#columns'] = array('target_id');
+  $element['und']['#after_build'] = array(
+    0 => 'field_form_element_after_build'
+  );
+  $element['und']['#element_validate'] = array(
+    0 => 'options_field_widget_validate'
+  );
+  
+  // set the predefined options or NONE if this is a new event 
+  $deftable = array();
+  $event_chems = $entity->field_link_to_registered_agchem['und'];
+  $event_chems = array_column($event_chems, 'target_id');
+  foreach ($event_chems as $selopt ) {
+    $deftable[$selopt] = 1;
+  }
+  $element['und']['#default_value'] = $deftable;
+  return $element;
+  
+}
+
+function om_agman_form_block_select2($entity) {
+  // selected options are in event_blocks
+  $event_blocks = $entity->dh_link_feature_submittal['und'];
+  $event_blocks = array_column($event_blocks, 'target_id');
+  $element = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array( 
+        0 => 'field-type-entityreference',
+        1 => 'field-name-dh-link-feature-submittal',
+        2 => 'field-widget-entityreference-autocomplete'
+      ),
+    ),
+    '#weight' => 2,
+    '#tree' => TRUE,
+    '#language' => 'und',
+    'und' => array(),
+    '#access' => TRUE
+  );
+  //dpm($entity,'entity');
+  //dpm($entity->farmid,"farm id");
+  $element['und']['#entity'] = $entity;
+  $element['und']['#entity_type'] = $entity->entityType();
+  $element['und']['#bundle'] = $entity->bundle;
+  $element['und']['#field_name'] = 'dh_link_feature_submittal';
+  $element['und']['#language'] = 'und';
+  $element['und']['#multiple'] = TRUE;
+  $element['und']['#required'] = FALSE;
+  $element['und']['#delta'] = 0;
+  $element['und']['#empty'] = t('None Selected.');
+  $element['und']['#type'] = 'tableselect';
+  $element['und']['#value_key'] = 'target_id';
+  $element['und']['#columns'] = array('target_id');
+  $element['und']['#after_build'] = array(
+    0 => 'field_form_element_after_build'
+  );
+  $element['und']['#element_validate'] = array(
+    0 => 'options_field_widget_validate'
+  );
+  $element['und']['#header'] = array(
+    'label' => 'Block', 
+  );
+  // Now populate
+  $deftable = array();
+  //dpm($element,'block select element');
+  //dpm($def,'block select #default_value');
+  foreach ($event_blocks as $selopt ) {
+    $deftable[$selopt] = 1;
+  }
+  $element['und']['#default_value'] = $deftable;
+  $opts = array();
+  // get vineyard blocks for all options
+  $farm = entity_load_single('dh_feature', $entity->farmid);
+  $element['und']['#prefix'] = "<b>" . t('Blocks to Spray at ') . $farm->name . "</b>";
+  if ($entity->farmid) {
+    $all_blockids = dh_get_facility_mps($entity->farmid, 'landunit');
+    if (count($all_blockids) > 0) {
+      $q = db_query("select hydroid, name from {dh_feature} where hydroid IN (:blocklist) order by name", array(':blocklist' => $all_blockids));
+      foreach ($q as $block) {
+        $id = $block->hydroid;
+        $opts[$id]['label'] .= $block->name;
+      }
+    }
+  }
+  // dpm($element,'el');
+  // END - tableselect
+  $element['und']['#options'] = $opts;
+  
+  return $element;
+}
+
 // custom field formatters
 /**
  * Implements hook_field_formatter_info().
