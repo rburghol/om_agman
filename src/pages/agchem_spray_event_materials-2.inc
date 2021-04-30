@@ -168,16 +168,8 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   );
 
   $block_select = om_agman_form_block_select2($dh_adminreg_feature);
- dpm($block_select, 'selector');
   $form['dh_link_feature_submittal'] = $block_select;
-// dpm($form, 'form');
-  //$dh_adminreg_feature->farmid = property_exists($dh_adminreg_feature, 'farmid') ? $dh_adminreg_feature->farmid : FALSE;
-  //field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form, $form_state);
-  // now, adjust the block ids form to show only those for this vineyard.
-  //om_agman_form_block_select($form['dh_link_feature_submittal'], $dh_adminreg_feature->farmid);
-  //dpm($form['dh_link_feature_submittal'],'field attach form version');
-  //dpm($form, 'form after faf');
-/*
+  
   // Add the chemical selector / material options for this farm
   $fname = 'field_link_to_registered_agchem';
   $criteria = array(
@@ -188,8 +180,10 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   $search_chems['#value'] = $form['dh_link_feature_submittal']['#value'];
   $form[$fname] = $search_chems; // pass in new_chems to this widget to highlight them in the 
   $form[$fname]['#title'] = 'Select Registered Spray Materials to Include for this Farm';
+ dpm($search_chems, 'new search_chems');
   
   
+/*
   $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];
   om_agman_agchem_materials_select($dh_adminreg_feature->farmid, $form, $fname, 'ipm_block_select_formulary', 'page_1', 'dh_adminreg_feature_field_data_field_link_agchem_material_ad');
   $form['data']['#tree'] = TRUE;
