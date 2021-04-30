@@ -267,6 +267,11 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       return FALSE;
     }
     parent::buildForm($form, $form_state);
+    // Added: RWB for fast option forms
+    // NOTICE: These must be in place if entity reference select fields are to be handled correctly, or, one has to call field_attach_form()
+    $form['#entity'] = $this->dh_adminreg_feature;
+    $form['#entity_type'] = $this->dh_adminreg_feature->entityType();
+    $form['#bundle'] = $this->dh_adminreg_feature->bundle;
     $form['name'] = array(
       '#title' => t('Title'),
       '#type' => 'textfield',
@@ -350,10 +355,14 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     foreach ($hidden as $hidethis) {
       $form[$hidethis]['#type'] = 'hidden';
     }
-    field_attach_form('dh_adminreg_feature', $this->dh_adminreg_feature, $form, $form_state);
-    // 'dh_link_feature_submittal', 
-    //$form[$fname]['und']['#options'] = $opts;
-    om_agman_form_block_select($form['dh_link_feature_submittal'], $this->dh_farm_feature->hydroid);
+    // Modified: RWB for fast option forms
+    // comment out field_attach_form 
+    //field_attach_form('dh_adminreg_feature', $this->dh_adminreg_feature, $form, $form_state);
+    //om_agman_form_block_select($form['dh_link_feature_submittal'], $this->dh_farm_feature->hydroid);
+    // now we use this function and only include this one single field.
+    $block_select = om_agman_form_block_select2($dh_adminreg_feature);
+    $form['dh_link_feature_submittal'] = $block_select;
+  
     $form['dh_link_feature_submittal']['#weight'] = 3;
     foreach ($hiddens as $hidethis) {
       if (isset($form[$hidethis])) {
