@@ -36,13 +36,13 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#size' => 1,
   );  
   $form['frac'] = $frac_opts;
-  $form['frac']['#title'] = 'Filter by FRAC';
-  $form['frac']['#empty_option'] = '- All FRACs - ';
+  $form['frac']['#title'] = 'Filter by Mode of Action';
+  $form['frac']['#empty_option'] = '- All Modes - ';
   $form['name'] = array(
     '#title' => t('Material Name'),
     '#type' => 'textfield',
     '#default_value' => '',
-    '#description' => t('Search for material with name containing the entered text.'),
+    '#description' => t('Search for material mode of action such as FRAC and IRAC code.'),
     '#required' => FALSE,
     '#size' => 30,
   );  

@@ -31,15 +31,39 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
     '#size' => 1,
   );  
   $form['frac'] = $frac_opts;
-  $form['frac']['#title'] = 'Filter by FRAC';
+  $form['frac']['#title'] = 'Filter by Mode of Action';
+  $form['frac']['#empty_option'] = '- All Modes - ';
   $form['name'] = array(
     '#title' => t('Material Name'),
     '#type' => 'textfield',
     '#default_value' => '',
-    '#description' => t('Search for material with name containing the entered text.'),
+    '#description' => t('Search for material mode of action such as FRAC and IRAC code.'),
     '#required' => FALSE,
     '#size' => 30,
   );  
+  // get target organisms
+  $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginIPMDisease');
+  $class = ctools_plugin_get_class($plugin, 'handler');
+  //dpm($plugin,'plug');
+  $config = array();
+  
+  if ($class) {
+    $src = new $class($config);
+    $target_orgs = $src->incidentCodes();
+    $form['target_org'] = array(
+      '#title' => t('Filter by Target Organism (fungicide only)'),
+      '#type' => 'select',
+      '#default_value' => array(),
+      '#options' => $target_orgs,
+      '#description' => t('Search for materials that are labelled for a specific organism.'),
+      '#required' => FALSE,
+      '#multiple' => FALSE,
+      '#empty_option' => '- Any -',
+      '#size' => 1,
+    );  
+  } else {
+    watchdog("Cannot get list of target organisms.  Please report to system administrator.");
+  }
 
   $form['ai'] = array(
     '#title' => t('Active Ingredient'),
@@ -107,8 +131,12 @@ function om_agman_material_explore_form($form, &$form_state, $farm_id) {
   if (!empty($form_state['input']['ftype'])) {
     $criteria['ftype'] = array('value' => $form_state['input']['ftype']);
   }
+  if (!empty($form_state['input']['target_org'])) {
+    $criteria['target_org'] = array('value' => $form_state['input']['target_org']);
+  }
   // Only show PMG in this form.
   $criteria['pmg'] = array('value' => 'PMG');
+  $criteria['filter_mode'] = array('value' => 'query');
   // 
   $new_chems = array();
   $form['chems'] = om_agman_material_search_opts('search', $criteria, $new_chems); // pass in new_chems to this widget to highlight them in the 

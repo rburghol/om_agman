@@ -146,7 +146,7 @@ function om_agman_material_query($criteria = array()) {
     $query .= " and chem.name ilike '%" . $criteria['name']['value'] . "%'"; ;
   }
   if (isset($criteria['pmg'])) {
-    $query .= " and pmg.propcode ilike '%" . $criteria['pmg']['value'] . "%'"; ;
+    $query .= " and pmg.propcode = '" . $criteria['pmg']['value'] . "'"; ;
   }
   
   if (isset($criteria['ai'])) {
@@ -171,6 +171,13 @@ function om_agman_material_query($criteria = array()) {
   }
   if (isset($criteria['target_eff'])) {
     $query .= " and target_org.propvalue >= " . $criteria['target_eff']['value'];
+  }
+  // TBD: this can be the method to easily unite this query to allow toggling between sql and display filtering
+  //      For now, we only implement this for the target org as the other criteria are NOT passed in for the other modes (the other way of doing it)
+  if (isset($criteria['filter_mode']) and ($criteria['filter_mode']['value'] == 'query')) {
+    if (isset($criteria['target_org'])) {
+      $query .= " and target_org.varid is not null ";
+    }
   }
   $query .= " group by farm.hydroid, chem.adminid, chem.name, br.propvalue, dm.propvalue, ph.propvalue, pm.propvalue, bot.propvalue, rei.propvalue, phi.propvalue";
   $query .= " order by chem.name, br.propvalue, dm.propvalue, pm.propvalue ";
@@ -355,9 +362,13 @@ function om_agman_material_search_opts($mode, $criteria, $new_chems = array(), $
         or (intval($chem_record->target_org_eff) == 6)
       ) {
         $opts[$id]['#attributes'] = array('style' => 'display: none');
+        if ($count <= 2) {
+          //dpm($chem_record->name,'hiding');
+        }
       }
     }
-    if ($count == 1) {
+    if ($count <= 2) {
+      //dpm($target_org_id,' target varid');
       //dpm($chem_record,'record');
       //dpm($criteria,'criteria');
     }
