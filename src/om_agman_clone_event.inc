@@ -6,7 +6,11 @@
     // grab copies of the fields from the original form, but we don't want to show them all.
     $form_copy = $form;
     $form_state_copy = $form_state;
-    field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form_copy, $form_state_copy);
+    // NOTICE: These must be in place if entity reference select fields are to be handled correctly, or, one has to call field_attach_form()
+    $form['#entity'] = $dh_adminreg_feature;
+    $form['#entity_type'] = $dh_adminreg_feature->entityType();
+    $form['#bundle'] = $dh_adminreg_feature->bundle;
+    //field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form_copy, $form_state_copy);
     // add copied fields 
     if (isset($form_copy['ftype'])) {
       $form['ftype'] = $form_copy['ftype'];
@@ -66,9 +70,12 @@
     );
     
     // format the block selector 
-    om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
-    $form['dh_link_feature_submittal'] = $form_copy['dh_link_feature_submittal'];
+    // RWB - replace this:
+    //om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
+    //$form['dh_link_feature_submittal'] = $form_copy['dh_link_feature_submittal'];
     //dpm($form,'form');
+    // with THIS:
+    $block_select = om_agman_form_block_select2($dh_adminreg_feature);
     
     $form['description'] = $form_copy['description'];
     
