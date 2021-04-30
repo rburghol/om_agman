@@ -76,7 +76,7 @@
     //dpm($form,'form');
     // with THIS:
     $block_select = om_agman_form_block_select2($dh_adminreg_feature);
-    
+    $form['dh_link_feature_submittal'] = $block_select;
     $form['description'] = $form_copy['description'];
     
     $form['actions'] = array('#type' => 'actions');
