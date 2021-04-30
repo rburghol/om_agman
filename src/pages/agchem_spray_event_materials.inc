@@ -115,6 +115,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   $form['data']['#tree'] = TRUE;
   //dpm($form[$fname],'original chem form');
   dpm($form,'form');
+  dpm($dh_adminreg_feature,'feature');
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
