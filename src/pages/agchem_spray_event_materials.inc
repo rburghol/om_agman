@@ -114,7 +114,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   om_agman_agchem_materials_select($dh_adminreg_feature->farmid, $form, $fname, 'ipm_block_select_formulary', 'page_1', 'dh_adminreg_feature_field_data_field_link_agchem_material_ad');
   $form['data']['#tree'] = TRUE;
   //dpm($form[$fname],'original chem form');
-  
+  dpm($form,'form');
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
