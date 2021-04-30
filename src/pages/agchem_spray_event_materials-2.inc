@@ -1,11 +1,61 @@
 <?php
 
 // use in any page with 1-line:
-//   module_load_include('inc', 'om_agman', 'src/pages/agchem_spray_event_materials');
+//   module_load_include('inc', 'om_agman', 'src/pages/agchem_spray_event_materials-2');
 
 module_load_include('module', 'om_agman');
 module_load_include('inc', 'om_agman', 'src/lib/om_agman_search_fn');
 
+function om_agman_form_material_select2($entity) {
+  $criteria = array(
+    'farm_id' => array('value' => $entity->farmid)
+  );
+  $checkboxes = om_agman_material_search_opts('current', $criteria);
+  //dpm($entity->farmid,"farm id");
+  $element = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array(
+        'field-type-entityreference', 
+        'field-name-field-link-to-registered-agchem', 
+        'field-widget-options-buttons'
+      ),
+    ),
+    '#tree' => TRUE,
+    '#language' => 'und',
+    '#access' => TRUE
+  );
+  $element['und'] = $checkboxes;
+  $element['und']['#entity'] = $entity;
+  $element['und']['#entity_type'] = $entity->entityType();
+  $element['und']['#bundle'] = $entity->bundle;
+  $element['und']['#field_name'] = 'dh_link_feature_submittal';
+  $element['und']['#language'] = 'und';
+  $element['und']['#multiple'] = TRUE;
+  $element['und']['#required'] = FALSE;
+  $element['und']['#delta'] = 0;
+  $element['und']['#empty'] = t('None Selected.');
+  $element['und']['#type'] = 'tableselect';
+  $element['und']['#value_key'] = 'target_id';
+  $element['und']['#columns'] = array('target_id');
+  $element['und']['#after_build'] = array(
+    0 => 'field_form_element_after_build'
+  );
+  $element['und']['#element_validate'] = array(
+    0 => 'options_field_widget_validate'
+  );
+  
+  // set the predefined options or NONE if this is a new event 
+  $deftable = array();
+  $event_chems = $entity->field_link_to_registered_agchem['und'];
+  $event_chems = array_column($event_chems, 'target_id');
+  foreach ($event_chems as $selopt ) {
+    $deftable[$selopt] = 1;
+  }
+  $element['und']['#default_value'] = $deftable;
+  return $element;
+  
+}
 
 function om_agman_form_block_select2($entity) {
   // selected options are in event_blocks
@@ -26,7 +76,7 @@ function om_agman_form_block_select2($entity) {
     'und' => array(),
     '#access' => TRUE
   );
-  dpm($entity,'entity');
+  //dpm($entity,'entity');
   //dpm($entity->farmid,"farm id");
   $element['und']['#entity'] = $entity;
   $element['und']['#entity_type'] = $entity->entityType();
@@ -172,15 +222,10 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   
   // Add the chemical selector / material options for this farm
   $fname = 'field_link_to_registered_agchem';
-  $criteria = array(
-    'farm_id' => array('value' => $dh_adminreg_feature->farmid)
-  );
-  $search_chems = om_agman_material_search_opts('current', $criteria);
-  $search_chems['#default_value'] = $form['dh_link_feature_submittal']['#default_value'];
-  $search_chems['#value'] = $form['dh_link_feature_submittal']['#value'];
+  $search_chems = om_agman_form_material_select2($dh_adminreg_feature);
   $form[$fname] = $search_chems; // pass in new_chems to this widget to highlight them in the 
   $form[$fname]['#title'] = 'Select Registered Spray Materials to Include for this Farm';
- dpm($search_chems, 'new search_chems');
+  //dpm($search_chems, 'new search_chems');
   
   
 /*
