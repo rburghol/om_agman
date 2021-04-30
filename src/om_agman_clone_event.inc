@@ -6,6 +6,7 @@
     // grab copies of the fields from the original form, but we don't want to show them all.
     $form_copy = $form;
     $form_state_copy = $form_state;
+    $dh_adminreg_feature->farmid = $farmid;
     // NOTICE: These must be in place if entity reference select fields are to be handled correctly, or, one has to call field_attach_form()
     $form['#entity'] = $dh_adminreg_feature;
     $form['#entity_type'] = $dh_adminreg_feature->entityType();
