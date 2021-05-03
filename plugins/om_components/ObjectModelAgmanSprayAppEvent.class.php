@@ -415,7 +415,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['chem_rates']['#prefix'] .= t('Notice: This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.');
     $form['chem_rates']['#prefix'] .= '</span>';
     $form['chem_rates']['#suffix'] = '</div">';
-    dpm($this->dh_adminreg_feature,'ar fe');
+    //dpm($this->dh_adminreg_feature,'ar fe');
     $desc = $this->dh_adminreg_feature->description['und'][0]['value'];
     $form['description'] = array(
       '#type' => 'textarea',
