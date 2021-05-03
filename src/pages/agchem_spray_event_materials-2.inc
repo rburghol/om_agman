@@ -105,7 +105,13 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   $form[$fname] = $search_chems; // pass in new_chems to this widget to highlight them in the 
   $form[$fname]['#title'] = 'Select Registered Spray Materials to Include for this Farm';
   //dpm($search_chems, 'new search_chems');
-  
+  /*
+  $instance = field_info_instance($entity_type, $field, $dh_adminreg_feature->bundle);
+  $field = field_info_field('description');
+  $element = array();
+  text_field_widget_form($form, $form_state, $field, $instance, 'und', $items, 0, $element);
+  */
+  dpm($dh_adminreg_feature,'event');
   
 /*
   $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];
