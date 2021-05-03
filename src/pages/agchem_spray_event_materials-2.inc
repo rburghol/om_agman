@@ -111,8 +111,15 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   $element = array();
   text_field_widget_form($form, $form_state, $field, $instance, 'und', $items, 0, $element);
   */
-  dpm($dh_adminreg_feature,'event');
-  
+  //dpm($dh_adminreg_feature,'event');
+  $desc = $dh_adminreg_feature->description['und'][0]['value'];
+  $form['description'] = array(
+    '#type' => 'textarea',
+    '#cols' => 60,
+    '#resizable' => TRUE,
+    '#default_value' => $desc,
+    '#rows' => 5
+  );  
 /*
   $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];
   om_agman_agchem_materials_select($dh_adminreg_feature->farmid, $form, $fname, 'ipm_block_select_formulary', 'page_1', 'dh_adminreg_feature_field_data_field_link_agchem_material_ad');
@@ -179,7 +186,7 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   // load the object
-  //dpm($form_state['values'],'fs vals');
+  dpm($form_state['values'],'fs vals');
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
   // replace this with faster plumbing?
   /*
@@ -190,6 +197,8 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   */
   //@todo: 1 houtr per acre
   $dh_adminreg_feature->enddate = dh_handletimestamp($dh_adminreg_feature->startdate) + 3600;
+  // capture the description since we avoided field_attach_form()
+  //$dh_adminreg_feature->description['und'][0]['value'] = $desc;
   $dh_adminreg_feature->save();
   return $dh_adminreg_feature;
 }
