@@ -186,7 +186,7 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   // load the object
-  dpm($form_state['values'],'fs vals');
+  //dpm($form_state['values'],'fs vals');
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
   // replace this with faster plumbing?
   /*
@@ -198,7 +198,7 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   //@todo: 1 houtr per acre
   $dh_adminreg_feature->enddate = dh_handletimestamp($dh_adminreg_feature->startdate) + 3600;
   // capture the description since we avoided field_attach_form()
-  //$dh_adminreg_feature->description['und'][0]['value'] = $desc;
+  $dh_adminreg_feature->description['und'][0]['value'] = $form_state['values']['description'];
   $dh_adminreg_feature->save();
   return $dh_adminreg_feature;
 }
