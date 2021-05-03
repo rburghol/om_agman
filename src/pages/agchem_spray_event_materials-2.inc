@@ -98,12 +98,14 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
 
   $block_select = om_agman_form_block_select2($dh_adminreg_feature);
   $form['dh_link_feature_submittal'] = $block_select;
+  $form['dh_link_feature_submittal']['#weight'] = 10;
   
   // Add the chemical selector / material options for this farm
   $fname = 'field_link_to_registered_agchem';
   $search_chems = om_agman_form_material_select2($dh_adminreg_feature);
   $form[$fname] = $search_chems; // pass in new_chems to this widget to highlight them in the 
   $form[$fname]['#title'] = 'Select Registered Spray Materials to Include for this Farm';
+  $form[$fname]['#weight'] = 20;
   //dpm($search_chems, 'new search_chems');
   /*
   $instance = field_info_instance($entity_type, $field, $dh_adminreg_feature->bundle);
@@ -118,7 +120,8 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
     '#cols' => 60,
     '#resizable' => TRUE,
     '#default_value' => $desc,
-    '#rows' => 5
+    '#rows' => 5,
+    '#weight' => 30
   );  
 /*
   $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];

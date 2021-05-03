@@ -100,6 +100,7 @@ function dh_sprayquan_form_save(&$form, &$form_state) {
   //      have to hand spin see dh.display.inc
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
   //dpm($dh_adminreg_feature,'pre save');
+  $dh_adminreg_feature->description['und'][0]['value'] = $form_state['values']['description'];
   $dh_adminreg_feature->save();
   // handle all the attached stuff
   //dpm($dh_adminreg_feature,'post save');
