@@ -343,7 +343,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
         'cancelled' => t('Cancelled'),
         'post_harvest' => t('Post-Harvest'),
       ),
-    );,
+    );
     // Machine-readable type name.
     $form['bundle'] = array(
       '#type' => 'hidden',
@@ -415,17 +415,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['chem_rates']['#prefix'] .= t('Notice: This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.');
     $form['chem_rates']['#prefix'] .= '</span>';
     $form['chem_rates']['#suffix'] = '</div">';
-    /*
-    $desc = $this->dh_adminreg_feature->description['und'][0]['value'];
-    $form['description'] = array(
-      '#type' => 'textarea',
-      '#cols' => 60,
-      '#resizable' => TRUE,
-      '#default_value' => $desc,
-      '#rows' => 5,
-      '#weight' => 7
-    );  
-    */
+    $form['description']['#weight'] = 7;
     $form['data']['#tree'] = TRUE;
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
