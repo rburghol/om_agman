@@ -416,7 +416,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['chem_rates']['#prefix'] .= '</span>';
     $form['chem_rates']['#suffix'] = '</div">';
     dpm($dh_adminreg_feature,'ar fe');
-    $desc = $dh_adminreg_feature->description['und'][0]['value'];
+    $desc = $this->dh_adminreg_feature->description['und'][0]['value'];
     $form['description'] = array(
       '#type' => 'textarea',
       '#cols' => 60,
