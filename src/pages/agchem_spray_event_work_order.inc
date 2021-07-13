@@ -66,6 +66,7 @@
       //dpm($content,'content');
 
       $event_title = $plan->name;
+      $farm_name = $plan->dh_farm_feature->name;
 //      $event_startdate = new DateTime();
 //      $event_startdate->setTimestamp($plan->startdate);
       $event_startdate = $plan->startdate;
@@ -104,7 +105,7 @@
 
       $title = [
         '#markup' => "<h2><center>IPM Work Order</center></h2> 
-        <h3><center>Mount Alto Vineyards</center></h3>
+        <h3><center>$farm_name</center></h3>
         <p><br><b>&nbsp;&nbsp;Date: </b>$event_startdate<br>
         <b>&nbsp;&nbsp;Locations/Block(s): </b>$block_names<br></p>
         <p><b>&nbsp;&nbsp;Area to Spray: </b>$event_area acres<br>
