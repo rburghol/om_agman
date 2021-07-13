@@ -103,7 +103,7 @@
 //
 
       $title = [
-        '#markup' => "<h2><center>Farm Spray Work Order</center></h2> 
+        '#markup' => "<h2><center>IPM Work Order</center></h2> 
         <h3><center>Mount Alto Vineyards</center></h3>
         <p><br><b>&nbsp;&nbsp;Date: </b>$event_startdate<br>
         <b>&nbsp;&nbsp;Locations/Block(s): </b>$block_names<br></p>
