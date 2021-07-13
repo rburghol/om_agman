@@ -33,8 +33,8 @@
       $form_state = array();
       $event_plugin->buildForm($form, $form_state);
     }
-    dpm($event_plugin,'event_plugin');
-    dpm($plan,'plan');
+    //dpm($event_plugin,'event_plugin');
+    //dpm($plan,'plan');
     if ($plan->fstatus == 'canceled') {
       $pre = "<s>Note: This event has been marked as canceled. ";
       $suf = "</s>";
@@ -51,7 +51,7 @@
     if (isset($tsrecs['dh_timeseries'])) {
       $rez1 = array_shift($tsrecs['dh_timeseries']);
       $ts = entity_load_single('dh_timeseries', $rez1->tid); 
-      dpm($ts,'ts');
+      //dpm($ts,'ts');
     }
     if (is_object($ts)) {
       $ts_plugin = dh_variables_getPlugins($ts);
@@ -59,11 +59,11 @@
       $ts_plugin->load_event_info($newplan);
 // data is all loaded into newplan variable -- load_event_info is the crucial line that does this
 // $newplan->chem_details has the name, rate and units of each chem in an array
-      dpm($newplan,'newplan');
+      //dpm($newplan,'newplan');
       $content = array();
       $ts_plugin->buildContent($content, $ts, 'plugin');
-      dpm($ts_plugin,'ts_plugin');
-      dpm($content,'content');
+      //dpm($ts_plugin,'ts_plugin');
+      //dpm($content,'content');
 
       $event_title = $plan->name;
 //      $event_startdate = new DateTime();
@@ -112,81 +112,56 @@
         <b>&nbsp;&nbsp;Growth Stage %: </b>$scale_volume%<br></p>
         <p><b>&nbsp;&nbsp;Amounts/Quantities to Spray: </b></p>",
       ];
-      dpm($title, 'title');
+      //dpm($title, 'title');
       $title_output = drupal_render($title);
       echo $title_output;
 
-      $chem_details = $newplan->chem_details;
-//      $chem_table = array(
-//       '#theme' => 'table',
-//       '#header' => array('Agrichemical Name', 'Amount', 'Units'),
-//       '#rows'  => $newplan->chem_details,
-//      );
-//     dpm($chem_table, 'chem_table');
-//     $output = drupal_render($chem_table);
-//     echo $output;
+    $chem_details_acre = array();
+    foreach ($newplan->chem_details as $x => $chem_deet) {
+      $chem_deet['units'] = $chem_deet['units'] . "/acre";
+      $chem_deet['rateunits'] = $chem_deet['rate'] . ' ' . $chem_deet['units'];
+      $chem_details_acre[$x] = $chem_deet;
+    }
 
-//     $chem_details_chosen = $newplan->chem_details;
-//     for ($x = 0; $x <= count($newplan->chem_details)-1; $x++) {
-//      $chem_details_chosen[$x]['units'] = $chem_details_chosen[$x]['units'] . //"/acre";
-//     }
-//     $chem_table_chosen = array(
-//      '#theme' => 'table',
-//      '#header' => array('Agrichemical Name', 'Chosen Amount', 'Units'),
-//      '#rows'  => $chem_details_chosen,
-//     );
-//     dpm($chem_table_chosen, 'chem_table_chosen');
-//     $output_chosen = drupal_render($chem_table_chosen);
-//     echo $output_chosen;
+    $chem_details_hundred = array();
+    foreach ($newplan->chem_details as $x => $chem_deet) {
+      $chem_deet['rate'] = $chem_deet['rate'] * 100.0 * $event_area / $spray_volume;
+      $chem_deet['units'] = $chem_deet['units'] . "/100 gallons";
+      $chem_deet['rateunits'] = $chem_deet['rate'] . ' ' . $chem_deet['units'];
+      $chem_details_hundred[$x] = $chem_deet;
+    }
 
-//     $chem_details_total = clone $chem_details;
-     $chem_details_total = $chem_details;
-     for ($x = 0; $x <= count($newplan->chem_details)-1; $x++) {
-      $chem_details_total[$x]['rate'] = $chem_details_total[$x]['rate']*$event_area;
-     }
-     $chem_table_total = array(
+    $chem_details_combined = array();
+    foreach ($chem_details_acre as $x => $chem_deet) {
+      $chem_details_combined[$x]['name'] = $chem_deet['name'];
+      $chem_details_combined[$x]['peracre'] = $chem_deet['rateunits'];
+    }
+    foreach ($chem_details_hundred as $x => $chem_deet) {
+      $chem_details_combined[$x]['perhundred'] = $chem_deet['rateunits'];
+    }
+
+     $chem_table_combined = array(
       '#theme' => 'table',
-      '#header' => array('Agrichemical Name', 'Total Amount', 'Units'),
-      '#rows'  => $chem_details_total,
+      '#header' => array('Material', 'Rate (per acre)', 'Total (per 100 gals)'),
+      '#rows'  => $chem_details_combined,
      );
-     dpm($chem_table_total, 'chem_table_total');
-     $output_total = drupal_render($chem_table_total);
-     echo $output_total;
-
-     $chem_details_ten_gal = $newplan->chem_details;
-     for ($x = 0; $x <= count($newplan->chem_details)-1; $x++) {
-      $chem_details_ten_gal[$x]['rate'] = $chem_details_ten_gal[$x]['rate']*10/$spray_volume;
-//      $chem_details_ten_gal[$x]['units'] = $chem_details_ten_gal[$x]['units'] . "/10 //gallons";
-     }
-     $chem_table_ten_gal = array(
-      '#theme' => 'table',
-      '#header' => array('Agrichemical Name', 'Amount (per 10 gals)', 'Units (per 10 gals)'),
-      '#rows'  => $chem_details_ten_gal,
-     );
-     dpm($chem_table_ten_gal, 'chem_table_ten_gal');
-     $output_ten_gal = drupal_render($chem_table_ten_gal);
-     echo $output_ten_gal;
-
-     $chem_details_hun_gal = $newplan->chem_details;
-     for ($x = 0; $x <= count($newplan->chem_details)-1; $x++) {
-      $chem_details_hun_gal[$x]['rate'] = $chem_details_hun_gal[$x]['rate']*10;
-     }
-     $chem_table_hun_gal = array(
-      '#theme' => 'table',
-      '#header' => array('Agrichemical Name', 'Amount (per 100 gals)', 'Units (per 100 gals)'),
-      '#rows'  => $chem_details_hun_gal,
-     );
-     dpm($chem_table_hun_gal, 'chem_table_hun_gal');
-     $output_hun_gal = drupal_render($chem_table_hun_gal);
-     echo $output_hun_gal;
+     //dpm($chem_table_combined, 'chem_table_combined');
+     $output_combined = drupal_render($chem_table_combined);
+     echo $output_combined;
     }
   }
 
       $note = [
         '#markup' => "<p><b>&nbsp;&nbsp;Note: </b><hr>&nbsp;&nbsp;$note<br><hr></p>",
       ];
-      dpm($note, 'note');
+      //dpm($note, 'note');
       $note_output = drupal_render($note);
       echo $note_output;
 
+      $page2 = [
+        '#markup' => "<p><div style='page-break-before:always'></div>&nbsp;&nbsp;Reserved for Page 2 Content<br></p>",
+      ];
+      //dpm($page2, 'page2');
+      $page2_output = drupal_render($page2);
+      echo $page2_output;
 ?>
