@@ -604,7 +604,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       $chem_names[] = $chem->name . ' @ ' . $chem->amount->propvalue . ' ' . $chem->units->propcode;
       $chem_details[] = array(
         'name' => $chem->name,
-        'rate' => $chem->amount->propvalue, 
+        'rate' => $chem->rate->propvalue, 
+        'amount' => $chem->amount->propvalue, 
         'units' => $chem->units->propcode
       );
       $feature->chems[$cix] = $chem;
