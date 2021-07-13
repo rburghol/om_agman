@@ -136,6 +136,7 @@
     $chem_details_combined = array();
     foreach ($chem_details_acre as $x => $chem_deet) {
       $chem_details_combined[$x]['name'] = $chem_deet['name'];
+      $chem_details_combined[$x]['amount'] = $chem_deet['amount'];
       $chem_details_combined[$x]['peracre'] = $chem_deet['rateunits'];
     }
     foreach ($chem_details_hundred as $x => $chem_deet) {
@@ -144,7 +145,7 @@
 
      $chem_table_combined = array(
       '#theme' => 'table',
-      '#header' => array('Material', 'Rate (per acre)', 'Total (per 100 gals)'),
+      '#header' => array('Material', 'Total to Spray', 'Rate (per acre)', 'Rate (per 100 gals)'),
       '#rows'  => $chem_details_combined,
      );
      //dpm($chem_table_combined, 'chem_table_combined');
