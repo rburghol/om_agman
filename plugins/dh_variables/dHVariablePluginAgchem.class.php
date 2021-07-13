@@ -553,6 +553,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     // REI Defaults
     $feature->rei_ts = $feature->enddate;
     $feature->rei_chems = array(); // chem w/limiting PHI
+    $chem_details = array(); // chem w/limiting PHI
     $feature->rei_info = 'unknown'; // chem w/limiting PHI
     foreach ($feature->chems as $cix => $cheminfo) {
       $chem = entity_load_single('dh_adminreg_feature', $cheminfo['adminid']);
@@ -601,10 +602,16 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       $this->getPHIInfo($feature, $chem);
       
       $chem_names[] = $chem->name . ' @ ' . $chem->amount->propvalue . ' ' . $chem->units->propcode;
+      $chem_details[] = array(
+        'name' => $chem->name,
+        'rate' => $chem->amount->propvalue, 
+        'units' => $chem->units->propcode
+      );
       $feature->chems[$cix] = $chem;
     }
     $chem_list = implode(', \n', $chem_names);
     $feature->chem_items = $chem_names;
+    $feature->chem_details = $chem_details;
     $feature->chem_list = $chem_list;
     // Handle Final PHI Date & REI Date
     $this->getPHIDate($feature);

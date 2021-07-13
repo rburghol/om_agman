@@ -267,6 +267,11 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       return FALSE;
     }
     parent::buildForm($form, $form_state);
+    // Added: RWB for fast option forms
+    // NOTICE: These must be in place if entity reference select fields are to be handled correctly, or, one has to call field_attach_form()
+    $form['#entity'] = $this->dh_adminreg_feature;
+    $form['#entity_type'] = $this->dh_adminreg_feature->entityType();
+    $form['#bundle'] = $this->dh_adminreg_feature->bundle;
     $form['name'] = array(
       '#title' => t('Title'),
       '#type' => 'textfield',
@@ -350,10 +355,17 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     foreach ($hidden as $hidethis) {
       $form[$hidethis]['#type'] = 'hidden';
     }
-    field_attach_form('dh_adminreg_feature', $this->dh_adminreg_feature, $form, $form_state);
-    // 'dh_link_feature_submittal', 
-    //$form[$fname]['und']['#options'] = $opts;
-    om_agman_form_block_select($form['dh_link_feature_submittal'], $this->dh_farm_feature->hydroid);
+    // Modified: RWB for fast option forms
+    // comment out field_attach_form 
+    //field_attach_form('dh_adminreg_feature', $this->dh_adminreg_feature, $form, $form_state);
+    //om_agman_form_block_select($form['dh_link_feature_submittal'], $this->dh_farm_feature->hydroid);
+    // now we use this function and only include this one single field.
+    $this->dh_adminreg_feature->farmid = $this->dh_farm_feature->hydroid;
+    $block_select = om_agman_form_block_select2($this->dh_adminreg_feature);
+    //dpm($this->dh_adminreg_feature,'ar feature');
+    //dpm($block_select, 'select box');
+    $form['dh_link_feature_submittal'] = $block_select;
+  
     $form['dh_link_feature_submittal']['#weight'] = 3;
     foreach ($hiddens as $hidethis) {
       if (isset($form[$hidethis])) {
@@ -403,7 +415,16 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['chem_rates']['#prefix'] .= t('Notice: This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.');
     $form['chem_rates']['#prefix'] .= '</span>';
     $form['chem_rates']['#suffix'] = '</div">';
-    $form['description']['#weight'] = 7;
+    //dpm($this->dh_adminreg_feature,'ar fe');
+    $desc = $this->dh_adminreg_feature->description['und'][0]['value'];
+    $form['description'] = array(
+      '#type' => 'textarea',
+      '#cols' => 60,
+      '#resizable' => TRUE,
+      '#default_value' => $desc,
+      '#rows' => 5,
+      '#weight' => 7
+    );  
     $form['data']['#tree'] = TRUE;
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(

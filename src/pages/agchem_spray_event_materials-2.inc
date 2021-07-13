@@ -1,82 +1,11 @@
 <?php
 
 // use in any page with 1-line:
-//   module_load_include('inc', 'om_agman', 'src/pages/agchem_spray_event_materials');
+//   module_load_include('inc', 'om_agman', 'src/pages/agchem_spray_event_materials-2');
 
 module_load_include('module', 'om_agman');
 module_load_include('inc', 'om_agman', 'src/lib/om_agman_search_fn');
 
-
-function om_agman_form_block_select2($entity) {
-  // selected options are in event_blocks
-  $event_blocks = $entity->dh_link_feature_submittal['und'];
-  $event_blocks = array_column($event_blocks, 'target_id');
-  $element = array(
-    '#type' => 'container',
-    '#attributes' => array(
-      'class' => array( 
-        0 => 'field-type-entityreference',
-        1 => 'field-name-dh-link-feature-submittal',
-        2 => 'field-widget-entityreference-autocomplete'
-      ),
-    ),
-    '#weight' => 2,
-    '#tree' => TRUE,
-    '#language' => 'und',
-    'und' => array(),
-    '#access' => TRUE
-  );
-  dpm($entity,'entity');
-  //dpm($entity->farmid,"farm id");
-  $element['und']['#entity'] = $entity;
-  $element['und']['#entity_type'] = $entity->entityType();
-  $element['und']['#bundle'] = $entity->bundle;
-  $element['und']['#field_name'] = 'dh_link_feature_submittal';
-  $element['und']['#language'] = 'und';
-  $element['und']['#multiple'] = TRUE;
-  $element['und']['#required'] = FALSE;
-  $element['und']['#delta'] = 0;
-  $element['und']['#empty'] = t('None Selected.');
-  $element['und']['#type'] = 'tableselect';
-  $element['und']['#value_key'] = 'target_id';
-  $element['und']['#columns'] = array('target_id');
-  $element['und']['#after_build'] = array(
-    0 => 'field_form_element_after_build'
-  );
-  $element['und']['#element_validate'] = array(
-    0 => 'options_field_widget_validate'
-  );
-  $element['und']['#header'] = array(
-    'label' => 'Block', 
-  );
-  // Now populate
-  $deftable = array();
-  //dpm($element,'block select element');
-  //dpm($def,'block select #default_value');
-  foreach ($event_blocks as $selopt ) {
-    $deftable[$selopt] = 1;
-  }
-  $element['und']['#default_value'] = $deftable;
-  $opts = array();
-  // get vineyard blocks for all options
-  $farm = entity_load_single('dh_feature', $entity->farmid);
-  $element['und']['#prefix'] = "<b>" . t('Blocks to Spray at ') . $farm->name . "</b>";
-  if ($entity->farmid) {
-    $all_blockids = dh_get_facility_mps($entity->farmid, 'landunit');
-    if (count($all_blockids) > 0) {
-      $q = db_query("select hydroid, name from {dh_feature} where hydroid IN (:blocklist) order by name", array(':blocklist' => $all_blockids));
-      foreach ($q as $block) {
-        $id = $block->hydroid;
-        $opts[$id]['label'] .= $block->name;
-      }
-    }
-  }
-  // dpm($element,'el');
-  // END - tableselect
-  $element['und']['#options'] = $opts;
-  
-  return $element;
-}
 
 function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op = 'edit') {
   if ($dh_adminreg_feature === NULL) {
@@ -168,28 +97,33 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   );
 
   $block_select = om_agman_form_block_select2($dh_adminreg_feature);
- dpm($block_select, 'selector');
   $form['dh_link_feature_submittal'] = $block_select;
-// dpm($form, 'form');
-  //$dh_adminreg_feature->farmid = property_exists($dh_adminreg_feature, 'farmid') ? $dh_adminreg_feature->farmid : FALSE;
-  //field_attach_form('dh_adminreg_feature', $dh_adminreg_feature, $form, $form_state);
-  // now, adjust the block ids form to show only those for this vineyard.
-  //om_agman_form_block_select($form['dh_link_feature_submittal'], $dh_adminreg_feature->farmid);
-  //dpm($form['dh_link_feature_submittal'],'field attach form version');
-  //dpm($form, 'form after faf');
-/*
+  $form['dh_link_feature_submittal']['#weight'] = 10;
+  
   // Add the chemical selector / material options for this farm
   $fname = 'field_link_to_registered_agchem';
-  $criteria = array(
-    'farm_id' => array('value' => $dh_adminreg_feature->farmid)
-  );
-  $search_chems = om_agman_material_search_opts('current', $criteria);
-  $search_chems['#default_value'] = $form['dh_link_feature_submittal']['#default_value'];
-  $search_chems['#value'] = $form['dh_link_feature_submittal']['#value'];
+  $search_chems = om_agman_form_material_select2($dh_adminreg_feature);
   $form[$fname] = $search_chems; // pass in new_chems to this widget to highlight them in the 
   $form[$fname]['#title'] = 'Select Registered Spray Materials to Include for this Farm';
-  
-  
+  $form[$fname]['#weight'] = 20;
+  //dpm($search_chems, 'new search_chems');
+  /*
+  $instance = field_info_instance($entity_type, $field, $dh_adminreg_feature->bundle);
+  $field = field_info_field('description');
+  $element = array();
+  text_field_widget_form($form, $form_state, $field, $instance, 'und', $items, 0, $element);
+  */
+  //dpm($dh_adminreg_feature,'event');
+  $desc = $dh_adminreg_feature->description['und'][0]['value'];
+  $form['description'] = array(
+    '#type' => 'textarea',
+    '#cols' => 60,
+    '#resizable' => TRUE,
+    '#default_value' => $desc,
+    '#rows' => 5,
+    '#weight' => 30
+  );  
+/*
   $blockid = $dh_adminreg_feature->dh_link_feature_submittal['und'][0]['target_id'];
   om_agman_agchem_materials_select($dh_adminreg_feature->farmid, $form, $fname, 'ipm_block_select_formulary', 'page_1', 'dh_adminreg_feature_field_data_field_link_agchem_material_ad');
   $form['data']['#tree'] = TRUE;
@@ -255,7 +189,7 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   // load the object
-  dpm($form_state['values'],'fs vals');
+  //dpm($form_state['values'],'fs vals');
   $dh_adminreg_feature = entity_ui_form_submit_build_entity($form, $form_state);
   // replace this with faster plumbing?
   /*
@@ -266,13 +200,15 @@ function dh_app_plan_form_save(&$form, &$form_state) {
   */
   //@todo: 1 houtr per acre
   $dh_adminreg_feature->enddate = dh_handletimestamp($dh_adminreg_feature->startdate) + 3600;
+  // capture the description since we avoided field_attach_form()
+  $dh_adminreg_feature->description['und'][0]['value'] = $form_state['values']['description'];
   $dh_adminreg_feature->save();
   return $dh_adminreg_feature;
 }
 
 function dh_app_plan_form_sprayquan(&$form, &$form_state) {
   dpm(t('This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.'), NULL, 'warning');
-  dpm($form_state['values'], 'values');
+  //dpm($form_state['values'], 'values');
   $blockid = $form_state['values']['dh_link_feature_submittal']['und'][0]['target_id'];
   $dh_adminreg_feature = dh_app_plan_form_save($form, $form_state);
   $url = implode('/', array('ipm-live-events', $blockid, 'sprayquan', $dh_adminreg_feature->adminid));
