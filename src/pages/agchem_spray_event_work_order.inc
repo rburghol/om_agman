@@ -130,7 +130,7 @@
       $chem_deet['rate'] = $chem_deet['rate'] * 100.0 * $event_area / $spray_volume;
       $chem_deet['units'] = $chem_deet['units'] . "/100 gallons";
       $chem_deet['rateunits'] = $chem_deet['rate'] . ' ' . $chem_deet['units'];
-      $chem_deet['amount_units'] = empty($chem_deet['units']) ? '' : $om_agman_convertRateUnitsAmount($chem_deet['units']);
+      $chem_deet['amount_units'] = empty($chem_deet['units']) ? '' : om_agman_convertRateUnitsAmount($chem_deet['units']);
       $chem_details_hundred[$x] = $chem_deet;
     }
 
