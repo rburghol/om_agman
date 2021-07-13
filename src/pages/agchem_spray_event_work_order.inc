@@ -66,7 +66,7 @@
       //dpm($content,'content');
 
       $event_title = $plan->name;
-      $farm_name = $plan->dh_farm_feature->name;
+      $farm_name = $newplan->dh_farm_feature->name;
 //      $event_startdate = new DateTime();
 //      $event_startdate->setTimestamp($plan->startdate);
       $event_startdate = $plan->startdate;
