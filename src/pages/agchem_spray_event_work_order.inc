@@ -59,15 +59,15 @@
       $ts_plugin->load_event_info($newplan);
 // data is all loaded into newplan variable -- load_event_info is the crucial line that does this
 // $newplan->chem_details has the name, rate and units of each chem in an array
-      dpm($newplan,'newplan');
-      dpm($plan,'newplan');
+      //dpm($newplan,'newplan');
+      //dpm($plan,'newplan');
       $content = array();
       $ts_plugin->buildContent($content, $ts, 'plugin');
       //dpm($ts_plugin,'ts_plugin');
       //dpm($content,'content');
 
       $event_title = $plan->name;
-      $farm_name = $newplan->dh_farm_feature->name;
+      $farm_name = $newplan->vineyard->name;
 //      $event_startdate = new DateTime();
 //      $event_startdate->setTimestamp($plan->startdate);
       $event_startdate = $plan->startdate;
