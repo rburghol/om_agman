@@ -485,6 +485,23 @@ function _om_agman_make_link($link_text = '') {
   return '<div id="magical-modal-link">' . l($link_text, 'om_agman/nojs', array('attributes' => array('class' => 'ctools-use-modal'))) . '</div>';
 }
 
+
+function om_agman_convertRateUnitsAmount($rate_units) {
+  // final units
+  $ra_conv = array(
+    'oz/acre' => 'oz',
+    'oz/gal' => 'oz',
+    'floz/acre' => 'floz',
+    'lbs/acre' => 'lbs',
+    'gals/acre' => 'gals',
+    'pt/acre' => 'pt',
+    'pt/gal' => 'pt',
+    'pt/cgal' => 'pt',
+    'qt/acre' => 'qt',
+  );
+  return $ra_conv[$rate_units];
+}
+
 function om_agman_get_block_phi($blockid, $varkey, $startdate, $enddate, $debug = FALSE) {
   // ex: agchem_application_event
   // find the event whose attached phi date prop is the highest 
