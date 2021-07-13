@@ -128,7 +128,6 @@
     $chem_details_hundred = array();
     foreach ($newplan->chem_details as $x => $chem_deet) {
       $chem_deet['rate'] = $chem_deet['rate'] * 100.0 * $event_area / $spray_volume;
-      $chem_deet['amount_units'] = empty($chem_deet['units']) ? '' : om_agman_convertRateUnitsAmount($chem_deet['units']);
       $chem_deet['units'] = $chem_deet['units'];
       $chem_deet['rateunits'] = $chem_deet['rate'] . ' ' . $chem_deet['units'] . "/100 gallons";
       $chem_details_hundred[$x] = $chem_deet;
@@ -137,7 +136,8 @@
     $chem_details_combined = array();
     foreach ($chem_details_acre as $x => $chem_deet) {
       $chem_details_combined[$x]['name'] = $chem_deet['name'];
-      $chem_details_combined[$x]['amount'] = $chem_deet['amount'] . ' ' . $chem_deet['amount_units'];
+      $amount_units = empty($chem_deet['units']) ? '' : om_agman_convertRateUnitsAmount($chem_deet['units']);
+      $chem_details_combined[$x]['amount'] = $chem_deet['amount'] . ' ' . $amount_units;
       $chem_details_combined[$x]['peracre'] = $chem_deet['rateunits'];
     }
     foreach ($chem_details_hundred as $x => $chem_deet) {
