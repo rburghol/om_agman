@@ -79,8 +79,8 @@ function agchem_registration_form($form, &$form_state, $dh_adminreg_feature = nu
   dpm($form['dh_link_admin_reg_issuer']['und']['#options'],'beginning form options');
   //dpm($form['dh_link_admin_reg_issuer'],'options');
   // is admin?
-  $is_admin = in_array('IPM Admin', $user->roles);
-  $is_admin = ($is_admin === FALSE) ? in_array('administrator', $user->roles) : FALSE;
+  $is_admin = in_array('IPM Admin', array_values($user->roles));
+  $is_admin = ($is_admin === FALSE) ? in_array('administrator', array_values($user->roles)) : FALSE;
   if ($is_admin === FALSE) {
     // restrict options to user-defined if not an admin
     $uix = array_search('User Defined', $form['dh_link_admin_reg_issuer']['und']['#options']);
