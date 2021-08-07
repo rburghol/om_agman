@@ -670,6 +670,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label', 'field_image'); // image hidden in most modes, except full render
     foreach ($hidden as $col) {
       $content[$col]['#type'] = 'hidden';
+      $content[$col]['#access'] = FALSE;
     }
     // stash rendered tsvalue, tscode and featureid in case these are used elsewhere
     $content['tscode']['#markup'] = $incident_detail;
