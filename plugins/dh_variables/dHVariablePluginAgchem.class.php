@@ -76,9 +76,6 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
   }
   
   public function rank_efficacies($effs) {
-    if (!empty($effs)) {
-      dpm($effs,'effs');
-    }
     // sorts through the convoluted hierarchy of ranks and chooses the best one.
     $tables = $this->get_eff_tables();
     $ranks = $tables['efficacy_ranking'];
@@ -90,6 +87,9 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
         $best_rank = $rank;
         $best_eff = $eff;
       }
+    }
+    if (!empty($effs)) {
+      dpm($effs,'effs to best eff: ' . $best_eff);
     }
     return $best_eff;
   }
