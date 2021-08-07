@@ -469,6 +469,27 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
         range(15,100,5)
       )
     );
+    // this is not yet used, but we should alert an admin if it seems likely to be useful.
+    if ($row->tsvalue > 0 ) {
+      // check if the tsvalue is incompatible value with the given select list
+      // if so, add it to the select list 
+      $ts_pct = $row->tsvalue;
+      $ts_pct = "$ts_pct";
+      if (!in_array($ts_pct, array_keys($pcts))) {
+        $new_pcts = array();
+        $added = FALSE;
+        foreach ($pcts as $pkey => $pval) {
+          if (!$added) {
+            if ($pkey > $ts_pct) {
+              $new_pcts["$ts_pct"] = round(100.0 * $ts_pct,1) . " %";
+              $added = TRUE;
+            }
+          }
+        }
+        // alert the admin users
+        dpm($new_pcts, "Non-conforming percentile value found $ts_pct ");
+      }
+    }
     $rowform['tsvalue'] = array(
       '#title' => t($varinfo->varname),
       '#type' => 'select',
