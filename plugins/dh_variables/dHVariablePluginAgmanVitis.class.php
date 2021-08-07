@@ -628,7 +628,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     // add photo button option
     $form['actions']['save_add_photo'] = array(
       '#type' => 'submit',
-      '#value' => t('Save'),
+      '#value' => t('Save & Add Photo'),
       '#weight' => 40,
       '#submit' => array('dh_timeseries_form_submit', 'om_attach_photo_property'),
     );
