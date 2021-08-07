@@ -2220,15 +2220,15 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         //dpm($ts,'Create new ts link');
       }
       // SAVE the linked ts
-      if ($ts->tsvalue > 0) {
-        dpm($ts, 'ts pre-save');
-      }
+      //if ($ts->tsvalue > 0) {
+      //  dpm($ts, 'ts pre-save');
+      //}
       $ts->save();
-      if ($ts->tsvalue > 0) {
-        dpm($ts, 'ts post-save');
-        $lts = entity_load_single("dh_timeseries", $ts->tid);
-        dpm($lts, 'ts loaded post-save');
-      }
+      //if ($ts->tsvalue > 0) {
+      //  dpm($ts, 'ts post-save');
+      //  $lts = entity_load_single("dh_timeseries", $ts->tid);
+      //  dpm($lts, 'ts loaded post-save');
+      //}
       // update the link property to insure we have the tid 
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       $prop->linked_ts->dest_entity_type = 'dh_timeseries';
