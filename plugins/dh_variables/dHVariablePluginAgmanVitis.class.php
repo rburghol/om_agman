@@ -1808,6 +1808,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'gfb' => array(
         'entity_type' => $entity->entityType(),
@@ -1826,6 +1829,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'gbm' => array(
         'entity_type' => $entity->entityType(),
@@ -1844,6 +1850,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'glh' => array(
         'entity_type' => $entity->entityType(),
@@ -1862,6 +1871,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'ermite' => array(
         'entity_type' => $entity->entityType(),
@@ -1880,6 +1892,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'gcg' => array(
         'entity_type' => $entity->entityType(),
@@ -1898,6 +1913,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'grb' => array(
         'entity_type' => $entity->entityType(),
@@ -1916,6 +1934,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'swd' => array(
         'entity_type' => $entity->entityType(),
@@ -1934,6 +1955,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'bmsb' => array(
         'entity_type' => $entity->entityType(),
@@ -1952,6 +1976,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'jbeetle' => array(
         'entity_type' => $entity->entityType(),
@@ -1991,6 +2018,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
     );
     return $defaults;
