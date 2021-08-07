@@ -1143,12 +1143,14 @@ function om_attach_photo_property(&$form, &$form_state) {
     dpm($dh_timeseries,' attaching photo to entity');
     $url = "admin/content/dh_properties/add/dh_properties";
     $options = array(
-      'varid' => 'dh_image_field',
-      'featureid' => $dh_timeseries->tid,
-      'entity_type' => 'dh_timeseries',
+      'query' => array(
+        'varid' => 'dh_image_field',
+        'featureid' => $dh_timeseries->tid,
+        'entity_type' => 'dh_timeseries',
+      )
     );
     if ($params['finaldest']) {
-      $options["destination"] = $params['finaldest'];
+      $options["query"]["destination"] = $params['finaldest'];
     }
     drupal_goto($url, $options);
   }
