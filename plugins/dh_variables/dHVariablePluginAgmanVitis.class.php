@@ -720,7 +720,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
     */
     $opts = array(
       'cutworms' => 'Climbing Cutworms',
-      'bm_stinkbugs' => 'Brown marmorated stink bug',
+      'bmsb' => 'Brown marmorated stink bug',
       'gbm' => 'Grape berry moth',
       'glh' => 'Grape Leaf Hopper',
       'swd' => 'Spotted wing drosophila',
