@@ -558,12 +558,19 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
   
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
+    // now handled in parent, is OK?
+    /*
     $pcts = array('<1');
     for ($i = 5; $i < 95; $i+= 5) {
+      if ($row->tsvalue > 0 ) {
+        // check if there is an incompatible value from the given select list
+        // if so, add this to the select list 
+      }
       $pcts[] = $i;
     }
     $pcts[] = '>95';
     $pcts = $this->pct_list($pcts);
+    */
     $form['tsvalue']['#options'] = $pcts;
     $form['tsvalue']['#description'] = t('% of Plants Affected.  To use incident/extent notation click below to expand the section labeled Advanced');
     $form['tsvalue']['#weight'] = 3;
