@@ -41,6 +41,7 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
       'efficacy_abbrev' => $this->effAbbrev(),
       'efficacy_full' => $this->effFull(),
       'efficacy_ranking' => array(
+        '' => -10, // not available is always the worst, unless something promotes the target!
         0 => -10, // not available is always the worst, unless something promotes the target!
         1 => 10, // Excellent 10 is top ranked (until we have Hors Categorie)
         2 => 8, // Good
