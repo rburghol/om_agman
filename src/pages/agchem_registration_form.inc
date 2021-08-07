@@ -76,6 +76,7 @@ function agchem_registration_form($form, &$form_state, $dh_adminreg_feature = nu
   $form['dh_link_admin_reg_issuer']['und']['#multiple'] = FALSE;
   global $user;
   dpm($user->roles,'user');
+  dpm($user->form,'user');
   //dpm($form['dh_link_admin_reg_issuer'],'options');
   // is admin?
   $is_admin = in_array('IPM Admin', $user->roles);
