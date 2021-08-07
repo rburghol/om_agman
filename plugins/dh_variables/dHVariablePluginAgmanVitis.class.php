@@ -1970,6 +1970,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_outbreak'
+        ),
       ),
       'mb' => array(
         'entity_type' => $entity->entityType(),
@@ -2137,10 +2140,17 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         $ts->tissue_type = $thisvar['tissue_type'];
       } else {
         // create 
+        if (!isset($thisvar['link_info'])) {
+          $link_info = array(
+            'varkey' => 'ipm_outbreak'
+          );
+        } else {
+          $link_info = $thisvar['link_info'];
+        }
         $ts_info = array(
           'featureid' => $entity->featureid,
           'entity_type' => $entity->entity_type,
-          'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+          'varid' => dh_varkey2varid($link_info['varkey'], TRUE),
           'tscode' => $prop->propcode,
           'tsvalue' => $prop->propvalue,
           'tstime' => $entity->tstime,
