@@ -666,6 +666,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     if ($varinfo === FALSE) {
       return;
     }
+    dpm($content,'orig content');
     $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label', 'image'); // image hidden in most modes, except full render
     foreach ($hidden as $col) {
       $content[$col]['#type'] = 'hidden';
