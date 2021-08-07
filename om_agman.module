@@ -1152,6 +1152,9 @@ function om_attach_photo_property(&$form, &$form_state) {
     if ($params['finaldest']) {
       $options["query"]["destination"] = $params['finaldest'];
     }
+    if ($params['destination']) {
+      $options["query"]["destination"] = $params['destination'];
+    }
     drupal_goto($url, $options);
   }
   
