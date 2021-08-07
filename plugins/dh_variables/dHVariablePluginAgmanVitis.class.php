@@ -725,7 +725,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         $content['field_image']['#weight'] = 10;
       break;
     }
-    dpm($content,'content');
+    //dpm($content,'content');
   }
   
 }
