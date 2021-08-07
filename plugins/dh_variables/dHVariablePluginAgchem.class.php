@@ -16,6 +16,7 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
       5 => 'P',
       6 => 'N',
       7 => 'Lab',
+      8 => 'Var',
     );
   }
   
@@ -29,7 +30,49 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
       5 => 'Poor',
       6 => 'None',
       7 => 'Labelled',
+      8 => 'Variable',
     );
+  }
+  
+  public function get_eff_tables() {
+    // 0 is the worst, but 1 is the best.
+    // how about Efficacy ranking?
+    $eff_tables = array(
+      'efficacy_abbrev' => $this->effAbbrev(),
+      'efficacy_full' => $this->effFull(),
+      'efficacy_ranking' => array(
+        0 => -10, // not available is always the worst, unless something promotes the target!
+        1 => 10, // Excellent 10 is top ranked (until we have Hors Categorie)
+        2 => 8, // Good
+        3 => 6, // Good/Fair
+        4 => 5, // Fair
+        5 => 4, // perfect
+        6 => -10, // none 
+        7 => 4, // Labelled is akin to poor
+        8 => 5, // variable is equated with Fair
+      ),
+      'efficacy_sym' => array(
+        0=> '?',
+        1=> '++',
+        2=> '+',
+        3=> '+',
+        4=> '-',
+        5=> '--',
+        6=> '∅',
+        7=> 'L',
+      ),
+      'efficacy_color' => array(
+        0=> '#e5e5e5',
+        1=> '#009900',
+        2=> '#33b233',
+        3=> '#66cc66',
+        4=> '#993599',
+        5=> '#ccffcc',
+        6=> '#ffffff',
+        7=> '#993599',
+      )
+    );
+    return $eff_tables;
   }
   
   public function formRowEdit(&$form, $entity) {
