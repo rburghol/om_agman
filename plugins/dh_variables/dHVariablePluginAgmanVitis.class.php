@@ -1971,7 +1971,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'options' => $disease_opts,
         '#weight' => 7,
         'link_info' => array(
-          'varkey' => 'ipm_outbreak'
+          'varkey' => 'ipm_event'
         ),
       ),
       'mb' => array(
