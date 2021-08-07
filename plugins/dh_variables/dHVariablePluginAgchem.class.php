@@ -89,7 +89,7 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
       }
     }
     if (!empty($effs)) {
-      dpm($effs,'effs to best eff: ' . $best_eff);
+      dpm($effs,'effs to best eff: ' . $best_eff . " and rank: " . $best_rank);
     }
     return $best_eff;
   }
