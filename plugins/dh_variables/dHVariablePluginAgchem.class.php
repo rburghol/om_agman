@@ -82,15 +82,15 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
     $best_rank = min(array_values($ranks));
     $best_eff = $ranks[$best_rank];
     foreach ($effs as $eff) {
-      $rank = isset($ranks[$eff]) ? min(array_values($ranks)) : $ranks[$eff];
+      $rank = isset($ranks[$eff]) ? $ranks[$eff] : min(array_values($ranks));
       if ($rank > $best_rank) {
         $best_rank = $rank;
         $best_eff = $eff;
       }
     }
-    if (!empty($effs)) {
-      dpm($effs,'effs to best eff: ' . $best_eff . " and rank: " . $best_rank);
-    }
+    //if (!empty($effs)) {
+    //  dpm($effs,'effs to best eff: ' . $best_eff . " and rank: " . $best_rank);
+    //}
     return $best_eff;
   }
   
