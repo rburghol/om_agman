@@ -81,7 +81,7 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
     $tables = $this->get_eff_tables();
     $ranks = $tables['efficacy_ranking'];
     $best_rank = min(array_values($ranks));
-    $best_eff = $ranks[$best_rank];
+    $best_eff = 0;
     foreach ($effs as $eff) {
       $rank = isset($ranks[$eff]) ? $ranks[$eff] : min(array_values($ranks));
       if ($rank > $best_rank) {
