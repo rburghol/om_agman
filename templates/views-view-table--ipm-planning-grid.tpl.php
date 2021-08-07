@@ -46,6 +46,8 @@ if ($class) {
   $eff_plugin = new $class($config);
   $eff_tables = $eff_plugin->get_eff_tables();
   $efficacy = $eff_tables['efficacy_full'];
+  // Add N/A ranking of 0 for backwards compatibility
+  $efficacy[0] = 'N/A';
   $efficacy_ranking = $eff_tables['efficacy_ranking'];
   $efficacy_sym = $eff_tables['efficacy_sym'];
   $efficacy_color = $eff_tables['efficacy_color'];
