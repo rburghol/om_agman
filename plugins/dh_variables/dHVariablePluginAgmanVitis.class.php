@@ -2098,45 +2098,45 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       // - propvalue = id of source entity, which is pathogen prop on this TS record 
       // - propcode = entity type of source entity, which is pathogen prop on this TS record 
       // - dest_entity_type = dh_timeseries, 
-        // - dest_entity_id = tid of pathogen record 
-        // @todo: move this code into the dHOMLinkage plugin 
-        //    - each property should be defined as a sub-prop of the link,
-        //      so, every single property of the destination entity can be 
-        //      copied from whatever source we choose, creating a full mapping.
-        //      This will be useful here as well as in WebForm maps, or any other 
-        //      flexible, decoupled form designing mechanism.
-        //     - These sub-props should have only src_prop and dest_prop, which automatically 
-        //       assumes the linked entity 
-        //   so:
-        //   @todo: this prop_tree array is not used, should actually be a host of child properties 
-        //          each which is copied via its own methods, recursively called by the parent
-        //     - is there another module that does this? like migrate?
-        $linked_prop_def = array(
-          'src_entity_type' => 'dh_timeseries',
-          'src_prop' => 'leaf_black_rot',
-          'dest_entity_type' => 'dh_timeseries',
-          'dest_prop' => 'tsvalue',
-          'dest_properties' => array(
-            // for use with "push remote prop" linkages, i.e. type 4 
-            // implement tokens for all of this 
-            'Sharing' => array('propname' => 'Sharing', 'propcode' => '[Sharing:propcode]'),
-            'tissue_type' => 'leaf', // probably can do this since the class will use it on save?
-            'tsvalue' => '[leaf_black_rot:propvalue]',
-            'tscode' => array('src_prop' => 'tscode', 'dest_prop' => 'tscode'),
-            'tstime' => array('src_prop' => 'tstime', 'dest_prop' => 'tstime'),
-          )
-        );
-        // this can be used with the new om_tokenize function as follows:
-        // create an array to store the tokenized data
-        // $tout = array();
-        // turn the object with all it's attached ovject into an array
-        // $tsa = json_decode(json_encode($entity), true);
-        // now turn the array of flat object props, into a set of unique tokens (only allow desired props)
-        // om_tokenize('', $tsa, $tout, ':', array('propcode', 'propname', 'pid', 'propvalue', 'entity_type', 'featureid'));
-        // now, finally, use token_replace with a special OM callback function that allows any token to be created in 
-        // the passed in $data array 
-        // $linked_prop_def['dest_properties']['tsvalue'] = token_replace($prop['black_rot'], $tout, array('callback'=>'om_token_replace_all'));
-        // END - not used prototype data model 
+      // - dest_entity_id = tid of pathogen record 
+      // @todo: move this code into the dHOMLinkage plugin 
+      //    - each property should be defined as a sub-prop of the link,
+      //      so, every single property of the destination entity can be 
+      //      copied from whatever source we choose, creating a full mapping.
+      //      This will be useful here as well as in WebForm maps, or any other 
+      //      flexible, decoupled form designing mechanism.
+      //     - These sub-props should have only src_prop and dest_prop, which automatically 
+      //       assumes the linked entity 
+      //   so:
+      //   @todo: this prop_tree array is not used, should actually be a host of child properties 
+      //          each which is copied via its own methods, recursively called by the parent
+      //     - is there another module that does this? like migrate?
+      $linked_prop_def = array(
+        'src_entity_type' => 'dh_timeseries',
+        'src_prop' => 'leaf_black_rot',
+        'dest_entity_type' => 'dh_timeseries',
+        'dest_prop' => 'tsvalue',
+        'dest_properties' => array(
+          // for use with "push remote prop" linkages, i.e. type 4 
+          // implement tokens for all of this 
+          'Sharing' => array('propname' => 'Sharing', 'propcode' => '[Sharing:propcode]'),
+          'tissue_type' => 'leaf', // probably can do this since the class will use it on save?
+          'tsvalue' => '[leaf_black_rot:propvalue]',
+          'tscode' => array('src_prop' => 'tscode', 'dest_prop' => 'tscode'),
+          'tstime' => array('src_prop' => 'tstime', 'dest_prop' => 'tstime'),
+        )
+      );
+      // this can be used with the new om_tokenize function as follows:
+      // create an array to store the tokenized data
+      // $tout = array();
+      // turn the object with all it's attached ovject into an array
+      // $tsa = json_decode(json_encode($entity), true);
+      // now turn the array of flat object props, into a set of unique tokens (only allow desired props)
+      // om_tokenize('', $tsa, $tout, ':', array('propcode', 'propname', 'pid', 'propvalue', 'entity_type', 'featureid'));
+      // now, finally, use token_replace with a special OM callback function that allows any token to be created in 
+      // the passed in $data array 
+      // $linked_prop_def['dest_properties']['tsvalue'] = token_replace($prop['black_rot'], $tout, array('callback'=>'om_token_replace_all'));
+      // END - not used prototype data model 
       $varinfo = array(
         'propname' => 'linked_ts', 
         'varkey' => 'om_map_model_linkage', 
@@ -2192,7 +2192,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         //dpm($ts,'Create new ts link');
       }
       // SAVE the linked ts
-      //dpm($ts, 'ts pre-save');
+      if ($ts->tsvalue > 0) {
+        dpm($ts, 'ts pre-save');
+      }
       $ts->save();
       // update the link property to insure we have the tid 
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
