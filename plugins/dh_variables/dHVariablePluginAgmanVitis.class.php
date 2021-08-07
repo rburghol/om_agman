@@ -2136,6 +2136,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         //    using getSourceEntity 
         $ts->tscode = $prop->propcode;
         $ts->tsvalue = $prop->propvalue;
+        $ts->featureid = $entity->featureid; // in case the form has changed feature, update this here as well.
         $ts->Sharing = $entity->Sharing->propcode;
         $ts->tissue_type = $thisvar['tissue_type'];
       } else {
