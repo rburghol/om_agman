@@ -507,8 +507,8 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
 }
 
 class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector {
-  var $loval = 0.05;
-  var $lolabel = '<=5%';
+  var $loval = 0.01;
+  var $lolabel = '<=1%';
   var $attach_method = 'contained';
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
