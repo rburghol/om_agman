@@ -625,6 +625,17 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     unset($form['Extent']);
     //dpm($form,'form');
     
+    /*
+    // eliminated in favor of field_image attached to dh_timeseries directly
+    // add photo button option
+    $form['actions']['save_add_photo'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save & Add Photo'),
+      '#weight' => 40,
+      '#submit' => array('dh_timeseries_form_submit', 'om_attach_photo_property'),
+    );
+    */
+    
   }
   
   public function save(&$entity) {
@@ -655,7 +666,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     if ($varinfo === FALSE) {
       return;
     }
-    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label');
+    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label', 'image'); // image hidden in most modes, except full render
     foreach ($hidden as $col) {
       $content[$col]['#type'] = 'hidden';
     }
@@ -700,6 +711,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
           '#type' => 'item',
           '#markup' => "$varname: $incident_detail @ $pct in " . $feature->name,
         );
+        $content['image']['#type'] = 'item';
       break;
     }
   }

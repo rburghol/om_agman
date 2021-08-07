@@ -1135,4 +1135,28 @@ function om_agman_form_alter(&$form, &$form_state, $form_id) {
   if (isset($form['type']) && $form['type']['#value'] . '_node_settings' == $form_id) {
   }
 }
+
+function om_attach_photo_property(&$form, &$form_state) {
+  // redirect to an add photo 
+  if (is_object($form['#entity'])) {
+    $dh_timeseries = $form['#entity'];
+    dpm($dh_timeseries,' attaching photo to entity');
+    $url = "admin/content/dh_properties/add/dh_properties";
+    $options = array(
+      'query' => array(
+        'varid' => 'dh_image_field',
+        'featureid' => $dh_timeseries->tid,
+        'entity_type' => 'dh_timeseries',
+      )
+    );
+    if ($params['finaldest']) {
+      $options["query"]["destination"] = $params['finaldest'];
+    }
+    if ($params['destination']) {
+      $options["query"]["destination"] = $params['destination'];
+    }
+    drupal_goto($url, $options);
+  }
+  
+}
 ?>
