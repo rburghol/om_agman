@@ -692,14 +692,20 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         );
       break;
       case 'tsvalue':
+        $content['tsvalue']['#type'] = 'item';
+        $content['tsvalue']['#access'] = TRUE;
         unset($content['tsvalue']['#title']);
         unset($content['tstext']);
       break;
       case 'tscode':
+        $content['tscode']['#type'] = 'item';
+        $content['tscode']['#access'] = TRUE;
         unset($content['tscode']['#title']);
         unset($content['tstext']);
       break;
       case 'featureid':
+        $content['featureid']['#type'] = 'item';
+        $content['featureid']['#access'] = TRUE;
         unset($content['featureid']['#title']);
         unset($content['tstext']);
       break;
@@ -714,6 +720,8 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
           '#markup' => "$varname: $incident_detail @ $pct in " . $feature->name,
         );
         $content['field_image']['#type'] = 'item';
+        $content['field_image']['#access'] = TRUE;
+        unset($content['field_image']['#title']);
         $content['field_image']['#weight'] = 10;
       break;
     }
