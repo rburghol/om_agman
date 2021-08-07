@@ -1140,6 +1140,7 @@ function om_attach_photo_property(&$form, &$form_state) {
   // redirect to an add photo 
   dpm($form_state->dh_timeseries, 'dh_timeseries');
   dpm($form_state, 'form state');
+  dpm($form, 'form');
   $url = "admin/content/dh_properties/add/dh_properties?varid=dh_image_field&featureid=120461425&entity_type=dh_timeseries&destination=admin/content/dh_timeseries/manage/120461425/dh_properties";
   
 }
