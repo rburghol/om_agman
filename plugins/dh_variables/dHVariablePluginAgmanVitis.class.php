@@ -469,6 +469,27 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
         range(15,100,5)
       )
     );
+    // this is not yet used, but we should alert an admin if it seems likely to be useful.
+    if ($row->tsvalue > 0 ) {
+      // check if the tsvalue is incompatible value with the given select list
+      // if so, add it to the select list 
+      $ts_pct = $row->tsvalue;
+      $ts_pct = "$ts_pct";
+      if (!in_array($ts_pct, array_keys($pcts))) {
+        $new_pcts = array();
+        $added = FALSE;
+        foreach ($pcts as $pkey => $pval) {
+          if (!$added) {
+            if ($pkey > $ts_pct) {
+              $new_pcts["$ts_pct"] = round(100.0 * $ts_pct,1) . " %";
+              $added = TRUE;
+            }
+          }
+        }
+        // alert the admin users
+        dpm($new_pcts, "Non-conforming percentile value found $ts_pct ");
+      }
+    }
     $rowform['tsvalue'] = array(
       '#title' => t($varinfo->varname),
       '#type' => 'select',
@@ -486,8 +507,8 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
 }
 
 class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector {
-  var $loval = 0.05;
-  var $lolabel = '<=5%';
+  var $loval = 0.01;
+  var $lolabel = '<=1%';
   var $attach_method = 'contained';
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
@@ -558,13 +579,20 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
   
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
+    // now handled in parent, is OK?
+    /*
     $pcts = array('<1');
     for ($i = 5; $i < 95; $i+= 5) {
+      if ($row->tsvalue > 0 ) {
+        // check if there is an incompatible value from the given select list
+        // if so, add this to the select list 
+      }
       $pcts[] = $i;
     }
     $pcts[] = '>95';
     $pcts = $this->pct_list($pcts);
     $form['tsvalue']['#options'] = $pcts;
+    */
     $form['tsvalue']['#description'] = t('% of Plants Affected.  To use incident/extent notation click below to expand the section labeled Advanced');
     $form['tsvalue']['#weight'] = 3;
     
@@ -692,7 +720,7 @@ class dHVariablePluginIPMIncident extends dHVariablePluginIPMIncidentExtent {
     */
     $opts = array(
       'cutworms' => 'Climbing Cutworms',
-      'bm_stinkbugs' => 'Brown marmorated stink bug',
+      'bmsb' => 'Brown marmorated stink bug',
       'gbm' => 'Grape berry moth',
       'glh' => 'Grape Leaf Hopper',
       'swd' => 'Spotted wing drosophila',
@@ -1303,6 +1331,8 @@ class dHVariablePluginIPMDisease extends dHVariablePluginIPMIncident {
   
   public function getIncidentDetail($entity ) {
     $codes = $this->incidentCodes();
+    //dpm($codes,'codes');
+    //dpm($entity,'entity');
     $incident_detail = !empty($entity->tscode) and isset($codes[$entity->tscode]) ? $codes[$entity->tscode] : $varname;
     $incident_detail = count($codes) > 0 ? $codes[$entity->tscode] : $varname;
     $incident_detail .= ' on ' . $entity->tissue_type->propcode;
@@ -1806,6 +1836,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'gfb' => array(
         'entity_type' => $entity->entityType(),
@@ -1824,6 +1857,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'gbm' => array(
         'entity_type' => $entity->entityType(),
@@ -1842,6 +1878,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'glh' => array(
         'entity_type' => $entity->entityType(),
@@ -1860,6 +1899,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'ermite' => array(
         'entity_type' => $entity->entityType(),
@@ -1878,6 +1920,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'gcg' => array(
         'entity_type' => $entity->entityType(),
@@ -1896,6 +1941,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'grb' => array(
         'entity_type' => $entity->entityType(),
@@ -1914,6 +1962,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'swd' => array(
         'entity_type' => $entity->entityType(),
@@ -1932,6 +1983,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'bmsb' => array(
         'entity_type' => $entity->entityType(),
@@ -1950,6 +2004,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'jbeetle' => array(
         'entity_type' => $entity->entityType(),
@@ -1968,6 +2025,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
       'mb' => array(
         'entity_type' => $entity->entityType(),
@@ -1986,6 +2046,9 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         'block' => 'Insects',
         'options' => $disease_opts,
         '#weight' => 7,
+        'link_info' => array(
+          'varkey' => 'ipm_event'
+        ),
       ),
     );
     return $defaults;
@@ -2063,45 +2126,45 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
       // - propvalue = id of source entity, which is pathogen prop on this TS record 
       // - propcode = entity type of source entity, which is pathogen prop on this TS record 
       // - dest_entity_type = dh_timeseries, 
-        // - dest_entity_id = tid of pathogen record 
-        // @todo: move this code into the dHOMLinkage plugin 
-        //    - each property should be defined as a sub-prop of the link,
-        //      so, every single property of the destination entity can be 
-        //      copied from whatever source we choose, creating a full mapping.
-        //      This will be useful here as well as in WebForm maps, or any other 
-        //      flexible, decoupled form designing mechanism.
-        //     - These sub-props should have only src_prop and dest_prop, which automatically 
-        //       assumes the linked entity 
-        //   so:
-        //   @todo: this prop_tree array is not used, should actually be a host of child properties 
-        //          each which is copied via its own methods, recursively called by the parent
-        //     - is there another module that does this? like migrate?
-        $linked_prop_def = array(
-          'src_entity_type' => 'dh_timeseries',
-          'src_prop' => 'leaf_black_rot',
-          'dest_entity_type' => 'dh_timeseries',
-          'dest_prop' => 'tsvalue',
-          'dest_properties' => array(
-            // for use with "push remote prop" linkages, i.e. type 4 
-            // implement tokens for all of this 
-            'Sharing' => array('propname' => 'Sharing', 'propcode' => '[Sharing:propcode]'),
-            'tissue_type' => 'leaf', // probably can do this since the class will use it on save?
-            'tsvalue' => '[leaf_black_rot:propvalue]',
-            'tscode' => array('src_prop' => 'tscode', 'dest_prop' => 'tscode'),
-            'tstime' => array('src_prop' => 'tstime', 'dest_prop' => 'tstime'),
-          )
-        );
-        // this can be used with the new om_tokenize function as follows:
-        // create an array to store the tokenized data
-        // $tout = array();
-        // turn the object with all it's attached ovject into an array
-        // $tsa = json_decode(json_encode($entity), true);
-        // now turn the array of flat object props, into a set of unique tokens (only allow desired props)
-        // om_tokenize('', $tsa, $tout, ':', array('propcode', 'propname', 'pid', 'propvalue', 'entity_type', 'featureid'));
-        // now, finally, use token_replace with a special OM callback function that allows any token to be created in 
-        // the passed in $data array 
-        // $linked_prop_def['dest_properties']['tsvalue'] = token_replace($prop['black_rot'], $tout, array('callback'=>'om_token_replace_all'));
-        // END - not used prototype data model 
+      // - dest_entity_id = tid of pathogen record 
+      // @todo: move this code into the dHOMLinkage plugin 
+      //    - each property should be defined as a sub-prop of the link,
+      //      so, every single property of the destination entity can be 
+      //      copied from whatever source we choose, creating a full mapping.
+      //      This will be useful here as well as in WebForm maps, or any other 
+      //      flexible, decoupled form designing mechanism.
+      //     - These sub-props should have only src_prop and dest_prop, which automatically 
+      //       assumes the linked entity 
+      //   so:
+      //   @todo: this prop_tree array is not used, should actually be a host of child properties 
+      //          each which is copied via its own methods, recursively called by the parent
+      //     - is there another module that does this? like migrate?
+      $linked_prop_def = array(
+        'src_entity_type' => 'dh_timeseries',
+        'src_prop' => 'leaf_black_rot',
+        'dest_entity_type' => 'dh_timeseries',
+        'dest_prop' => 'tsvalue',
+        'dest_properties' => array(
+          // for use with "push remote prop" linkages, i.e. type 4 
+          // implement tokens for all of this 
+          'Sharing' => array('propname' => 'Sharing', 'propcode' => '[Sharing:propcode]'),
+          'tissue_type' => 'leaf', // probably can do this since the class will use it on save?
+          'tsvalue' => '[leaf_black_rot:propvalue]',
+          'tscode' => array('src_prop' => 'tscode', 'dest_prop' => 'tscode'),
+          'tstime' => array('src_prop' => 'tstime', 'dest_prop' => 'tstime'),
+        )
+      );
+      // this can be used with the new om_tokenize function as follows:
+      // create an array to store the tokenized data
+      // $tout = array();
+      // turn the object with all it's attached ovject into an array
+      // $tsa = json_decode(json_encode($entity), true);
+      // now turn the array of flat object props, into a set of unique tokens (only allow desired props)
+      // om_tokenize('', $tsa, $tout, ':', array('propcode', 'propname', 'pid', 'propvalue', 'entity_type', 'featureid'));
+      // now, finally, use token_replace with a special OM callback function that allows any token to be created in 
+      // the passed in $data array 
+      // $linked_prop_def['dest_properties']['tsvalue'] = token_replace($prop['black_rot'], $tout, array('callback'=>'om_token_replace_all'));
+      // END - not used prototype data model 
       $varinfo = array(
         'propname' => 'linked_ts', 
         'varkey' => 'om_map_model_linkage', 
@@ -2131,14 +2194,22 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         //    using getSourceEntity 
         $ts->tscode = $prop->propcode;
         $ts->tsvalue = $prop->propvalue;
+        $ts->featureid = $entity->featureid; // in case the form has changed feature, update this here as well.
         $ts->Sharing = $entity->Sharing->propcode;
         $ts->tissue_type = $thisvar['tissue_type'];
       } else {
         // create 
+        if (!isset($thisvar['link_info'])) {
+          $link_info = array(
+            'varkey' => 'ipm_outbreak'
+          );
+        } else {
+          $link_info = $thisvar['link_info'];
+        }
         $ts_info = array(
           'featureid' => $entity->featureid,
           'entity_type' => $entity->entity_type,
-          'varid' => dh_varkey2varid('ipm_outbreak', TRUE),
+          'varid' => dh_varkey2varid($link_info['varkey'], TRUE),
           'tscode' => $prop->propcode,
           'tsvalue' => $prop->propvalue,
           'tstime' => $entity->tstime,
@@ -2149,8 +2220,15 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
         //dpm($ts,'Create new ts link');
       }
       // SAVE the linked ts
-      //dpm($ts, 'ts pre-save');
+      //if ($ts->tsvalue > 0) {
+      //  dpm($ts, 'ts pre-save');
+      //}
       $ts->save();
+      //if ($ts->tsvalue > 0) {
+      //  dpm($ts, 'ts post-save');
+      //  $lts = entity_load_single("dh_timeseries", $ts->tid);
+      //  dpm($lts, 'ts loaded post-save');
+      //}
       // update the link property to insure we have the tid 
       // @todo: once this goes into the dHOMLinkage plugin we can delete call to save this property 
       $prop->linked_ts->dest_entity_type = 'dh_timeseries';
