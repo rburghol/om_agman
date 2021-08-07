@@ -666,9 +666,11 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
     if ($varinfo === FALSE) {
       return;
     }
-    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label', 'image'); // image hidden in most modes, except full render
+    //dpm($content,'orig content');
+    $hidden = array('varname', 'tstime', 'tid', 'tsvalue', 'tscode', 'entity_type', 'featureid', 'tsendtime', 'modified', 'label', 'field_image'); // image hidden in most modes, except full render
     foreach ($hidden as $col) {
       $content[$col]['#type'] = 'hidden';
+      $content[$col]['#access'] = FALSE;
     }
     // stash rendered tsvalue, tscode and featureid in case these are used elsewhere
     $content['tscode']['#markup'] = $incident_detail;
@@ -690,14 +692,20 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         );
       break;
       case 'tsvalue':
+        $content['tsvalue']['#type'] = 'item';
+        $content['tsvalue']['#access'] = TRUE;
         unset($content['tsvalue']['#title']);
         unset($content['tstext']);
       break;
       case 'tscode':
+        $content['tscode']['#type'] = 'item';
+        $content['tscode']['#access'] = TRUE;
         unset($content['tscode']['#title']);
         unset($content['tstext']);
       break;
       case 'featureid':
+        $content['featureid']['#type'] = 'item';
+        $content['featureid']['#access'] = TRUE;
         unset($content['featureid']['#title']);
         unset($content['tstext']);
       break;
@@ -711,9 +719,13 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
           '#type' => 'item',
           '#markup' => "$varname: $incident_detail @ $pct in " . $feature->name,
         );
-        $content['image']['#type'] = 'item';
+        $content['field_image']['#type'] = 'item';
+        $content['field_image']['#access'] = TRUE;
+        unset($content['field_image']['#title']);
+        $content['field_image']['#weight'] = 10;
       break;
     }
+    //dpm($content,'content');
   }
   
 }
