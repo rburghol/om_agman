@@ -95,9 +95,12 @@ foreach ($yrwk_master as $yrwk => $yrwk_rows) {
          $eff[] = $idx;
        }
      }
-     $eff_index = empty($eff) ? 0 : min($eff);
-     // text label only
-     $row[$col] = $efficacy[$eff_index];
+     // Replace this:
+     //  $eff_index = empty($eff) ? 0 : min($eff);
+     //  $row[$col] = $efficacy[$eff_index]; // text label only
+     // With:
+     $eff_index = $eff_plugin->rank_efficacies($eff);
+     // other format options 
      // symbolic only
      //$row[$col] = $efficacy_sym[$eff_index];
      // text label and color

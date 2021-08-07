@@ -75,6 +75,22 @@ class dHVariablePluginEfficacy extends dHVariablePluginDefault {
     return $eff_tables;
   }
   
+  public function rank_efficacies($effs) {
+    // sorts through the convoluted hierarchy of ranks and chooses the best one.
+    $tables = $this->get_eff_tables();
+    $ranks = $tables['efficacy_ranking'];
+    $best_rank = min(array_values($ranks));
+    $best_eff = 0;
+    foreach ($effs as $eff) {
+      $rank = isset($ranks[$eff]) ? min(array_values($ranks)) : $ranks[$eff];
+      if ($rank > $best_rank) {
+        $best_rank = $rank;
+        $best_eff = $eff;
+      }
+    }
+    return $best_eff;
+  }
+  
   public function formRowEdit(&$form, $entity) {
     $form['propcode']['#type'] = 'hidden';
     $form['propvalue']['#type'] = 'select';
