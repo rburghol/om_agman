@@ -45,7 +45,7 @@ $config = array();
 if ($class) {
   $eff_plugin = new $class($config);
   $eff_tables = $eff_plugin->get_eff_tables();
-  $efficacy = $eff_tables['efficacy_abbrev'];
+  $efficacy = $eff_tables['efficacy_full'];
   $efficacy_ranking = $eff_tables['efficacy_ranking'];
   $efficacy_sym = $eff_tables['efficacy_sym'];
   $efficacy_color = $eff_tables['efficacy_color'];
