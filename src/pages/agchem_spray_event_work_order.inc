@@ -77,9 +77,9 @@
       $event_status = $plan->fstatus;
       $block_names = $newplan->block_names;
       $rei_date = $newplan->rei_date;
-      $rei_chems = $newplan->rei_chems;
+      $rei_chems = implode(", ",$newplan->rei_chems);
       $phi_date = $newplan->phi_date;
-      $phi_chems = $newplan->phi_chems;
+      $phi_chems = implode(" ,",$newplan->phi_chems);
       $event_area = $plan->dh_properties['agchem_event_area']->propvalue;
       $event_spray_rate = $plan->dh_properties['agchem_total_spray_rate_galac']->propvalue;
       $spray_tank_size = $plan->dh_properties['agchem_batch_gal']->propvalue;
@@ -112,8 +112,8 @@
         '#markup' => "<h2><center>IPM Work Order</center></h2> 
         <h3><center>$farm_name</center></h3>
         <p><br><b>&nbsp;&nbsp;Date: </b>$event_startdate<br>
-        <p><br><b>&nbsp;&nbsp;Date: </b>$rei_date ($rei_chems)<br>
-        <p><br><b>&nbsp;&nbsp;Date: </b>$phi_date ($phi_chems)<br>
+        <ul><li><b>REI Date: </b>$rei_date ($rei_chems)</li>
+            <li><b>PHI Date: </b>$phi_date ($phi_chems)</li> </ul>
         <b>&nbsp;&nbsp;Locations/Block(s): </b>$block_names<br></p>
         <p><b>&nbsp;&nbsp;Area to Spray: </b>$event_area acres<br>
         <b>&nbsp;&nbsp;Estimate Total Volume to Spray: </b>$spray_volume gallons (at $event_spray_rate gals/acre)<br>
