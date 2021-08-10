@@ -19,10 +19,38 @@ class dHVariablePluginAgmanLocationEvent extends dHVariablePluginDefaultOM {
     return array('tid', 'varid', 'entity_type', 'bundle');
   }
   
+  public function addNonConforming(&$pcts, $value) {
+    // NOTE: this is not yet used, 
+    //    it only alerts an admin if it seems likely to be useful.
+    if ($value > 0 ) {
+      // check if the tsvalue is incompatible value with the given select list
+      // if so, add it to the select list 
+      $ts_pct = $value;
+      $ts_pct = "$ts_pct";
+      if (!in_array($ts_pct, array_keys($pcts))) {
+        $new_pcts = array();
+        $added = FALSE;
+        foreach ($pcts as $pkey => $pval) {
+          if (!$added) {
+            if ($pkey > $ts_pct) {
+              $new_pcts["$ts_pct"] = round(100.0 * floatval($ts_pct),1) . " %";
+              $added = TRUE;
+            }
+          }
+        }
+        // alert the admin users
+        dpm($new_pcts, "Non-conforming percentile value found $ts_pct ");
+      }
+    }
+    // UNCOMMENT THIS TO ENABLE
+    // $pcts = $new_pcts;
+  }
+  
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     return $defaults;
   }
+  
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
     $rowform['tstime']['#weight'] = 0;
@@ -69,7 +97,14 @@ class dHVariablePluginAgmanLocationEvent extends dHVariablePluginDefaultOM {
     $form['tscode']['#title'] = t('Sub-Area');
   }
     
-  public function pct_list($inc = 10) {
+  public function pct_list($inc = FALSE) {
+    // $inc can be an array of numbers, or an increment which will be used to count from zero till 100
+    if ($inc === FALSE) {
+      $inc = array_merge(
+        array(0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        range(15,100,5)
+      );
+    }
     $pcts = array();
     if (is_array($inc)) {
       // we already have our list of percents, just work it out
@@ -271,7 +306,7 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
     }
   }
   
-  public function pct_list($inc = 10) {
+  public function pct_list($inc = 5) {
     $pcts = parent::pct_list($inc);
     $pcts["0"] = "TBD";
     return $pcts;
@@ -306,7 +341,7 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
       '#options' => $actions,
       '#weight' => 1,
     );
-    $pcts = $this->pct_list(10);
+    $pcts = $this->pct_list();
     //$pcts = array();
     //for ($i = 1; $i <= 20; $i++) {
    //   $dec = $i * 0.05;
@@ -348,7 +383,7 @@ class dHVariablePluginVitisCanopyMgmt extends dHVariablePluginAgmanAction {
     $actions = $this->getActions();
     $activity = isset($actions[$entity->tscode]) ? $actions[$entity->tscode] : "Pruning/Canopy";
     $pct = ($entity->tsvalue <= 0.05) ? "<=5%" : round(100.0 * $entity->tsvalue) . '%';
-    $pcts = $this->pct_list(5);
+    $pcts = $this->pct_list();
     $pct = isset($pcts[$entity->tsvalue]) ? $pcts[$entity->tsvalue] : "TBD";
     switch($view_mode) {
       default:
@@ -435,24 +470,6 @@ class dHVariablePluginVitisShootLength extends dHVariablePluginAgmanAction {
 }
 
 class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
-  public function pct_list($inc = 10) {
-    $pcts = array();
-    if (is_array($inc)) {
-      // we already have our list of percents, just work it out
-      foreach ($inc as $i) {
-        $dec = floatval(preg_replace('/\D/', '', $i)) / 100.0;
-        $pcts["$dec"] = $i . " %";
-      }
-    } else {
-      $i = $inc;
-      while ($i <= 100) {
-        $dec = floatval($i) / 100.0;
-        $pcts["$dec"] = $i . " %";
-        $i += $inc;
-      }
-    }
-    return $pcts;
-  }
   
   public function formRowEdit(&$rowform, $row) {
     parent::formRowEdit($rowform, $row); // does hiding etc.
@@ -463,33 +480,7 @@ class dHVariablePluginPercentSelector extends dHVariablePluginAgmanAction {
       return FALSE;
     }
     $rowform['tstime']['#type'] = 'date_popup';
-    $pcts = $this->pct_list(
-      array_merge(
-        array(0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        range(15,100,5)
-      )
-    );
-    // this is not yet used, but we should alert an admin if it seems likely to be useful.
-    if ($row->tsvalue > 0 ) {
-      // check if the tsvalue is incompatible value with the given select list
-      // if so, add it to the select list 
-      $ts_pct = $row->tsvalue;
-      $ts_pct = "$ts_pct";
-      if (!in_array($ts_pct, array_keys($pcts))) {
-        $new_pcts = array();
-        $added = FALSE;
-        foreach ($pcts as $pkey => $pval) {
-          if (!$added) {
-            if ($pkey > $ts_pct) {
-              $new_pcts["$ts_pct"] = round(100.0 * $ts_pct,1) . " %";
-              $added = TRUE;
-            }
-          }
-        }
-        // alert the admin users
-        dpm($new_pcts, "Non-conforming percentile value found $ts_pct ");
-      }
-    }
+    $pcts = $this->pct_list(); // use default which is 1-10 by 1, then to 100 by 5
     $rowform['tsvalue'] = array(
       '#title' => t($varinfo->varname),
       '#type' => 'select',
@@ -579,20 +570,6 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
   
   public function formRowEdit(&$form, $row) {
     parent::formRowEdit($form, $row); // does hiding etc.
-    // now handled in parent, is OK?
-    /*
-    $pcts = array('<1');
-    for ($i = 5; $i < 95; $i+= 5) {
-      if ($row->tsvalue > 0 ) {
-        // check if there is an incompatible value from the given select list
-        // if so, add this to the select list 
-      }
-      $pcts[] = $i;
-    }
-    $pcts[] = '>95';
-    $pcts = $this->pct_list($pcts);
-    $form['tsvalue']['#options'] = $pcts;
-    */
     $form['tsvalue']['#description'] = t('% of Plants Affected.  To use incident/extent notation click below to expand the section labeled Advanced');
     $form['tsvalue']['#weight'] = 3;
     
@@ -800,7 +777,7 @@ class dHVariablePluginVitisVeraison extends dHVariablePluginAgmanAction {
     }
     
     $form['tstime']['#type'] = 'date_popup';
-    $pcts = $this->pct_list(array('<5', 25, 50, 75, 100));
+    $pcts = $this->pct_list();
     $form['tsvalue'] = array(
       '#title' => t('% Veraison'),
       '#type' => 'select',
@@ -930,7 +907,7 @@ class dHVariablePluginVitisBudBreak extends dHVariablePluginAgmanAction {
     $etimename = $this->row_map['end'];
     $rowform[$stimename]['#weight'] = 0;
     $rowform[$codename]['#default_value'] = $row->$codename;
-    $scale_opts = $this->pct_list(range(0,100,5));
+    $scale_opts = $this->pct_list();
     $rowform[$valname]['#type'] = 'select';
     $rowform[$valname]['#options'] = $scale_opts;
     $rowform[$valname]['#size'] = 1;
@@ -1409,12 +1386,7 @@ class dHAgmanSVSampleEvent extends dHVariablePluginAgmanAction {
   public function getDefaults($entity, &$defaults = array()) {
     parent::getDefaults($entity, $defaults);
     $sel = new dHVariablePluginPercentSelector();
-    $disease_opts = $sel->pct_list(
-      array_merge(
-        array(0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        range(15,100,5)
-      )
-    );
+    $disease_opts = $sel->pct_list();
     //dpm($disease_opts,'opts');
     $defaults += array(
       'Sharing' => array(

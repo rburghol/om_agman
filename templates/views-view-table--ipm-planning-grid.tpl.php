@@ -36,36 +36,28 @@ foreach ($rows as $row_count => $row) {
  }
 }
 $i = 0;
-$efficacy = array(
-  0=> 'N/A',
-  1=> 'Excellent',
-  2=> 'Good',
-  3=> 'Good/Fair',
-  4=> 'Fair',
-  5=> 'Poor',
-  6=> 'None',
-  7=> 'Labelled',
-);
-$efficacy_sym = array(
-  0=> '?',
-  1=> '++',
-  2=> '+',
-  3=> '+',
-  4=> '-',
-  5=> '--',
-  6=> '∅',
-  7=> 'L',
-);
-$efficacy_color = array(
-  0=> '#e5e5e5',
-  1=> '#009900',
-  2=> '#33b233',
-  3=> '#66cc66',
-  4=> '#993599',
-  5=> '#ccffcc',
-  6=> '#ffffff',
-  7=> '#993599',
-);
+
+// Get formatting for 
+$plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginEfficacy');
+$class = ctools_plugin_get_class($plugin, 'handler');
+//dpm($plugin,'plug');
+$config = array();
+if ($class) {
+  $eff_plugin = new $class($config);
+  $eff_tables = $eff_plugin->get_eff_tables();
+  $efficacy = $eff_tables['efficacy_full'];
+  // Add N/A ranking of 0 for backwards compatibility
+  $efficacy[0] = 'N/A';
+  $efficacy_ranking = $eff_tables['efficacy_ranking'];
+  $efficacy_sym = $eff_tables['efficacy_sym'];
+  $efficacy_color = $eff_tables['efficacy_color'];
+} else {
+  watchdog('ipm', "Cannot load dHVariablePluginEfficacy");
+  $efficacy = array();
+  $efficacy_ranking = array();
+  $efficacy_sym = array();
+  $efficacy_color = array();
+}
 $rendered_rows = array();
 
 #foreach ($yrwk_rows as $yrwk => $yrwk_rows) {
@@ -77,7 +69,7 @@ foreach ($yrwk_master as $yrwk => $yrwk_rows) {
        unset($values[$ix]);
      }
      if ( (count($values) > 1) and (strip_tags($val) == '--')) {
-       dpm($values);
+       //dpm($values);
        unset($values[$ix]);
      }
    }
@@ -103,9 +95,13 @@ foreach ($yrwk_master as $yrwk => $yrwk_rows) {
          $eff[] = $idx;
        }
      }
-     $eff_index = empty($eff) ? 0 : min($eff);
-     // text label only
-     $row[$col] = $efficacy[$eff_index];
+     // Replace this:
+     //  $eff_index = empty($eff) ? 0 : min($eff);
+     //  
+     // With:
+     $eff_index = $eff_plugin->rank_efficacies($eff);
+     $row[$col] = $efficacy[$eff_index]; // text label only
+     // other format options 
      // symbolic only
      //$row[$col] = $efficacy_sym[$eff_index];
      // text label and color
