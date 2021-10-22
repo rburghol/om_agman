@@ -68,14 +68,14 @@ $event_query .= " 	and arfeat.startdate >= extract(epoch from '2021-01-01'::time
 $event_query .= " 	and arfeat.startdate <= extract(epoch from '2021-12-31'::timestamp) ";
 $event_query .= " ) order by tstime ";
 
-dpm($event_query, 'query');
+//dpm($event_query, 'query');
 $rez = db_query(
   $event_query, 
   array(), 
   array('fetch' => PDO::FETCH_ASSOC)
 );
 $recs = $rez->fetchAllAssoc('tid');
-dpm($recs, 'recs');
+//dpm($recs, 'recs');
 $row_one = $recs[array_shift(array_keys($recs))];
 $header = array_keys($row_one);
 $event_table = array(
