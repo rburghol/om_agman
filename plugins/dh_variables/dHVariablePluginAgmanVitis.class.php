@@ -243,6 +243,14 @@ class dHVariablePluginAgmanLocationEvent extends dHVariablePluginDefaultOM {
           '#markup' => "$varname @ $pct in " . $feature->name,
         );
       break;
+      case 'tiny':
+      // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$varname @ $pct",
+        );
+      break;
       default:
         //$content['title'] = array(
         //  '#type' => 'item',
