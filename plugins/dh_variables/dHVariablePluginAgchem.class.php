@@ -1060,7 +1060,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
         $content = array('body'=>array());
         #$content['body']['#type']= 'item'; 
-        $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list " . $edit_link;
+        $content['body']['#markup'] .= "<b>Spray:</b> $feature->chem_list " . $edit_l;
       break;
       
       case 'full':

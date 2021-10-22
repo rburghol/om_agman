@@ -92,7 +92,7 @@ $events = array();
 foreach ($ts_objects as $ts) {
   dpm($ts,'ts');
   $ts_rendered = array();
-  $ts_rendered = entity_build_content('dh_timeseries', $ts, 'ical_summary', NULL);
+  $ts_rendered = entity_build_content('dh_timeseries', $ts, 'tiny', NULL);
   $events[] = array('description' => drupal_render($ts_rendered));
 }
 dpm($events, 'rendered table');
