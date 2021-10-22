@@ -1224,7 +1224,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content = array();
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "$varname @ " . $entity->tss->propvalue . " brix in " . $feature->name,
+          //'#markup' => "$varname @ " . $entity->tss->propvalue . " brix in " . $feature->name,
         );
       break;
       case 'tiny':
@@ -1232,7 +1232,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content = array();
         $content['body'] = array(
           '#type' => 'item',
-         // '#markup' => '#markup' => "Berry sample analyzed @ " . $entity->tss->propvalue . " brix in ",
+          '#markup' => '#markup' => "Berry sample analyzed @ " . $entity->tss->propvalue . " brix in ",
         );
       break;
       default:
