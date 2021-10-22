@@ -149,6 +149,20 @@ class dHVariablePluginAgchemAI extends dHVariablePluginDefault {
 }
 
 class dHVariablePluginAgchemPHI extends dHVariablePluginDefault {
+      
+  public function buildContent(&$content, &$entity, $view_mode) {
+    parent::buildContent($content, $entity, $view_mode);
+    switch ($view_mode) {
+      case 'tiny':
+      // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "<b>Harvest Allowed as of </b> " . date('Y-m-d h:m:s', dh_handletimestamp($entity->tstime)) . "(PHI Chems: $entity->tscode)",
+        );
+      break;
+    }
+  }
   
   public function formRowEdit(&$form, $entity) {
     $form['propcode']['#type'] = 'hidden';

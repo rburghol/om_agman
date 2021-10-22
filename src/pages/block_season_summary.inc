@@ -40,7 +40,9 @@ $event_query .= " ) ";
 $event_query .= " where  ";
 $event_query .= " ts.entity_type = 'dh_feature' ";
 $event_query .= " and featureid = $fid ";
-$event_query .= " and varid not in (select hydroid from dh_variabledefinition where varkey in ('event_dha_default', 'event_dh_link_submittal_feature') )";
+// exclude standard admin reg event mappings because they are handled in the second query in this UNION
+// exclude the scouting report because individual pathogens are already included.
+$event_query .= " and varid not in (select hydroid from dh_variabledefinition where varkey in ('event_dha_default', 'event_dh_link_submittal_feature', 'om_agman_svform') )";
 $event_query .= " and tstime >= extract(epoch from '2021-01-01'::timestamp) ";
 $event_query .= " and tstime <= extract(epoch from '2021-12-31'::timestamp) ";
 $event_query .= " ) UNION ( 
