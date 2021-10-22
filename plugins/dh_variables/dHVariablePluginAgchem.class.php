@@ -1056,6 +1056,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['body']['#markup'] .= "<br><b>REI: .$feature->rei_date ($feature->rei_chem)";
       break;
       
+      case 'tiny':
+        $content = array('body'=>array());
+        #$content['body']['#type']= 'item'; 
+        $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list " . $edit_link;
+      break;
+      
       case 'full':
         $this->renderWorkOrder($content, $entity, $feature);
       break;

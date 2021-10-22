@@ -67,13 +67,44 @@ $event_query .= " 	and arfeat.startdate <= extract(epoch from '2021-12-31'::time
 $event_query .= " ) order by tstime ";
 
 dpm($event_query, 'query');
-
-$event_table = array(
-'#theme' => 'table',
-'#header' => array('Material', 'Total to Spray', 'Rate (per acre)', 'Rate (per 100 gals)'),
-'#rows'  => $chem_details_combined,
+$rez = db_query(
+  $event_query, 
+  array(), 
+  array('fetch' => PDO::FETCH_ASSOC)
 );
+$recs = $rez->fetchAllAssoc('tid');
+dpm($recs, 'recs');
+$row_one = $recs[array_shift(array_keys($recs))];
+$header = array_keys($row_one);
+$event_table = array(
+  '#theme' => 'table',
+  '#header' => $header,
+  '#rows'  => $recs,
+);
+// just spit out the raw table for debugging
+//$output_combined = drupal_render($event_table);
+//echo $output_combined;
 //dpm($chem_table_combined, 'chem_table_combined');
-$output_combined = drupal_render($chem_table_combined);
+// @todo: every TS and Prop object class has a method buildContent
+//        that takes the active plugin, and renders the object in the requested mode. 
+$ts_objects = entity_load('dh_timeseries', array_keys($recs));
+$events = array();
+foreach ($ts_objects as $ts) {
+  dpm($ts,'ts');
+  $ts_rendered = array();
+  $ts_rendered = entity_build_content('dh_timeseries', $ts, 'ical_summary', NULL);
+  $events[] = array('description' => drupal_render($ts_rendered));
+}
+dpm($events, 'rendered table');
+$row_one = $events[array_shift(array_keys($events))];
+dpm($row_one, 'row_one');
+$header = array_keys($row_one);
+dpm($header, 'header');
+$event_table = array(
+  '#theme' => 'table',
+  '#header' => $header,
+  '#rows'  => $events,
+);
+$output_combined = drupal_render($event_table);
 echo $output_combined;
 ?>
