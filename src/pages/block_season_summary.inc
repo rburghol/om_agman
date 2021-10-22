@@ -90,16 +90,16 @@ $event_table = array(
 $ts_objects = entity_load('dh_timeseries', array_keys($recs));
 $events = array();
 foreach ($ts_objects as $ts) {
-  dpm($ts,'ts');
+  //dpm($ts,'ts');
   $ts_rendered = array();
   $ts_rendered = entity_build_content('dh_timeseries', $ts, 'tiny', NULL);
   $events[] = array('description' => drupal_render($ts_rendered));
 }
-dpm($events, 'rendered table');
+//dpm($events, 'rendered table');
 $row_one = $events[array_shift(array_keys($events))];
-dpm($row_one, 'row_one');
+//dpm($row_one, 'row_one');
 $header = array_keys($row_one);
-dpm($header, 'header');
+//dpm($header, 'header');
 $event_table = array(
   '#theme' => 'table',
   '#header' => $header,
