@@ -1209,7 +1209,8 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     $varname = $varinfo->varname;
     $this->loadProperties($entity);
-    dpm($entity, 'chem sample');
+    $tss = $entity->tss->propvalue;
+    //dpm($entity, 'chem sample');
     if ($varinfo === FALSE) {
       return;
     }
@@ -1232,7 +1233,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content = array();
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => '#markup' => "Berry sample analyzed @ " . $tss . " brix",
+          '#markup' => "Berry sample analyzed @ " . $tss . " brix",
         );
       break;
       default:
@@ -1243,7 +1244,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content['title'] = $link;
         $content['body'] = array(
           '#type' => 'item',
-         // '#markup' => "$varname @ " . $entity->tss->propvalue . " brix in " . $feature->name,
+          '#markup' => "$varname @ " . $tss . " brix in " . $feature->name,
         );
       break;
     }
