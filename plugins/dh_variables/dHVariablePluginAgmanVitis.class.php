@@ -1224,7 +1224,15 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content = array();
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "$varname @ $entity->tss brix in " . $feature->name,
+          '#markup' => "$varname @ " . $entity->tss->propvalue . " brix in " . $feature->name,
+        );
+      break;
+      case 'tiny':
+      // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => '#markup' => "Berry sample analyzed @ " . $entity->tss->propvalue . " brix in ",
         );
       break;
       default:
@@ -1235,7 +1243,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content['title'] = $link;
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "$varname @ $entity->tss brix in " . $feature->name,
+          '#markup' => "$varname @ " . $entity->tss->propvalue . " brix in " . $feature->name,
         );
       break;
     }
