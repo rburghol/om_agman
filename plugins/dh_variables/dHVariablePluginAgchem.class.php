@@ -1012,7 +1012,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     );
     // Edit standalone href link
     $edit_l = l(date('Y-m-d', $feature->startdate) . ' ' . $title, $uri, array('attributes' => array('class' => 'editlink')));
-    $edit_l_tiny = l(' ', $uri, array('attributes' => array('class' => 'editlink')));
+    $wo_uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/workorder/$feature->adminid&destination=$page";
+    $wo_tiny = l(' ', $wo_uri);
     // Other URIs
     $copy_uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/clone/$feature->adminid&destination=$page";
     $copy_l = l(" ", $copy_uri, array('attributes' => array('class' => 'copylink', 'title' => 'Copy this event')));
@@ -1062,7 +1063,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content = array('body'=>array());
         #$content['body']['#type']= 'item'; 
         $chem_list = implode(', ', array_column($feature->chem_details, 'name'));
-        $content['body']['#markup'] .= "<b>Spray:</b> $chem_list " . $edit_l_tiny;
+        $content['body']['#markup'] .= l("<b>Spray:</b> $chem_list ", $wo_uri);
       break;
       
       case 'full':

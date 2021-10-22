@@ -93,7 +93,11 @@ foreach ($ts_objects as $ts) {
   //dpm($ts,'ts');
   $ts_rendered = array();
   $ts_rendered = entity_build_content('dh_timeseries', $ts, 'tiny', NULL);
-  $events[] = array('description' => drupal_render($ts_rendered));
+  $events[] = array(
+    'date' => date( 'Y-m-d', dh_handletimestamp($ts->tstime)), 
+    'description' => drupal_render($ts_rendered),
+    //'style' => 'background-color: pink'
+  );
 }
 //dpm($events, 'rendered table');
 $row_one = $events[array_shift(array_keys($events))];
