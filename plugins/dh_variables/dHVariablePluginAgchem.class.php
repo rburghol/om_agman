@@ -1063,7 +1063,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content = array('body'=>array());
         #$content['body']['#type']= 'item'; 
         $chem_list = implode(', ', array_column($feature->chem_details, 'name'));
-        $content['body']['#markup'] .= l("<b>Spray:</b> $chem_list ", $wo_uri);
+        $content['body']['#markup'] .= "<b>Spray:</b>" . l( $chem_list, $wo_uri);
       break;
       
       case 'full':
