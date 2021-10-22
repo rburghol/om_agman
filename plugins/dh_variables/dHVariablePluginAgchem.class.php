@@ -158,7 +158,7 @@ class dHVariablePluginAgchemPHI extends dHVariablePluginDefault {
         $content = array();
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "<b>Harvest Allowed as of </b> " . date('Y-m-d h:m:s', dh_handletimestamp($entity->tstime)) . "(PHI Chems: $entity->tscode)",
+          '#markup' => "<b>Harvest Allowable as of </b> " . date('Y-m-d h:m:s', dh_handletimestamp($entity->tsendtime)) . " (PHI Chems: $entity->tscode)",
         );
       break;
     }
