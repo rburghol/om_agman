@@ -1208,6 +1208,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     $feature = $this->getParentEntity($entity);
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     $varname = $varinfo->varname;
+    dpm($entity, 'chem sample');
     if ($varinfo === FALSE) {
       return;
     }
