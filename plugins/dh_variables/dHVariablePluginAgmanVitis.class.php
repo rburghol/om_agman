@@ -243,6 +243,14 @@ class dHVariablePluginAgmanLocationEvent extends dHVariablePluginDefaultOM {
           '#markup' => "$varname @ $pct in " . $feature->name,
         );
       break;
+      case 'tiny':
+      // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "$varname @ $pct",
+        );
+      break;
       default:
         //$content['title'] = array(
         //  '#type' => 'item',
@@ -668,6 +676,16 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
           '#markup' => "$varname: $incident_detail @ $pct in " . $feature->name,
         );
       break;
+      
+      case 'tiny':
+      // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "<b>$varname:</b> $incident_detail @ $pct",
+        );
+      break;
+      
       case 'tsvalue':
         $content['tsvalue']['#type'] = 'item';
         $content['tsvalue']['#access'] = TRUE;
@@ -1190,6 +1208,9 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
     $feature = $this->getParentEntity($entity);
     $varinfo = $entity->varid ? dh_vardef_info($entity->varid) : FALSE;
     $varname = $varinfo->varname;
+    $this->loadProperties($entity);
+    $tss = $entity->tss->propvalue;
+    //dpm($entity, 'chem sample');
     if ($varinfo === FALSE) {
       return;
     }
@@ -1204,7 +1225,15 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content = array();
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "$varname @ $entity->tss brix in " . $feature->name,
+          //'#markup' => "$varname @ " . $entity->tss->propvalue . " brix in " . $feature->name,
+        );
+      break;
+      case 'tiny':
+      // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "Berry sample analyzed @ " . $tss . " brix",
         );
       break;
       default:
@@ -1215,7 +1244,7 @@ class dHVariablePluginFruitChemSample extends dHVariablePluginAgmanAction {
         $content['title'] = $link;
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "$varname @ $entity->tss brix in " . $feature->name,
+          '#markup' => "$varname @ " . $tss . " brix in " . $feature->name,
         );
       break;
     }

@@ -149,6 +149,20 @@ class dHVariablePluginAgchemAI extends dHVariablePluginDefault {
 }
 
 class dHVariablePluginAgchemPHI extends dHVariablePluginDefault {
+      
+  public function buildContent(&$content, &$entity, $view_mode) {
+    parent::buildContent($content, $entity, $view_mode);
+    switch ($view_mode) {
+      case 'tiny':
+      // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
+        $content = array();
+        $content['body'] = array(
+          '#type' => 'item',
+          '#markup' => "<b>Harvest Allowable as of </b> " . date('Y-m-d h:m:s', dh_handletimestamp($entity->tsendtime)) . " (PHI Chems: $entity->tscode)",
+        );
+      break;
+    }
+  }
   
   public function formRowEdit(&$form, $entity) {
     $form['propcode']['#type'] = 'hidden';
@@ -1012,6 +1026,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
     );
     // Edit standalone href link
     $edit_l = l(date('Y-m-d', $feature->startdate) . ' ' . $title, $uri, array('attributes' => array('class' => 'editlink')));
+    $wo_uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/workorder/$feature->adminid&destination=$page";
+    $wo_tiny = l(' ', $wo_uri);
     // Other URIs
     $copy_uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/clone/$feature->adminid&destination=$page";
     $copy_l = l(" ", $copy_uri, array('attributes' => array('class' => 'copylink', 'title' => 'Copy this event')));
@@ -1054,6 +1070,14 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
         $content['body']['#markup'] .= "<br><b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
         $content['body']['#markup'] .= "<br><b>REI: .$feature->rei_date ($feature->rei_chem)";
+      break;
+      
+      case 'tiny':
+      // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
+        $content = array('body'=>array());
+        #$content['body']['#type']= 'item'; 
+        $chem_list = implode(', ', array_column($feature->chem_details, 'name'));
+        $content['body']['#markup'] .= "<b>Spray:</b>" . l( $chem_list, $wo_uri);
       break;
       
       case 'full':
