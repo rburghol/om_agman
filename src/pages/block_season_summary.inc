@@ -1,7 +1,7 @@
 <?php
 
 // use this to call this file 
-// module_load_include('inc', 'om_agman', 'src/pages/agchem_spray_event_work_order');
+// module_load_include('inc', 'om_agman', 'src/pages/block_season_summary');
 module_load_include('module', 'om_agman');
 module_load_include('module', 'dh');
 module_load_include('module', 'dh_adminreg');
@@ -9,7 +9,7 @@ module_load_include('module', 'dh_adminreg');
 //dpm($plugin,'plug');
 // get the arguments from URL, they come in the form farm_hydroid/sub_page_name/event_adminid
 $a = arg();
-$fix = ($a[0] == 'node') ? 2 : 3; // use 3 for the page, 2 for a node during development
+$fix = ($a[0] == 'node') ? 3 : 4; // use 3 for the page, 2 for a node during development
 if (!isset($a[$fix])) {
   dsm( "There was a problem, block can not be found.");
 } else {
