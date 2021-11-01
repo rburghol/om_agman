@@ -12,6 +12,7 @@ $a = arg();
 $fix = ($a[0] == 'node') ? 3 : 4; // use 3 for the page, 2 for a node during development
 if (!isset($a[$fix])) {
   dsm( "There was a problem, block can not be found.");
+  dpm($a, "args passed");
 } else {
   $fid = $a[$fix];
 }
