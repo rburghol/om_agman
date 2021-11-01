@@ -134,6 +134,11 @@
     $chem_details_hundred = array();
     foreach ($newplan->chem_details as $x => $chem_deet) {
       $chem_deet['rate'] = $chem_deet['rate'] * 100.0 * $event_area / $spray_volume;
+      if ($chem_deet['rate'] < 10.0) {
+        $chem_deet['rate'] = round($chem_deet['rate'],2);
+      } else {
+        $chem_deet['rate'] = round($chem_deet['rate'],1);
+      }
       $chem_deet['units'] = $chem_deet['units'];
       $chem_deet['rateunits'] = $chem_deet['rate'] . ' ' . $chem_deet['units'] . "/100 gallons";
       $chem_details_hundred[$x] = $chem_deet;
