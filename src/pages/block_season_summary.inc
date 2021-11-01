@@ -9,7 +9,7 @@ module_load_include('module', 'dh_adminreg');
 //dpm($plugin,'plug');
 // get the arguments from URL, they come in the form farm_hydroid/sub_page_name/event_adminid
 $a = arg();
-$fix = ($a[0] == 'node') ? 3 : 4; // use 3 for the page, 2 for a node during development
+$fix = ($a[0] == 'node') ? 3 : 2; // use 3 for the page, 2 for a node during development
 if (!isset($a[$fix])) {
   dsm( "There was a problem, block can not be found.");
   dpm($a, "args passed");
