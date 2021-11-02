@@ -680,10 +680,14 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       case 'tiny':
       // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
         $content = array();
+        /*
         $content['body'] = array(
           '#type' => 'item',
           '#markup' => "<b>$varname:</b> $incident_detail @ $pct",
         );
+        */
+        $content['body'] = $link;
+        $content['body']['#title'] = "<b>$varname:</b> $incident_detail @ $pct";
       break;
       
       case 'tsvalue':
