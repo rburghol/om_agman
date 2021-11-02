@@ -18,8 +18,8 @@ if (count($a) <= 1) {
   }
 }
 $urls = array(
-  'season' => url(implode('/', array($a[0], $a[1], $a[2], 'season', $a[4]))),
-  'material' => url(implode('/', array($a[0], $a[1], $a[2], 'material', $a[4]))),
+  'season' => url(implode('/', $a + array(3=>'season') )),
+  'material' => url(implode('/', array($a[0], $a[1], $a[2], 'material', $a[4])	)),
   'frac' => url(implode('/', array($a[0], $a[1], $a[2], 'frac', $a[4]))),
   'usda-private' => url(implode('/', array($a[0], $a[1], $a[2], 'usda-private', $a[4]))),
   'phi' => url(implode('/', array($a[0], $a[1], $a[2], 'phi', $a[4]))),
