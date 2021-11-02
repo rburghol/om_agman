@@ -22,7 +22,7 @@ if (count($a) < 3) {
 $blocks = dh_get_facility_mps($a[1], 'landunit');
 $block_selected = ($a[2] == 'all') ? $blocks[current($blocks)] : $a[2];
 
-dpm($blocks,'blocks');
+//dpm($blocks,'blocks');
 $targets = array();
 $options = array(
   'default_value' => url($_GET['q']),
@@ -38,7 +38,7 @@ foreach ($blocks as $block) {
   $block_obj = entity_load_single('dh_feature', $block);
   $targets[$block_path] = $block_obj->name;
 }
-dpm($targets,'targs');
+//dpm($targets,'targs');
 
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
 echo "<b>Show Block:</b><br>" . drupal_render($output);
