@@ -680,19 +680,14 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       case 'tiny':
       // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
         $content = array();
+        $lopts = array();
+        if (!empty($entity->field_image)) {
+          $lopts['attributes']['class'][] = 'imagelink';
+        }
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "<b>$varname:</b>" . l(" $incident_detail @ $pct", "dh_timeseries/" . $entity->tid),
+          '#markup' => "<b>$varname:</b>" . l(" $incident_detail @ $pct", "dh_timeseries/" . $entity->tid, $lopts),
         );
-        if (!empty($entity->field_image)) {
-          $img = field_view_field('dh_timeseries', $entity, 'field_image');
-          $img['#theme'] = 'responsive_image';
-          $img[0]['#theme'] = 'responsive_image';
-          dpm($img,'image field');
-          $img_rendered = drupal_render($img);
-          $content['body']['#markup'] .= " " . $img_rendered;
-          
-        }
       break;
       
       case 'tsvalue':
