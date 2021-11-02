@@ -15,6 +15,8 @@ if (!isset($a[$fix])) {
   //dpm($a, "args passed");
 } else {
   $fid = $a[$fix];
+  $blocks = dh_get_facility_mps($a[$fix - 1], 'landunit');
+  $fid = ($a[$fix] == 'all') ? $blocks[current($blocks)] : $a[$fix];
 }
 
 // Parts:
