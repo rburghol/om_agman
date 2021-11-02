@@ -14,6 +14,7 @@ if (!isset($a[$fix])) {
   dsm( "There was a problem, block can not be found.");
   //dpm($a, "args passed");
 } else {
+  dpm($a, "args passed with index $fix");
   $blocks = dh_get_facility_mps($a[$fix - 1], 'landunit');
   dpm($blocks,'blocks');
   dpm($fid,'initial block');
