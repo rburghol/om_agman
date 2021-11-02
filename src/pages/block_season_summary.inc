@@ -17,8 +17,8 @@ if (!isset($a[$fix])) {
   dpm($a, "args passed with index $fix");
   $blocks = dh_get_facility_mps($a[$fix - 1], 'landunit');
   dpm($blocks,'blocks');
-  dpm($fid,'initial block');
   $fid = $a[$fix];
+  dpm($fid,'initial block');
   $fid = $fid ? $blocks[current($blocks)] : $fid;
   dpm($fid,'using block');
 }
