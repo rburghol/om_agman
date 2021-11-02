@@ -17,7 +17,8 @@ if (!isset($a[$fix])) {
   $blocks = dh_get_facility_mps($a[$fix - 1], 'landunit');
   dpm($blocks,'blocks');
   $fid = $a[$fix];
-  $fid = ($a[$fix] == 'all') ? $blocks[current($blocks)] : $a[$fix];
+  $fid = $fid ? $blocks[current($blocks)] : $fid;
+  dpm($fid,'using block');
 }
 
 // Parts:
