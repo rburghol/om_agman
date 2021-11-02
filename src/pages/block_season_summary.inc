@@ -100,8 +100,8 @@ $event_query .= " 	  and ts.entity_type = 'dh_adminreg_feature' ";
 $event_query .= " 	) ";
 $event_query .= " 	where link.dh_link_feature_submittal_target_id = $fid  ";
 $event_query .= " 	and ts.varid not in (select hydroid from dh_variabledefinition where varkey in ('event_dha_default')) ";
-$event_query .= " 	and arfeat.startdate >= extract(epoch from '2021-01-01'::timestamp) ";
-$event_query .= " 	and arfeat.startdate <= extract(epoch from '2021-12-31'::timestamp) ";
+$event_query .= " 	and arfeat.startdate >= extract(epoch from '$start_date'::timestamp) ";
+$event_query .= " 	and arfeat.startdate <= extract(epoch from '$end_date'::timestamp) ";
 $event_query .= " ) order by tstime ";
 
 //dpm($event_query, 'query');
