@@ -1,4 +1,6 @@
 <?php
+// use this to call this file 
+// module_load_include('inc', 'om_agman', 'src/panes/ipm_block_jump');
 // argument default
 // if user has only one facility, return its ID, otherwise return 'multiple'
 $a = arg();
