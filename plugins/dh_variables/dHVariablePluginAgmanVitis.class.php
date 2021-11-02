@@ -687,7 +687,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         if (!empty($entity->field_image)) {
           $img = field_view_field('dh_timeseries', $entity, 'field_image');
           //dpm($img,'image field');
-          $img_rendered = drupal_render(img);
+          $img_rendered = drupal_render($img);
           $content['body']['#markup'] .= " " . $img_rendered;
           
         }
