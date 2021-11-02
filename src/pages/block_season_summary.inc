@@ -25,6 +25,7 @@ if (!isset($a[$fix])) {
   }
   //dpm($fid,'using block');
 }
+$a[$fix] = $fid; // make sure all links reflect the current block.
 if (isset($a[$fix + 2])) {
   $year = $a[$fix + 2];
 } else {
