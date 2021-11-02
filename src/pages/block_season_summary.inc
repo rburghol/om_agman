@@ -19,7 +19,7 @@ if (!isset($a[$fix])) {
   dpm($blocks,'blocks');
   $fid = $a[$fix];
   dpm($fid,'initial block');
-  $fid = $fid ? $blocks[current($blocks)] : $fid;
+  $fid = ($fid == 'all') ? $blocks[current($blocks)] : $fid;
   dpm($fid,'using block');
 }
 
