@@ -92,21 +92,31 @@ $event_table = array(
 //        that takes the active plugin, and renders the object in the requested mode. 
 $ts_objects = entity_load('dh_timeseries', array_keys($recs));
 $events = array();
+$added_months = array();
+$row_one = NULL;
 foreach ($ts_objects as $ts) {
   //dpm($ts,'ts');
   $ts_rendered = array();
   $ts_rendered = entity_build_content('dh_timeseries', $ts, 'tiny', NULL);
-  $events[] = array(
+  $month = date( 'F', dh_handletimestamp($ts->tstime));
+  if (!isset($added_months[$month])) {
+    $events[] = array(
+      '#plain_text' => "<b>$month</b>",
+      '#wrapper_attributes' => ['colspan' => 2],
+    );
+    $added_months[$month] = $month;
+  }
+  $this_row = array(
     'date' => date( 'Y-m-d', dh_handletimestamp($ts->tstime)), 
     'description' => drupal_render($ts_rendered),
     //'style' => 'background-color: pink'
   );
+  $events[] = $this_row;
 }
 //dpm($events, 'rendered table');
 $row_one = $events[array_shift(array_keys($events))];
 //dpm($row_one, 'row_one');
-$header = array_keys($row_one);
-//dpm($header, 'header');
+$header = array('Date', 'Event Description');
 $event_table = array(
   '#theme' => 'table',
   '#header' => $header,
