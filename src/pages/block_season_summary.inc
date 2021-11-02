@@ -25,7 +25,32 @@ if (!isset($a[$fix])) {
   }
   //dpm($fid,'using block');
 }
+if (isset($a[$fix + 2])) {
+  $year = $a[$fix + 2];
+} else {
+  $year = date('Y');
+}
+$start_date = $year . "/01/01";
+$end_date = $year . "/12/31";
 
+// Load Block Info
+$block = entity_load_single('dh_feature', $fid);
+$ly = $year - 1;
+$ny = $year + 1;
+$pa = $a;
+$pa[$fix + 2] = $ly;
+$prev = l("<< $ly", implode("/", $pa));
+$na = $a;
+$na[$fix + 2] = $ny;
+$next = l("$ny >>", implode("/", $na));
+$date_range = $prev . " | <b>$year</b> | " . $next;
+$title = [
+  '#markup' => "<h4>Season Summary</h4> 
+  <h4>Block: $block->name</h4>
+  <h5>Year: $date_range<h5>",
+];
+$title_text = drupal_render($title);
+echo $title_text;
 // Parts:
 // 1. List of Events
 // 2. Growth/Disease/Rain chart
@@ -53,8 +78,8 @@ $event_query .= " and featureid = $fid ";
 // exclude standard admin reg event mappings because they are handled in the second query in this UNION
 // exclude the scouting report because individual pathogens are already included.
 $event_query .= " and varid not in (select hydroid from dh_variabledefinition where varkey in ('event_dha_default', 'event_dh_link_submittal_feature', 'om_agman_svform') )";
-$event_query .= " and tstime >= extract(epoch from '2021-01-01'::timestamp) ";
-$event_query .= " and tstime <= extract(epoch from '2021-12-31'::timestamp) ";
+$event_query .= " and tstime >= extract(epoch from '$start_date'::timestamp) ";
+$event_query .= " and tstime <= extract(epoch from '$end_date'::timestamp) ";
 $event_query .= " ) UNION ( 
 select ts.tid, ts.tstime, ts.tsvalue, ts.tscode, ts.entity_type, ts.varid, ";
 $event_query .= " 	  arfeat.adminid, arfeat.name, arfeat.bundle  ";
