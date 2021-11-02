@@ -46,8 +46,7 @@ $na[$fix + 2] = $ny;
 $next = l("$ny >>", implode("/", $na));
 $date_range = $prev . " | <b>$year</b> | " . $next;
 $title = [
-  '#markup' => "<h4>Season Summary</h4> 
-  <h4>Block: $block->name</h4>
+  '#markup' => "<h4>Block: $block->name</h4>
   <h5>Year: $date_range<h5>",
 ];
 $title_text = drupal_render($title);
