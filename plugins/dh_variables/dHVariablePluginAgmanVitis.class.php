@@ -686,7 +686,7 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
         }
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "<b>$varname:</b>" . l(" $incident_detail @ $pct", "dh_timeseries/" . $entity->tid, $lopts),
+          '#markup' => "<b>$varname:</b>" . l(" $incident_detail @ $pct ", "dh_timeseries/" . $entity->tid, $lopts),
         );
       break;
       
