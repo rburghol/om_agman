@@ -21,10 +21,7 @@ if (count($a) <= 1) {
 if (count($a) < 3) {
   $a[2] = 'all';
 }
-$blocks = dh_get_facility_mps($a[1], 'landunit');
-$block_selected = ($a[2] == 'all') ? $blocks[current($blocks)] : $a[2];
-
-//dpm($blocks,'blocks');
+dpm($farms,'farms');
 $targets = array();
 $options = array(
   'default_value' => url($_GET['q']),
