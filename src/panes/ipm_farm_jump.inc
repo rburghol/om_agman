@@ -6,9 +6,9 @@
 $a = arg();
 ctools_include('jump-menu');
 // if none, check for users farms 
+global $user;
+$farms = dh_get_user_mgr_features($user->uid, 'facility', 'vineyard');
 if (count($a) <= 1) {
-  global $user;
-  $farms = dh_get_user_mgr_features($user->uid, 'facility', 'vineyard');
   if (count($farms) == 1) {
     $default = current($farms);
     $a[] = $default;
@@ -21,7 +21,7 @@ if (count($a) <= 1) {
 if (count($a) < 3) {
   $a[2] = 'all';
 }
-dpm($farms,'farms');
+//dpm($farms,'farms');
 $targets = array();
 $options = array(
   'default_value' => url($_GET['q']),
