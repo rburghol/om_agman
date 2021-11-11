@@ -10,7 +10,7 @@ if (count($a) <= 1) {
   global $user;
   $farms = dh_get_user_mgr_features($user->uid, 'facility', 'vineyard');
   if (count($farms) == 1) {
-    $default = array_shift($farms);
+    $default = current($farms);
     $a[] = $default;
   } else {
     // do NOT show this, 
