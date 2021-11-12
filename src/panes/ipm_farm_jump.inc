@@ -34,14 +34,14 @@ if ( $a[1] <> 'all' ) {
     $red = TRUE;
   }
 }
+if (count($a) < 3) {
+  $a[2] = 'all';
+}
+
 
 if ($red) {
   //dpm($a,'final args');
   drupal_goto(implode('/',$a));
-}
-
-if (count($a) < 3) {
-  $a[2] = 'all';
 }
 
 // save the current values for the session
