@@ -6,7 +6,7 @@
 $a = arg();
 ctools_include('jump-menu');
 // if none, check for users farms 
-
+$thisyear = date('Y');
 $targets = array();
 $options = array(
   'default_value' => url($_GET['q']),
