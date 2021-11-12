@@ -9,7 +9,7 @@ ctools_include('jump-menu');
 $thisyear = date('Y');
 $targets = array();
 $options = array(
-  'default_value' => url($_GET['q']),
+  'default_value' => url($_GET['q'], array('params' => drupal_get_query_parameters())),
 );
 $block_urls = array();
 $years = range($thisyear - 10, $thisyear + 2);
