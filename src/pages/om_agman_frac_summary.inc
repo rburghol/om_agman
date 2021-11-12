@@ -13,7 +13,7 @@ if (isset($u['year'])) {
   $yr = $u['year'];
 } else {
   $yr = date('Y');
-  if (intval(date('m')) > 11) {
+  if (intval(date('m')) > 10) {
     $yr += 1;
   }
 }
