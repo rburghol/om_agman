@@ -21,6 +21,39 @@ if (count($a) <= 1) {
 if (count($a) < 3) {
   $a[2] = 'all';
 }
+
+$red = FALSE;
+// Check for re-direct, if no filters are set, or if a location filter is an illegal value 
+if (!isset($a[1])) {
+  $a[1] = isset($_SESSION['om_agman']['facility']) ? $_SESSION['om_agman']['facility'] : 'all';
+  $red = TRUE;
+}
+// check to see if user has only 1 farm, if so, default to that.
+if ( (count($farms) == 1) and ($a[1] == 'all')) {
+  $a[1] = array_shift($farms);
+}
+
+// check permissions
+if (!in_array($a[1], $farms)) {
+  $a[1] = isset($_SESSION['om_agman']['facility']) ? $_SESSION['om_agman']['facility'] : 'all';
+  $red = TRUE;
+}
+
+// Finally, redirect to the location management page if we have no blocks
+if ( $a[1] <> 'all' ) {
+  $blockids = dh_get_facility_mps($a[1], 'landunit');
+  if (empty($blockids) and ($a[0] <> 'ipm-facility-info')) {
+    drupal_set_message("You must create at least 1 block on your farm to access these features.");
+    $a[0] = 'ipm-facility-info';
+    $red = TRUE;
+  }
+}
+
+if ($red) {
+  //dpm($a,'final args');
+  drupal_goto(implode('/',$a));
+}
+
 // save the current values for the session
 if ($a[1] <> 'all') {
   $vineyard_id = $a[1];
