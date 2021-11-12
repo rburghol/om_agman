@@ -21,6 +21,15 @@ if (count($a) <= 1) {
 if (count($a) < 3) {
   $a[2] = 'all';
 }
+// save the current values for the session
+if ($a[1] <> 'all') {
+  $vineyard_id = $a[1];
+}
+if ($a[2] <> 'all') {
+  $block_id = $a[2];
+}
+$_SESSION['om_agman']['facility'] = $vineyard_id;
+$_SESSION['om_agman']['landunit'] = $block_id;
 //dpm($farms,'farms');
 $targets = array();
 $options = array(
