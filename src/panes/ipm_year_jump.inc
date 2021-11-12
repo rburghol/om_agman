@@ -7,12 +7,13 @@ $a = arg();
 ctools_include('jump-menu');
 // if none, check for users farms 
 $thisyear = date('Y');
+$params = drupal_get_query_parameters();
 $targets = array();
 $options = array(
   'default_value' => url(
     $_GET['q'], 
     array(
-      'query' =>drupal_get_query_parameters()
+      'query' => $params
     )
   ),
 );
@@ -20,13 +21,20 @@ $options = array(
 $block_urls = array();
 $years = range($thisyear - 10, $thisyear + 2);
 foreach ($years as $year) {
+  $url_options = array(
+    'query' => array(
+      'year' => $year
+    )
+  );
+  if (!isset($params['year'])) {
+    // blank out the query if the current year is used by default here
+    if ($thisyear == $year) {
+      $url_options = array();
+    }
+  }
   $base_path = url(
     implode('/', $a), 
-    array(
-      'query' => array(
-        'year' => $year
-      )
-    )
+    $url_options
   );
   $targets[$base_path] = $year;
 }
