@@ -11,6 +11,7 @@ $targets = array();
 $options = array(
   'default_value' => url($_GET['q'], array('params' => drupal_get_query_parameters())),
 );
+dpm($options,'opts');
 $block_urls = array();
 $years = range($thisyear - 10, $thisyear + 2);
 foreach ($years as $year) {
