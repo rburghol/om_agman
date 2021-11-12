@@ -16,7 +16,7 @@ $options = array(
     )
   ),
 );
-dpm($options,'opts');
+//dpm($options,'opts');
 $block_urls = array();
 $years = range($thisyear - 10, $thisyear + 2);
 foreach ($years as $year) {
@@ -30,9 +30,9 @@ foreach ($years as $year) {
   );
   $targets[$base_path] = $year;
 }
-dpm($targets,'targs');
+//dpm($targets,'targs');
 
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
-echo "<b>Show Farm:</b><br>" . drupal_render($output);
+echo "<b>Show Year:</b><br>" . drupal_render($output);
 
 ?>
