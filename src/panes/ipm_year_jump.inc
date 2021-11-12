@@ -18,7 +18,7 @@ foreach ($years as $year) {
   $base_path = url(implode('/', $a)) . "&year=$year";
   $targets[$base_path] = $year;
 }
-//dpm($targets,'targs');
+dpm($targets,'targs');
 
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
 echo "<b>Show Farm:</b><br>" . drupal_render($output);
