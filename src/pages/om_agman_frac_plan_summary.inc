@@ -34,6 +34,7 @@ $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $endda
 //dpm($alerts, 'alert');
 $display = om_agman_show_formatted_frac_alerts($alerts, 2, 'table');
 echo "<h3>High Risk FRAC Warnings:</h3>";
+echo "<h4>$startdate to $enddate</h4>";
 if (count($display['#rows']) > 0) {
   $output = render($display);
   echo $output;
