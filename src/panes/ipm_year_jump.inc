@@ -20,7 +20,14 @@ dpm($options,'opts');
 $block_urls = array();
 $years = range($thisyear - 10, $thisyear + 2);
 foreach ($years as $year) {
-  $base_path = url(implode('/', $a)) . "&year=$year";
+  $base_path = url(
+    implode('/', $a), 
+    array(
+      'query' => array(
+        'year' => $year
+      )
+    )
+  );
   $targets[$base_path] = $year;
 }
 dpm($targets,'targs');
