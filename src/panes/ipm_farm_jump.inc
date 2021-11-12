@@ -8,20 +8,6 @@ ctools_include('jump-menu');
 // if none, check for users farms 
 global $user;
 $farms = dh_get_user_mgr_features($user->uid, 'facility', 'vineyard');
-if (count($a) <= 1) {
-  if (count($farms) == 1) {
-    $default = current($farms);
-    $a[] = $default;
-  } else {
-    // do NOT show this, 
-    dsm("No Block Indicated.", 'error');
-    die;
-  }
-}
-if (count($a) < 3) {
-  $a[2] = 'all';
-}
-
 $red = FALSE;
 // Check for re-direct, if no filters are set, or if a location filter is an illegal value 
 if (!isset($a[1])) {
@@ -52,6 +38,10 @@ if ( $a[1] <> 'all' ) {
 if ($red) {
   //dpm($a,'final args');
   drupal_goto(implode('/',$a));
+}
+
+if (count($a) < 3) {
+  $a[2] = 'all';
 }
 
 // save the current values for the session
