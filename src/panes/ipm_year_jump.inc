@@ -12,9 +12,7 @@ $options = array(
   'default_value' => url(
     $_GET['q'], 
     array(
-      'options' => array(
-        'query' =>drupal_get_query_parameters()
-      )
+      'query' =>drupal_get_query_parameters()
     )
   ),
 );
