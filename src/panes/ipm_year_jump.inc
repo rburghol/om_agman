@@ -7,6 +7,9 @@ $a = arg();
 ctools_include('jump-menu');
 // if none, check for users farms 
 $thisyear = date('Y');
+if (intval(date('m')) > 10) {
+  $thisyear += 1;
+}
 $params = drupal_get_query_parameters();
 $targets = array();
 $options = array(
