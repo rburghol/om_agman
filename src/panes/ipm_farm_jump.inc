@@ -18,7 +18,7 @@ if (!isset($a[1])) {
 }
 // check to see if user has at least 1 farm, if so, default to the first one.
 if ( (count($farms) >= 1) and ($a[1] == 'all')) {
-  $a[1] = array_shift($farms);
+  $a[1] = current($farms);
 }
 
 // check permissions
