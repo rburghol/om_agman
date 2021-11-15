@@ -42,7 +42,7 @@ if (count($a) < 3) {
 
 
 if ($red) {
-  //dpm($a,'final args');
+  dpm($a,'final args');
   drupal_goto(implode('/',$a));
 }
 
