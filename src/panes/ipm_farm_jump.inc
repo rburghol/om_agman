@@ -16,8 +16,8 @@ if (!isset($a[1])) {
   $a[1] = isset($_SESSION['om_agman']['facility']) ? $_SESSION['om_agman']['facility'] : 'all';
   $red = TRUE;
 }
-// check to see if user has only 1 farm, if so, default to that.
-if ( (count($farms) == 1) and ($a[1] == 'all')) {
+// check to see if user has at least 1 farm, if so, default to the first one.
+if ( (count($farms) >= 1) and ($a[1] == 'all')) {
   $a[1] = array_shift($farms);
 }
 
