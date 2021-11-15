@@ -8,6 +8,8 @@ ctools_include('jump-menu');
 // if none, check for users farms 
 global $user;
 $farms = dh_get_user_mgr_features($user->uid, 'facility', 'vineyard');
+dpm($a,'args');
+dpm($farms,'farms');
 $red = FALSE;
 // Check for re-direct, if no filters are set, or if a location filter is an illegal value 
 if (!isset($a[1])) {
