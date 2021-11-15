@@ -74,8 +74,9 @@ foreach ($farms as $farm) {
 }
 //dpm($targets,'targs');
 
-$output = drupal_get_form('ctools_jump_menu', $targets, $options);
-dpm($output,'form');
-echo "<b>Show Farm:</b><br>" . drupal_render($output);
+$jump_menu = drupal_get_form('ctools_jump_menu', $targets, $options);
+//dpm($jump_menu,'form');
+$jump_menu['jump']['#prefix'] .= "<b>Show Farm:</b>";
+echo drupal_render($jump_menu);
 
 ?>
