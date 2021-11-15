@@ -45,12 +45,19 @@ $na = $a;
 $na[$fix + 2] = $ny;
 $next = l("$ny >>", implode("/", $na));
 $date_range = $prev . " | <b>$year</b> | " . $next;
+/*
 $title = [
   '#markup' => "<h4>Block: $block->name</h4>
   <h5>Year: $date_range<h5>",
 ];
 $title_text = drupal_render($title);
 echo $title_text;
+*/
+// show the year
+module_load_include('inc', 'om_agman', 'src/panes/ipm_year_jump');
+
+// show the block jump
+module_load_include('inc', 'om_agman', 'src/panes/ipm_block_jump');
 // Parts:
 // 1. List of Events
 // 2. Growth/Disease/Rain chart
