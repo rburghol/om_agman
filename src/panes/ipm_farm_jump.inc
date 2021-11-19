@@ -24,7 +24,8 @@ if ( (count($farms) >= 1) and ($a[1] == 'all')) {
 
 // check permissions
 if (!in_array($a[1], $farms)) {
-  $a[1] = isset($_SESSION['om_agman']['facility']) ? $_SESSION['om_agman']['facility'] : 'all';
+  $sfac = $_SESSION['om_agman']['facility'];
+  $a[1] = in_array($sfac, $farms) ? $_SESSION['om_agman']['facility'] : 'all';
   $red = TRUE;
 }
 
