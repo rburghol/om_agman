@@ -42,6 +42,13 @@ if (count($a) < 3) {
   $a[2] = 'all';
 }
 
+if (empty($farms)) {
+  // user must have clicked a menu prior to set up. 
+  // send them back to the welcome page 
+    $a[0] = 'ipm-edit-vineyard/new';
+    $red = TRUE;
+}
+
 
 if ($red) {
   //dpm($a,'final args');
