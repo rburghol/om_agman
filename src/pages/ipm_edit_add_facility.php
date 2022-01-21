@@ -1,4 +1,7 @@
 <?php
+// use in any page with 1-line:
+//   module_load_include('inc', 'om_agman', 'src/pages/ipm_edit_add_facility');
+
 function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit') {
   if ($dh_feature === NULL) {
     $props = array(
@@ -80,12 +83,16 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
 
   field_attach_form('dh_feature', $dh_feature, $form, $form_state);
   //$hiddens = array('dh_link_feature_mgr_id', 'dh_link_admin_location', 'dh_link_facility_mps', 'dh_link_admin_fa_usafips', 'dh_link_admin_fa_or');
-  $hiddens = array('field_link_agchem_material', 'dh_link_admin_location', 'dh_link_facility_mps', 'dh_link_admin_fa_usafips', 'dh_link_admin_fa_or');
+  $hiddens = array('field_link_agchem_material', 'dh_link_admin_location', 'dh_link_facility_mps', 'dh_link_admin_fa_usafips', 'dh_link_admin_fa_or', 'bundle');
   foreach ($hiddens as $hidethis) {
     if (isset($form[$hidethis])) {
       $form[$hidethis]['#type'] = 'hidden';
     }
   }
+  $form['dh_geofield']['und'][0]['geom']['#title'] = 'Location (latitude & longitude)';
+  $form['dh_geofield']['und'][0]['geom']['#description'] = t('If you know the coordinates for your vineyard, enter them in the fields below the map labeled \'Latitude\' and \'Longitude\'. ');
+  // for if using the Google Map geolocation
+  //$form['dh_geofield']['und'][0]['geom']['#description'] = t('If you know the coordinates for your vineyard, enter them in the fields below the map labeled \'Latitude\' and \'Longitude\'. If not, you can enter your address below in the field labelled \'Geocode address\' and it will estimate your latitude and lkongitude automatically.  Finally, you can drag the map to the location of your vineyard to set the lat/lon fields to the appropriate coordinates.');
   global $user;
   //dpm($user->roles,'roles');
   //if (in_array(array('ipm_admin','administrator'), $user->roles)) {

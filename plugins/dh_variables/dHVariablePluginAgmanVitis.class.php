@@ -680,9 +680,13 @@ class dHVariablePluginIPMIncidentExtent extends dHVariablePluginPercentSelector 
       case 'tiny':
       // note, this is not detailed in the modes available in dh.module, so this will not be available in Views
         $content = array();
+        $lopts = array();
+        if (!empty($entity->field_image)) {
+          $lopts['attributes']['class'][] = 'imagelink';
+        }
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => "<b>$varname:</b> $incident_detail @ $pct",
+          '#markup' => "<b>$varname:</b>" . l(" $incident_detail @ $pct ", "dh_timeseries/" . $entity->tid, $lopts),
         );
       break;
       

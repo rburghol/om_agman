@@ -12,11 +12,52 @@ $a = arg();
 $fix = ($a[0] == 'node') ? 3 : 2; // use 3 for the page, 2 for a node during development
 if (!isset($a[$fix])) {
   dsm( "There was a problem, block can not be found.");
-  dpm($a, "args passed");
+  //dpm($a, "args passed");
 } else {
+  //dpm($a, "args passed with index $fix");
+  $blocks = dh_get_facility_mps($a[$fix - 1], 'landunit');
+  //dpm($blocks,'blocks');
   $fid = $a[$fix];
+  //dpm($fid,'initial block');
+  //dsm('current block = '. current($blocks));
+  if ($fid == 'all') {
+    $fid = current($blocks);
+  }
+  //dpm($fid,'using block');
 }
+$a[$fix] = $fid; // make sure all links reflect the current block.
+if (isset($a[$fix + 2])) {
+  $year = $a[$fix + 2];
+} else {
+  $year = date('Y');
+}
+$start_date = $year . "/01/01";
+$end_date = $year . "/12/31";
 
+// Load Block Info
+$block = entity_load_single('dh_feature', $fid);
+$ly = $year - 1;
+$ny = $year + 1;
+$pa = $a;
+$pa[$fix + 2] = $ly;
+$prev = l("<< $ly", implode("/", $pa));
+$na = $a;
+$na[$fix + 2] = $ny;
+$next = l("$ny >>", implode("/", $na));
+$date_range = $prev . " | <b>$year</b> | " . $next;
+/*
+$title = [
+  '#markup' => "<h4>Block: $block->name</h4>
+  <h5>Year: $date_range<h5>",
+];
+$title_text = drupal_render($title);
+echo $title_text;
+*/
+// show the year
+module_load_include('inc', 'om_agman', 'src/panes/ipm_year_jump');
+
+// show the block jump
+module_load_include('inc', 'om_agman', 'src/panes/ipm_block_jump');
 // Parts:
 // 1. List of Events
 // 2. Growth/Disease/Rain chart
@@ -44,8 +85,8 @@ $event_query .= " and featureid = $fid ";
 // exclude standard admin reg event mappings because they are handled in the second query in this UNION
 // exclude the scouting report because individual pathogens are already included.
 $event_query .= " and varid not in (select hydroid from dh_variabledefinition where varkey in ('event_dha_default', 'event_dh_link_submittal_feature', 'om_agman_svform') )";
-$event_query .= " and tstime >= extract(epoch from '2021-01-01'::timestamp) ";
-$event_query .= " and tstime <= extract(epoch from '2021-12-31'::timestamp) ";
+$event_query .= " and tstime >= extract(epoch from '$start_date'::timestamp) ";
+$event_query .= " and tstime <= extract(epoch from '$end_date'::timestamp) ";
 $event_query .= " ) UNION ( 
 select ts.tid, ts.tstime, ts.tsvalue, ts.tscode, ts.entity_type, ts.varid, ";
 $event_query .= " 	  arfeat.adminid, arfeat.name, arfeat.bundle  ";
@@ -65,8 +106,8 @@ $event_query .= " 	  and ts.entity_type = 'dh_adminreg_feature' ";
 $event_query .= " 	) ";
 $event_query .= " 	where link.dh_link_feature_submittal_target_id = $fid  ";
 $event_query .= " 	and ts.varid not in (select hydroid from dh_variabledefinition where varkey in ('event_dha_default')) ";
-$event_query .= " 	and arfeat.startdate >= extract(epoch from '2021-01-01'::timestamp) ";
-$event_query .= " 	and arfeat.startdate <= extract(epoch from '2021-12-31'::timestamp) ";
+$event_query .= " 	and arfeat.startdate >= extract(epoch from '$start_date'::timestamp) ";
+$event_query .= " 	and arfeat.startdate <= extract(epoch from '$end_date'::timestamp) ";
 $event_query .= " ) order by tstime ";
 
 //dpm($event_query, 'query');
@@ -92,21 +133,31 @@ $event_table = array(
 //        that takes the active plugin, and renders the object in the requested mode. 
 $ts_objects = entity_load('dh_timeseries', array_keys($recs));
 $events = array();
+$added_months = array();
+$row_one = NULL;
 foreach ($ts_objects as $ts) {
   //dpm($ts,'ts');
   $ts_rendered = array();
   $ts_rendered = entity_build_content('dh_timeseries', $ts, 'tiny', NULL);
-  $events[] = array(
+  $month = date( 'F', dh_handletimestamp($ts->tstime));
+  if (!isset($added_months[$month])) {
+    $events[] = array(
+      '#plain_text' => "<b>$month</b>",
+      '#wrapper_attributes' => ['colspan' => 2],
+    );
+    $added_months[$month] = $month;
+  }
+  $this_row = array(
     'date' => date( 'Y-m-d', dh_handletimestamp($ts->tstime)), 
     'description' => drupal_render($ts_rendered),
     //'style' => 'background-color: pink'
   );
+  $events[] = $this_row;
 }
 //dpm($events, 'rendered table');
 $row_one = $events[array_shift(array_keys($events))];
 //dpm($row_one, 'row_one');
-$header = array_keys($row_one);
-//dpm($header, 'header');
+$header = array('Date', 'Event Description');
 $event_table = array(
   '#theme' => 'table',
   '#header' => $header,

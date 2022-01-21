@@ -18,13 +18,13 @@ if (count($a) <= 1) {
   }
 }
 $urls = array(
-  'season' => url(implode('/', array($a[0], $a[1], $a[2], 'season'))),
-  'material' => url(implode('/', array($a[0], $a[1], $a[2], 'material'))),
-  'frac' => url(implode('/', array($a[0], $a[1], $a[2], 'frac'))),
-  'usda-private' => url(implode('/', array($a[0], $a[1], $a[2], 'usda-private'))),
-  'phi' => url(implode('/', array($a[0], $a[1], $a[2], 'phi'))),
-  'ipmir' => url(implode('/', array($a[0], $a[1], $a[2], 'ipmir'))),
-//  'search' => url(implode('/', array($a[0], $a[1], $a[2], 'search'))),
+  'season' => url(implode('/', array_replace($a, array(3=>'season')) )),
+  'material' => url(implode('/', array_replace($a, array(3=>'material')) )),
+  'frac' => url(implode('/', array_replace($a, array(3=>'frac')) )),
+  'usda-private' => url(implode('/', array_replace($a, array(3=>'usda-private')) )),
+  'phi' => url(implode('/', array_replace($a, array(3=>'phi')) )),
+  'ipmir' => url(implode('/', array_replace($a, array(3=>'ipmir')) )),
+//  'search' => url(implode('/', array_replace($a, array(3=>'season')) )),
 );
 $targets = array();
 $options = array(

@@ -14,7 +14,7 @@ if (isset($u['year'])) {
   $yr = $u['year'];
 } else {
   $yr = date('Y');
-  if (intval(date('m')) > 11) {
+  if (intval(date('m')) > 10) {
     $yr += 1;
   }
 }
@@ -33,7 +33,8 @@ $enddate = $yr . '-12-31';
 $alerts = om_agman_group_frac_check($vineyard_id, $block_ids, $startdate, $enddate, array());
 //dpm($alerts, 'alert');
 $display = om_agman_show_formatted_frac_alerts($alerts, 2, 'table');
-echo "<h3>High Risk FRAC Warnings:</h3>";
+echo "<h3>High Risk FRAC Warnings ($startdate to $enddate):</h3>";
+
 if (count($display['#rows']) > 0) {
   $output = render($display);
   echo $output;
