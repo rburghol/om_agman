@@ -130,6 +130,7 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
     );
     break;
   }
+  dpm($form,'form');
   return $form;
 }
 
