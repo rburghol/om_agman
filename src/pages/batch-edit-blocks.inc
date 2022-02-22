@@ -128,6 +128,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // if this is a the first block of a given vineyard, we handle it specially
     // if this is a blank row in a vineyard that already has one or more blocks, we add less info
     $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
+    dpm($blocks, "This farm has blocks");
     if (empty($blocks)) {
       $form['message'] = array(
         '#weight' => -6, // we want this at the very top
@@ -135,7 +136,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       );
       $form['info'] = array(
         '#weight' => -5, // we want this next
-        '#markup' => t('Congratulations on setting up a vineyard.  Now, you must add at least one block to your vineyard.');
+        '#markup' => t('Congratulations on setting up a vineyard.  Now, yqou must add at least one block to your vineyard.');
       );
     }
     return $form;
