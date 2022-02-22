@@ -143,8 +143,6 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
         '#value' => 1,
       );
     }
-    dpm($form, "form object");
-    dpm($form_state, "form_state object");
     $form['info'] = array(
       '#weight' => -5, // we want this next
       '#markup' => t(
