@@ -119,10 +119,9 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
   // prepareQuery() sets up the EFQ to retrieve related
   function buildForm(&$form, &$form_state) {
     parent::buildForm($form, $form_state);
-    /*
     // add custom things here. 
     $dh_feature = $form_state['build_info']['args']][0];
-    if (!is_object($dh_feature) {
+    if (!is_object($dh_feature)) {
       return $form;
     }
     // ********** Add special annotations and instructions 
@@ -140,7 +139,6 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
         '#markup' => t('Congratulations on setting up a vineyard.  Now, yqou must add at least one block to your vineyard.');
       );
     }
-    */
     return $form;
   }
   
