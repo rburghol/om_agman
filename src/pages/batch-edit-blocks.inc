@@ -134,6 +134,8 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       $form['message'] = array(
         '#weight' => -6, // we want this at the very top
         '#markup' => t('Step 2 of 4: Add blocks to your vineyard.'),
+        '#prefix' => '<h3>',
+        '#suffix' => '</h3>',
       );
       $form['info'] = array(
         '#weight' => -5, // we want this next
