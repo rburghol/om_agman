@@ -132,7 +132,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
  //     '#element_validate' => array('om_agman_validate_block'),
     );
     if (empty($row->hydroid)) {
-      $rowform['name']['#prefix'] = "Add New Block";
+      $rowform['name']['#suffix'] = "Add New Block";
     }
     //dpm($row->dh_areasqkm,'area');
     // Use property with plugin dHAgmanAreaMultiDim

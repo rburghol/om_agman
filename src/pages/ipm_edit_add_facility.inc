@@ -90,6 +90,7 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
     }
   }
   $form['dh_geofield']['#weight'] = intval($form['postal_code']['#weight']) + 1;
+  $form['dh_geofield']['und'][0]['geom']['#geolocation'] = 0; //Hide the Find Location button for now
   $form['dh_geofield']['und'][0]['geom']['#title'] = 'Location (latitude & longitude)';
   $form['dh_geofield']['und'][0]['geom']['#description'] = t('If you know the coordinates for your vineyard, enter them in the fields below the map labeled \'Latitude\' and \'Longitude\'. ');
   // for if using the Google Map geolocation
