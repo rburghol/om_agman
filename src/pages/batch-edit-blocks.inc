@@ -120,10 +120,25 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
   function buildForm(&$form, &$form_state) {
     parent::buildForm($form, $form_state);
     // add custom things here. 
+    $dh_feature = $form_state['build_info']['args']][0];
+    if (!is_object($dh_feature) {
+      return $form;
+    }
     // ********** Add special annotations and instructions 
     // if this is a the first block of a given vineyard, we handle it specially
     // if this is a blank row in a vineyard that already has one or more blocks, we add less info
-    dpm($form_state, 'fs');
+    $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
+    if (empty($blocks)) {
+      $form['message'] = array(
+        '#weight' => -6, // we want this at the very top
+        '#markup' => t('Step 2 of 4: Add blocks to your vineyard.');
+      );
+      $form['info'] = array(
+        '#weight' => -5, // we want this next
+        '#markup' => t('Congratulations on setting up a vineyard.  Now, you must add at least one block to your vineyard.');
+      );
+    }
+    return $form;
   }
   
   public function formRowDefaults(&$rowform, $row) {
