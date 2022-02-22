@@ -136,13 +136,13 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
         '#prefix' => '<h3>',
         '#suffix' => '</h3>',
       );
-      $form['info'] = array(
-        '#weight' => -5, // we want this next
-        '#markup' => t(
-          "In the fields below, please type the block name, the area in acres, (in order to enable spray calculations), and the variety or varieties planted in the block. <br> If you wish to add multiple blocks, click 'Save & Add Another'"
-        ),
-      );
     }
+    $form['info'] = array(
+      '#weight' => -5, // we want this next
+      '#markup' => t(
+        "In the fields below, please type the block name, the area in acres, (in order to enable spray calculations), and the variety or varieties planted in the block. <br> If you wish to add multiple blocks, click 'Save & Add Another'"
+      ),
+    );
     return $form;
   }
   
