@@ -120,8 +120,9 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
   function buildForm(&$form, &$form_state) {
     // add custom things here. 
     parent::buildForm($form, $form_state);
-    /*
     $dh_feature = $form_state['build_info']['args']][0];
+    dpm($dh_feature, "farm object");
+    /*
     if (!is_object($dh_feature)) {
       return $form;
     }
