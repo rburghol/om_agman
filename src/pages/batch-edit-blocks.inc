@@ -121,7 +121,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // add custom things here. 
     parent::buildForm($form, $form_state);
     $dh_feature = $form_state['build_info']['args'][0];
-    dpm($dh_feature, "farm object");
+    dpm($form_state, "form object");
     if (!is_object($dh_feature)) {
       return $form;
     }
@@ -136,11 +136,19 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
         '#prefix' => '<h3>',
         '#suffix' => '</h3>',
       );
+      // also, add a special hidden variable to tell successive rebvuilds of this form that this is the 
+      // first time for a user on this form, in case they are adding multiple blocks, we still may need to 
+      // have custom, first time user buttons.
+      $form['setup'] = array(
+        '#weight' => -1, // we want this at the very top
+        '#type' => 'hidden',
+        '#value' => 1,
+      );
     }
     $form['info'] = array(
       '#weight' => -5, // we want this next
       '#markup' => t(
-        "In the fields below, please type the block name, the area in acres, (in order to enable spray calculations), and the variety or varieties planted in the block. <br> If you wish to add multiple blocks, click 'Save & Add Another'"
+        "In the fields below, please type the block name, the area in acres, (in order to enable spray calculations), and the  name of the variety or varieties planted in the block. <br> If you wish to add multiple blocks, click 'Save & Add Another'.  You can return to this screen by selecting 'Locations' from the main menu at any time to add more vineyard blocks."
       ),
     );
     return $form;
