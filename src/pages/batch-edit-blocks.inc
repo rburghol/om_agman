@@ -121,7 +121,6 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // add custom things here. 
     parent::buildForm($form, $form_state);
     $dh_feature = $form_state['build_info']['args'][0];
-    dpm($form_state, "form object");
     if (!is_object($dh_feature)) {
       return $form;
     }
@@ -129,7 +128,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // if this is a the first block of a given vineyard, we handle it specially
     // if this is a blank row in a vineyard that already has one or more blocks, we add less info
     $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
-    if (empty($blocks)) {
+    if (empty($blocks) or ($form_state[) {
       $form['message'] = array(
         '#weight' => -6, // we want this at the very top
         '#markup' => t('Step 2 of 4: Add blocks to your vineyard.'),
@@ -140,11 +139,11 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       // first time for a user on this form, in case they are adding multiple blocks, we still may need to 
       // have custom, first time user buttons.
       $form['setup'] = array(
-        '#weight' => -1, // we want this at the very top
         '#type' => 'hidden',
         '#value' => 1,
       );
     }
+    dpm($form_state, "form_state object");
     $form['info'] = array(
       '#weight' => -5, // we want this next
       '#markup' => t(
