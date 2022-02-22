@@ -139,9 +139,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       $form['info'] = array(
         '#weight' => -5, // we want this next
         '#markup' => t(
-          'Congratulations on setting up a vineyard! Now, you must add at least one block to your vineyard.'
-          . '<br>In the fields below, please type the block name, the area in acres, (in order to enable spray calculations), and the variety or varieties planted in the block.'
-          
+          "In the fields below, please type the block name, the area in acres, (in order to enable spray calculations), and the variety or varieties planted in the block. <br> If you wish to add multiple blocks, click 'Save & Add Another'"
         ),
       );
     }
