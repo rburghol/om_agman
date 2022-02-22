@@ -220,7 +220,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // ********** Add special annotations and instructions 
     // if this is a the first block of a given vineyard, we handle it specially
     // if this is a blank row in a vineyard that already has one or more blocks, we add less info
-    if (!empty($row->hydroid)) {
+    if (empty($row->hydroid)) {
       $rowform['name']['#suffix'] = t('Enter new block info here.');
       $rowform['area']['#prefix'] = t('');
       $rowform['agman_plant']['#prefix'] = t('');
