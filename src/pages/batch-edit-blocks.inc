@@ -119,8 +119,8 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
   // prepareQuery() sets up the EFQ to retrieve related
   function buildForm(&$form, &$form_state) {
     // add custom things here. 
-    $dh_feature = $form_state['build_info']['args']][0];
     parent::buildForm($form, $form_state);
+    $dh_feature = $form_state['build_info']['args']][0];
     if (!is_object($dh_feature)) {
       return $form;
     }
