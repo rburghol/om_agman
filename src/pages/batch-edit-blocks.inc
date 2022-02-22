@@ -139,7 +139,12 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       );
       $form['info'] = array(
         '#weight' => -5, // we want this next
-        '#markup' => t('Congratulations on setting up a vineyard.  Now, yqou must add at least one block to your vineyard.'),
+        '#markup' => t(
+          'Congratulations on setting up a vineyard! '
+          . '<br>Now, you must add at least one block to your vineyard.'
+          . '<br>You must include the area (in acres) of the block in order to enable spray calculations.'
+          
+        ),
       );
     }
     return $form;
@@ -218,7 +223,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // if this is a the first block of a given vineyard, we handle it specially
     // if this is a blank row in a vineyard that already has one or more blocks, we add less info
     if (empty($row->hydroid)) {
-      $rowform['name']['#suffix'] = "New Block Name (i.e. 'Chard 2018')";
+      $rowform['name']['#suffix'] = t('');
       $rowform['area']['#prefix'] = t('');
       $rowform['agman_plant']['#prefix'] = t('');
     }
