@@ -116,6 +116,16 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // Add some blanks
   }
   
+  // prepareQuery() sets up the EFQ to retrieve related
+  function buildForm(&$form, &$form_state) {
+    parent::buildForm($form, $form_state);
+    // add custom things here. 
+    // ********** Add special annotations and instructions 
+    // if this is a the first block of a given vineyard, we handle it specially
+    // if this is a blank row in a vineyard that already has one or more blocks, we add less info
+    dpm($form_state, 'fs');
+  }
+  
   public function formRowDefaults(&$rowform, $row) {
     parent::formRowDefaults($rowform, $row);
     $rowform['hydroid'] = array(
@@ -131,9 +141,6 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       '#coltitle' => 'Block Name', 
  //     '#element_validate' => array('om_agman_validate_block'),
     );
-    if (empty($row->hydroid)) {
-      $rowform['name']['#suffix'] = "Add New Block";
-    }
     //dpm($row->dh_areasqkm,'area');
     // Use property with plugin dHAgmanAreaMultiDim
     $area_prop = FALSE;
@@ -168,9 +175,6 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       //'#required' => TRUE,
       '#size' => 10,
     );  
-    //if (empty($row->hydroid)) {
-    //  $rowform['area']['#title'] = t('Area (ac)');
-    //}
     // variety 
     //dpm($row,'row');
     //$variety = $row->{}
@@ -190,6 +194,15 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       '#coltitle' => 'Variety', 
     );
     // variety 
+    
+    // ********** Add special annotations and instructions 
+    // if this is a the first block of a given vineyard, we handle it specially
+    // if this is a blank row in a vineyard that already has one or more blocks, we add less info
+    if (empty($row->hydroid)) {
+      $rowform['name']['#suffix'] = "New Block Name (i.e. 'Chard 2018')";
+      $rowform['area']['#prefix'] = t('');
+      $rowform['agman_plant']['#prefix'] = t('');
+    }
     
   }
   
