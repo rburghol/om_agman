@@ -120,9 +120,8 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
   function buildForm(&$form, &$form_state) {
     // add custom things here. 
     parent::buildForm($form, $form_state);
-    $dh_feature = $form_state['build_info']['args']][0];
+    $dh_feature = $form_state['build_info']['args'][0];
     dpm($dh_feature, "farm object");
-    /*
     if (!is_object($dh_feature)) {
       return $form;
     }
@@ -141,7 +140,6 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
         '#markup' => t('Congratulations on setting up a vineyard.  Now, yqou must add at least one block to your vineyard.'),
       );
     }
-    */
     return $form;
   }
   
