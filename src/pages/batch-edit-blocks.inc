@@ -128,7 +128,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // if this is a the first block of a given vineyard, we handle it specially
     // if this is a blank row in a vineyard that already has one or more blocks, we add less info
     $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
-    if (empty($blocks) or (!empty($form_state['input']['setup']))) {
+    if (empty($blocks) or (!empty($form_state['setup']))) {
       $form['message'] = array(
         '#weight' => -6, // we want this at the very top
         '#markup' => t('Step 2 of 4: Add blocks to your vineyard.'),
@@ -327,7 +327,7 @@ function om_multiple_landunit_form_save($form, &$form_state) {
 function om_multiple_landunit_form_save_another($form, &$form_state) {
   om_multiple_landunit_form_save($form, $form_state);
   $vineyard_id = $form_state['values']['vineyard_id'];
-  $url = "ipm-facility-info/$vineyard_id/all/editblocks";
+  $url = "ipm-facility-info/$vineyard_id/all/editblocks&setup=1";
   drupal_goto($url);
 }
 function om_multiple_landunit_form_submit($form, &$form_state) {
@@ -345,6 +345,7 @@ function om_multiple_landunit_form_cancel($form, &$form_state) {
 
 global $user;
 $a = arg();
+$p = drupal_get_query_parameters();
 
 if (isset($a[1])) {
   $vid = $a[1];
@@ -360,6 +361,7 @@ if ($ok) {
   $form_state['wrapper_callback'] = 'entity_ui_main_form_defaults';
   $form_state['entity_type'] = 'dh_feature';
   $form_state['bundle'] = 'facility';
+  $form_state['setup'] = isset($p['setup']) ? $p['setup'] : 0;
   //$form_state['redirect'] = 'ipm-facility-info';
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   $form_state['build_info']['args'] = array($v, 'add', 'dh_feature');
@@ -371,7 +373,7 @@ if ($ok) {
   $elements = drupal_build_form('om_multiple_landunit_form', $form_state);
   //$elements = entity_ui_get_bundle_add_form('dh_feature', 'landunit');
   // entity_ui_get_form($entity_type, $entity, $op = 'edit', $form_state = array())
-  error_reporting(E_ALL);
+  //error_reporting(E_ALL);
   // just grab the regular form for proof of concept
   //$elements = entity_ui_get_form('dh_feature', $lu, $op, $form_state);
 
