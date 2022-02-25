@@ -342,4 +342,26 @@ class dHVariablePluginCanopyScaler extends dHVariablePluginDefaultOM {
   }
   
 }
+
+
+
+class dHVariablePluginAgmanSprayerRate extends dHOMConstant {
+  
+  public function hiddenFields() {
+    $hidden = array('varname', 'varid', 'pid', 'propcode', 'entity_type', 'featureid', 'startdate', 'enddate', 'modified', 'label');
+    return $hidden;
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    parent::formRowEdit($form, $entity);
+  }
+  
+  public function entityDefaults(&$entity) {
+    //dpm($entity,'entity');
+    // special render handlers when displaying in a grouped property block
+    $entity->propvalue = 100.0;
+  }
+  
+}
+
 ?>
