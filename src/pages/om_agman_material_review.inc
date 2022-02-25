@@ -77,7 +77,7 @@ function om_agman_material_review_save($form, &$form_state) {
   }
   $options = array();
   // now check to see if setup has been set
-  if (!empty($form_state['setup'])) {
+  if (!empty($parms['setup'])) {
     $url = implode('/', array('ipm-home'));
     $options['query'] = array(
       'setup' => 1,
