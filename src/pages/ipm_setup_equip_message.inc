@@ -25,7 +25,7 @@ if ($setup) {
 $text['info'] = array(
   '#weight' => -5, // we want this next
   '#markup' => t(
-    "In the fields below, please describe the volume of your sprayer, and approximate spray volume needed to cover an acre of vineyard. These value will be used to populate the defaults when you record a spray event."
+    "In the fields below, please describe the volume of your sprayer, and approximate spray volume needed to cover an acre of vineyard. These value will be used to populate the defaults when you create a spray event."
   ),
 );
 $message = drupal_render($text);

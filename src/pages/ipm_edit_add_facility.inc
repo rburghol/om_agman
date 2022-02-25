@@ -162,6 +162,7 @@ global $user;
 $vineyard = NULL;
 $op = 'add';
 $a = arg();
+dpm($a,'args');
 if (isset($a[2])) {
   $vid = $a[2];
 }
