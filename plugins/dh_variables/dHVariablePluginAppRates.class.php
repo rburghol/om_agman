@@ -370,4 +370,46 @@ class dHVariablePluginAgmanSprayerRate extends dHVariablePluginDefault {
   
 }
 
+class dHVariablePluginAgmanSprayerRate extends dHVariablePluginDefault {
+  
+  public function hiddenFields() {
+    $hidden = array('varid', 'pid', 'propcode', 'entity_type', 'featureid', 'startdate', 'enddate', 'modified', 'label');
+    return $hidden;
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    //dpm($form,'form');
+    parent::formRowEdit($form, $entity);
+    //$form['propname']['#prefix'] = $this->varname;
+    $form['propvalue']['#default_value'] = empty($entity->propvalue) ? 100 : $entity->propvalue;
+    //dpm($form,'form');
+  }
+  
+  public function entityDefaults(&$entity) {
+    // note: the base class does NOT expect &$entity as an argument
+    //  so the below does NOT work (even though there are plugins that *think* it works this way
+    $entity->propvalue = 100.0;
+    // Instead, this is the expected 
+    // BUT this doesn't work in all cases either... this is too bad
+    $this->entity_defaults['propvalue'] = 100.0;
+  }
+  
+}
+
+class dHVariablePluginAgmanSprayerVolume extends dHVariablePluginDefault {
+  
+  public function hiddenFields() {
+    $hidden = array('varid', 'pid', 'propcode', 'entity_type', 'featureid', 'startdate', 'enddate', 'modified', 'label');
+    return $hidden;
+  }
+  
+  public function formRowEdit(&$form, $entity) {
+    //dpm($form,'form');
+    parent::formRowEdit($form, $entity);
+    //$form['propname']['#prefix'] = $this->varname;
+    $form['propvalue']['#default_value'] = empty($entity->propvalue) ? 100 : $entity->propvalue;
+    //dpm($form,'form');
+  }
+}
+
 ?>

@@ -3,25 +3,25 @@
 $plugin = array(
   'label' => t('AgMan - Sprayer Rate per Acre'),
   'handler' =>  array(
-    'class' => 'dHVariablePluginAgmanSprayerRate',
+    'class' => 'dHVariablePluginAgmanSprayerVolume',
     'file' => 'dHVariablePluginAppRates.class.php',
   ),
   'variable' =>  array(
-    'varname' => 'Agman: Sprayer Default Rate',
-    'vardesc' => 'Default Spray Volume per acre.',
+    'varname' => 'Sprayer Tank Volume',
+    'vardesc' => 'Maximum volume of liquid contained by sprayer.',
     'vocabulary' => 'agman_equipment',
     'varunits' => 'gal',
-    'varkey' => 'agman_sprayrate_default_galac',
-    'datatype' => 'volume',
-    'varcode' => 'agman_sprayrate_default_galac',
+    'varkey' => 'agchem_sprayer_vol',
+    'datatype' => 'capacity',
+    'varcode' => 'agchem_sprayer_vol',
     'isregular' => 0,
     'timestep' => 0,
     'timeunits' => 'n/a',
     'nodataval' => 0,
     'data_entry' => 'value',
-    'plugin' => 'dHVariablePluginAgmanSprayerRate',
+    'plugin' => 'dHVariablePluginAgmanSprayerVolume',
     'options' => '',
-    'varabbrev' => 'Spray Rate',
+    'varabbrev' => 'Tank Size',
   ),
 );
 
