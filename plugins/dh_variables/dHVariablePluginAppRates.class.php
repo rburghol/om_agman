@@ -344,7 +344,7 @@ class dHVariablePluginCanopyScaler extends dHVariablePluginDefaultOM {
 }
 
 
-class dHVariablePluginAgmanSprayerRate extends dHOMConstant {
+class dHVariablePluginAgmanSprayerRate extends dHVariablePluginDefault {
   
   public function hiddenFields() {
     $hidden = array('varname', 'varid', 'pid', 'propcode', 'entity_type', 'featureid', 'startdate', 'enddate', 'modified', 'label');
