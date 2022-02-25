@@ -10,7 +10,7 @@ $text = array();
 if ($setup) {
   $text['message'] = array(
     '#weight' => -6, // we want this first
-    '#markup' => t('Step 4 of 4: Set up sprayer volume & rate information.'),
+    '#markup' => t('Step 4 of 4: Select Spray Materials.'),
     '#prefix' => '<h3>',
     '#suffix' => '</h3>',
   );
