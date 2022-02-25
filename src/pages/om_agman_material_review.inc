@@ -75,7 +75,15 @@ function om_agman_material_review_save($form, &$form_state) {
   } else {
     $url = implode('/', array('ipm-facility-materials'));
   }
-  drupal_goto($url);
+  $options = array();
+  // now check to see if setup has been set
+  if (!empty($form_state['setup'])) {
+    $url = implode('/', array('ipm-home'));
+    $options['query'] = array(
+      'setup' => 1,
+    );
+  }
+  drupal_goto($url, $options);
 }
 
 
