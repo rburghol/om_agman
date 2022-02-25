@@ -9,12 +9,14 @@ $setup = isset($p['setup']) ? $p['setup'] : 0;
 $text = array();
 if ($setup) {
   $text['message'] = array(
+    '#weight' => -6, // we want this first
     '#markup' => t('Step 3 of 4: Set up sprayer volume & rate information.'),
     '#prefix' => '<h3>',
     '#suffix' => '</h3>',
   );
 } else {
   $text['message'] = array(
+    '#weight' => -6, // we want this first
     '#markup' => t('Configure: Set up sprayer volume & rate information.'),
     '#prefix' => '<h3>',
     '#suffix' => '</h3>',
