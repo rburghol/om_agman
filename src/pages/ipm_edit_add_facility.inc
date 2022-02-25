@@ -14,16 +14,23 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
     $dh_feature->name .= ' (cloned)';
     $dh_feature->bundle = '';
   }
-
-/*  $form['name'] = array(
-    '#title' => t('Label'),
-    '#type' => 'textfield',
-    '#default_value' => $dh_feature->name,
-    '#description' => t('The human-readable name of this dH Feature type.'),
-    '#required' => TRUE,
-    '#size' => 30,
-  );*/
-
+  if ($op == 'add') {
+    
+    $text['message'] = array(
+      '#weight' => -6, // we want this first
+      '#markup' => t('Step 1 of 4: Create a New Vineyard.'),
+      '#prefix' => '<h3>',
+      '#suffix' => '</h3>',
+    );
+  } else {
+    $text['message'] = array(
+      '#weight' => -6, // we want this first
+      '#markup' => t('Edit your vineyard information.'),
+      '#prefix' => '<h3>',
+      '#suffix' => '</h3>',
+    );
+  }
+  
   $form['name'] = array(
     '#title' => t('Vineyard Name'),
     '#type' => 'textfield',
