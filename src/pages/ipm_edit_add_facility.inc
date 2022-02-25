@@ -162,9 +162,9 @@ global $user;
 $vineyard = NULL;
 $op = 'add';
 $a = arg();
-dpm($a,'args');
-if (isset($a[2])) {
-  $vid = $a[2];
+//dpm($a,'args');
+if (isset($a[1])) {
+  $vid = $a[1];
 }
 if (isset($vid)) {
   $vineyard = entity_load_single('dh_feature', $vid);
