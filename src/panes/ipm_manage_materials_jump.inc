@@ -38,7 +38,7 @@ $output = drupal_get_form('ctools_jump_menu', $targets, $options);
 $farm = entity_load_single('dh_feature', $a[1]);
 $farm_chems = $farm->field_link_agchem_material['und'];
 $farm_chems = array_column($farm_chems, 'target_id');
-dpm($farm_chems,'chems');
+
 if (count($farm_chems) > 0) {
   echo "<b>Go To:</b>" . drupal_render($output);
 } else {
