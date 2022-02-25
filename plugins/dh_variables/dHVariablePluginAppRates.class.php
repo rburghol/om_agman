@@ -344,7 +344,6 @@ class dHVariablePluginCanopyScaler extends dHVariablePluginDefaultOM {
 }
 
 
-
 class dHVariablePluginAgmanSprayerRate extends dHOMConstant {
   
   public function hiddenFields() {
@@ -353,9 +352,9 @@ class dHVariablePluginAgmanSprayerRate extends dHOMConstant {
   }
   
   public function formRowEdit(&$form, $entity) {
-    dpm($form,'form')
+    dpm($form,'form');
     parent::formRowEdit($form, $entity);
-    dpm($form,'form')
+    dpm($form,'form');
   }
   
   public function entityDefaults(&$entity) {
