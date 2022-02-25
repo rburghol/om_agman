@@ -251,6 +251,7 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
         '#submit' => array('om_multiple_landunit_form_save_equip')
         // @todo: do this as ajax
       );
+      unset($form['actions']['submit']);
     } else {
       // just show the regular save button
       $form['actions']['submit']['#submit'] = array('om_multiple_landunit_form_submit');
