@@ -363,7 +363,7 @@ function om_multiple_landunit_form_save_equip($form, &$form_state) {
   $options = array(
     'query' => array(
       'setup' => 1,
-      'destination' => "ipm-facility-materials/$vineyard_id"
+      'destination' => "ipm-facility-materials/$vineyard_id/search"
     ),
   );
   drupal_goto($url, $options);
