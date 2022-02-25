@@ -381,7 +381,7 @@ class dHVariablePluginAgmanSprayerVolume extends dHVariablePluginDefault {
     //dpm($form,'form');
     parent::formRowEdit($form, $entity);
     //$form['propname']['#prefix'] = $this->varname;
-    $form['propvalue']['#default_value'] = empty($entity->propvalue) ? 100 : $entity->propvalue;
+    $form['propvalue']['#default_value'] = empty($entity->propvalue) ? 250 : $entity->propvalue;
     //dpm($form,'form');
   }
 }
