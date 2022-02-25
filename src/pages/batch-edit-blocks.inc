@@ -328,6 +328,12 @@ function om_multiple_landunit_form_save_another($form, &$form_state) {
   $url = "ipm-facility-info/$vineyard_id/all/editblocks&setup=1";
   drupal_goto($url);
 }
+function om_multiple_landunit_form_save_equip($form, &$form_state) {
+  om_multiple_landunit_form_save($form, $form_state);
+  $vineyard_id = $form_state['values']['vineyard_id'];
+  $url = "ipm-facility-info/$vineyard_id/all/editblocks&setup=1";
+  drupal_goto($url);
+}
 function om_multiple_landunit_form_submit($form, &$form_state) {
   om_multiple_landunit_form_save($form, $form_state);
   $vineyard_id = $form_state['values']['vineyard_id'];
