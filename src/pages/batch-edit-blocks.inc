@@ -359,11 +359,11 @@ function om_multiple_landunit_form_save_another($form, &$form_state) {
 function om_multiple_landunit_form_save_equip($form, &$form_state) {
   om_multiple_landunit_form_save($form, $form_state);
   $vineyard_id = $form_state['values']['vineyard_id'];
-  $url = "ipm-facility-equip/$vineyard_id/all/edit&setup=1";
+  $url = "ipm-facility-equip/$vineyard_id/all/edit";
   $options = array(
     'query' => array(
       'setup' => 1,
-      'destination' => 'ipm-facility-materials/$vineyard_id'
+      'destination' => "ipm-facility-materials/$vineyard_id"
     ),
   );
   drupal_goto($url, $options);
