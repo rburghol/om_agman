@@ -42,6 +42,7 @@ $farm_chems = array_column($farm_chems, 'target_id');
 if (count($farm_chems) > 0) {
   echo "<b>Go To:</b>" . drupal_render($output);
 } else {
+  echo("Args:" . print_r($a));
   if ($a[2] <> 'search') {
     // no chems, and not on search page, must go to search
     $url = implode('/', array($a[0], $a[1], 'search'));
