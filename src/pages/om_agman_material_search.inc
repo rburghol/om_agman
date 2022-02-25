@@ -240,6 +240,9 @@ function om_agman_material_search_save($form, &$form_state) {
   foreach ( $new_chems as $chem_id) {
     $params['chems'][] = $chem_id;
   }
+  if (!empty($form_state['setup']) or empty($farm_chems) ) {
+    $params['setup'] = 1;
+  }
   //dpm($params,"search_search params");
   drupal_goto($path, array('query' => $params));
   return TRUE;
