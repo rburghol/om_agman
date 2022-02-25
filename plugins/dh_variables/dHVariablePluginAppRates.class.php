@@ -354,10 +354,11 @@ class dHVariablePluginAgmanSprayerRate extends dHOMConstant {
   
   public function formRowEdit(&$form, $entity) {
     parent::formRowEdit($form, $entity);
+    dpm($form,'form')
   }
   
   public function entityDefaults(&$entity) {
-    //dpm($entity,'entity');
+    dpm($entity,'entity');
     // special render handlers when displaying in a grouped property block
     $entity->propvalue = 100.0;
   }
