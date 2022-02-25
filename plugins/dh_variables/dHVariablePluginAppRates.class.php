@@ -352,10 +352,11 @@ class dHVariablePluginAgmanSprayerRate extends dHVariablePluginDefault {
   }
   
   public function formRowEdit(&$form, $entity) {
-    dpm($form,'form');
+    //dpm($form,'form');
     parent::formRowEdit($form, $entity);
     $form['propname']['#prefix'] = $this->varname;
-    dpm($form,'form');
+    $form['propvalue']['#default_value'] = empty($entity->propvalue) ? 100 : $entity->propvalue;
+    //dpm($form,'form');
   }
   
   public function entityDefaults(&$entity) {
