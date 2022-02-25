@@ -355,7 +355,7 @@ class dHVariablePluginAgmanSprayerRate extends dHVariablePluginDefault {
     //dpm($form,'form');
     parent::formRowEdit($form, $entity);
     $form['propname']['#prefix'] = $this->varname;
-    //$form['propvalue']['#default_value'] = empty($entity->propvalue) ? 100 : $entity->propvalue;
+    $form['propvalue']['#default_value'] = empty($entity->propvalue) ? 100 : $entity->propvalue;
     //dpm($form,'form');
   }
   
@@ -363,6 +363,7 @@ class dHVariablePluginAgmanSprayerRate extends dHVariablePluginDefault {
     //dpm($entity,'entity');
     // special render handlers when displaying in a grouped property block
     $entity->propvalue = 100.0;
+    $this->entity_defaults['starttime'] = 100.0;
   }
   
 }
