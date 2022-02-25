@@ -234,10 +234,29 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
   
   public function addFormActions(&$form, $form_state) {
     parent::addFormActions($form, $form_state);
+    $dh_feature = $form_state['build_info']['args'][0];
+    if (!is_object($dh_feature)) {
+      return $form;
+    }
+    // ********** Add special annotations and instructions 
+    // if this is a the first block of a given vineyard, we handle it specially
+    // if this is a blank row in a vineyard that already has one or more blocks, we add less info
+    $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
     $form['actions']['submit']['#submit'] = array('om_multiple_landunit_form_submit');
+    if (empty($blocks) or (!empty($form_state['setup']))) {
+      $form['actions']['save_equip'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save & Next: Set Up Your Sprayer'),
+        '#weight' => 40,
+        '#submit' => array('om_multiple_landunit_form_save_equip')
+        // @todo: do this as ajax
+      );
+    } else {
+      
+    }
     $form['actions']['submit_another'] = array(
       '#type' => 'submit',
-      '#value' => t('Save & Add Another'),
+      '#value' => t('Save & Add Another Block'),
       '#weight' => 40,
       '#submit' => array('om_multiple_landunit_form_save_another')
       // @todo: do this as ajax
@@ -331,7 +350,7 @@ function om_multiple_landunit_form_save_another($form, &$form_state) {
 function om_multiple_landunit_form_save_equip($form, &$form_state) {
   om_multiple_landunit_form_save($form, $form_state);
   $vineyard_id = $form_state['values']['vineyard_id'];
-  $url = "ipm-facility-info/$vineyard_id/all/editblocks&setup=1";
+  $url = "ipm-facility-equip/$vineyard_id/all/edit&setup=1";
   drupal_goto($url);
 }
 function om_multiple_landunit_form_submit($form, &$form_state) {
