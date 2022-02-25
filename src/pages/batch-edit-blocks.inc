@@ -242,8 +242,8 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // if this is a the first block of a given vineyard, we handle it specially
     // if this is a blank row in a vineyard that already has one or more blocks, we add less info
     $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
-    $form['actions']['submit']['#submit'] = array('om_multiple_landunit_form_submit');
     if (empty($blocks) or (!empty($form_state['setup']))) {
+      // Show the next step in the work flow
       $form['actions']['save_equip'] = array(
         '#type' => 'submit',
         '#value' => t('Save & Next: Set Up Your Sprayer'),
@@ -252,7 +252,8 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
         // @todo: do this as ajax
       );
     } else {
-      
+      // just show the regular save button
+      $form['actions']['submit']['#submit'] = array('om_multiple_landunit_form_submit');
     }
     $form['actions']['submit_another'] = array(
       '#type' => 'submit',
