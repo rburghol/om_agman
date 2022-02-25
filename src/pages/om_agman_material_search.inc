@@ -20,11 +20,17 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     $frac_opts = $arr['propcode'];
   }
   
-  
+  $form['group1'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Search Filters'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,  
+  );
+
   $ftype_options = array('fungicide', 'herbicide', 'insecticide', 'fertilizer', 'other');
   $ftype_options = array_combine($ftype_options, $ftype_options);
   //dpm($phi_options,'phi');
-  $form['ftype'] = array(
+  $form['group1']['ftype'] = array(
     '#title' => t('Material Type'),
     '#type' => 'select',
     '#default_value' => array(),
@@ -35,10 +41,10 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#empty_option' => '- Any -',
     '#size' => 1,
   );  
-  $form['frac'] = $frac_opts;
-  $form['frac']['#title'] = 'Filter by Mode of Action';
-  $form['frac']['#empty_option'] = '- All Modes - ';
-  $form['name'] = array(
+  $form['group1']['frac'] = $frac_opts;
+  $form['group1']['frac']['#title'] = 'Filter by Mode of Action';
+  $form['group1']['frac']['#empty_option'] = '- All Modes - ';
+  $form['group1']['name'] = array(
     '#title' => t('Material Name'),
     '#type' => 'textfield',
     '#default_value' => '',
@@ -56,7 +62,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   if ($class) {
     $src = new $class($config);
     $target_orgs = $src->incidentCodes();
-    $form['target_org'] = array(
+    $form['group1']['target_org'] = array(
       '#title' => t('Filter by Target Organism (fungicide only)'),
       '#type' => 'select',
       '#default_value' => array(),
@@ -71,7 +77,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     watchdog("Cannot get list of target organisms.  Please report to system administrator.");
   }
   
-  $form['ai'] = array(
+  $form['group1']['ai'] = array(
     '#title' => t('Active Ingredient'),
     '#type' => 'textfield',
     '#default_value' => '',
@@ -87,7 +93,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     $value .= ' days';
   });
   //dpm($phi_options,'phi');
-  $form['phi'] = array(
+  $form['group1']['phi'] = array(
     '#title' => t('Pre-Harvest Interval (PHI)'),
     '#type' => 'select',
     '#default_value' => array(),
