@@ -26,6 +26,15 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,  
   );
+  
+  $form['group1']['name'] = array(
+    '#title' => t('Material Name'),
+    '#type' => 'textfield',
+    '#default_value' => '',
+    '#description' => t('Search for material mode of action such as FRAC and IRAC code.'),
+    '#required' => FALSE,
+    '#size' => 30,
+  );  
 
   $ftype_options = array('fungicide', 'herbicide', 'insecticide', 'fertilizer', 'other');
   $ftype_options = array_combine($ftype_options, $ftype_options);
@@ -44,14 +53,6 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   $form['group1']['frac'] = $frac_opts;
   $form['group1']['frac']['#title'] = 'Filter by Mode of Action';
   $form['group1']['frac']['#empty_option'] = '- All Modes - ';
-  $form['group1']['name'] = array(
-    '#title' => t('Material Name'),
-    '#type' => 'textfield',
-    '#default_value' => '',
-    '#description' => t('Search for material mode of action such as FRAC and IRAC code.'),
-    '#required' => FALSE,
-    '#size' => 30,
-  );  
 
   // get target organisms
   $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginIPMDisease');
