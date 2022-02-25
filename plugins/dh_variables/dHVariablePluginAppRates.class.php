@@ -355,15 +355,18 @@ class dHVariablePluginAgmanSprayerRate extends dHVariablePluginDefault {
     //dpm($form,'form');
     parent::formRowEdit($form, $entity);
     $form['propname']['#prefix'] = $this->varname;
-    $form['propvalue']['#default_value'] = empty($entity->propvalue) ? 100 : $entity->propvalue;
+    //$form['propvalue']['#default_value'] = empty($entity->propvalue) ? 100 : $entity->propvalue;
     //dpm($form,'form');
   }
   
   public function entityDefaults(&$entity) {
     //dpm($entity,'entity');
     // special render handlers when displaying in a grouped property block
+    // note: the base class does NOT expect &$entity as an argument
+    //  so the below does NOT work (even though there are plugins that *think* it works this way
     $entity->propvalue = 100.0;
-    $this->entity_defaults['starttime'] = 100.0;
+    // Instead, this is the expected 
+    $this->entity_defaults['propvalue'] = 100.0;
   }
   
 }
