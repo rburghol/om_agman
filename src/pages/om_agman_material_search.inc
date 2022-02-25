@@ -269,18 +269,18 @@ $elements = drupal_build_form('om_agman_material_search_form', $form_state);
 $farm = entity_load_single('dh_feature', $farm_id);
 $farm_chems = $farm->field_link_agchem_material['und'];
 $farm_chems = array_column($farm_chems, 'target_id');
-// since drupal_build_form() alters form_state by reference the setup var may be there
+// since drupal_build_form() alters form_state by reference the setup var may be there on refresh
 if (empty($farm_chems) or (!empty($form_state['setup']))) {
-  $form['message'] = array(
+  $elements['message'] = array(
     '#weight' => -6, // we want this at the very top
-    '#markup' => t('Step 2 of 4: Add blocks to your vineyard.'),
+    '#markup' => t('Step 4 of 4: Add spray materials to your vineyard.'),
     '#prefix' => '<h3>',
     '#suffix' => '</h3>',
   );
   // also, add a special hidden variable to tell successive rebvuilds of this form that this is the 
   // first time for a user on this form, in case they are adding multiple blocks, we still may need to 
   // have custom, first time user buttons.
-  $form['setup'] = array(
+  $elements['setup'] = array(
     '#type' => 'hidden',
     '#value' => 1,
   );
