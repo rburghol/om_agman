@@ -31,5 +31,17 @@ $targets[$urls['search']] = 'Search for New Materials';
 $targets[$urls['inventory']] = 'Update Inventory';
 $targets[$urls['purchasing']] = 'Estimate Purchasing';
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
-echo "<b>Go To:</b>" . drupal_render($output);
+
+// now, we test to see if this farm HAS chems already, because if it doesn't we want to 
+// NOT show this menu.
+
+$farm = entity_load_single('dh_feature', $a[1]);
+$farm_chems = $farm->field_link_agchem_material['und'];
+$farm_chems = array_column($farm_chems, 'target_id');
+dpm($farm_chems,'chems');
+if (count($farm_chems) > 0) {
+  echo "<b>Go To:</b>" . drupal_render($output);
+} else {
+  
+}
 ?>
