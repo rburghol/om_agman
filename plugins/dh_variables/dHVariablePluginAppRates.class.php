@@ -353,6 +353,7 @@ class dHVariablePluginAgmanSprayerRate extends dHOMConstant {
   }
   
   public function formRowEdit(&$form, $entity) {
+    dpm($form,'form')
     parent::formRowEdit($form, $entity);
     dpm($form,'form')
   }
