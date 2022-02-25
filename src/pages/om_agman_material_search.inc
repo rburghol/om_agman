@@ -20,21 +20,21 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     $frac_opts = $arr['propcode'];
   }
   
-  $form['group1'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Search Filters (click to here to show/hide filters)'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,  
-  );
-  
-  $form['group1']['name'] = array(
-    '#title' => t('Material Name'),
+  $form['name'] = array(
+    '#title' => t('Search by Material Name'),
     '#type' => 'textfield',
     '#default_value' => '',
-    '#description' => t('Search for material mode of action such as FRAC and IRAC code.'),
+    '#description' => t('Search for material by brand name (i.e. Mancozeb, Captan, ...).'),
     '#required' => FALSE,
     '#size' => 30,
   );  
+  
+  $form['group1'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Additional Search Filters, FRAC, PHI, etc. (click to show/hide filters)'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,  
+  );
 
   $ftype_options = array('fungicide', 'herbicide', 'insecticide', 'fertilizer', 'other');
   $ftype_options = array_combine($ftype_options, $ftype_options);
