@@ -19,15 +19,15 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
     $form['message'] = array(
       '#weight' => -6, // we want this first
       '#markup' => t('Step 1 of 4: Create a New Vineyard.'),
-      '#prefix' => '<h3>',
-      '#suffix' => '</h3>',
+      '#prefix' => '<h2>',
+      '#suffix' => '</h2>',
     );
   } else {
     $form['message'] = array(
       '#weight' => -6, // we want this first
       '#markup' => t('Edit your vineyard information.'),
-      '#prefix' => '<h3>',
-      '#suffix' => '</h3>',
+      '#prefix' => '<h2>',
+      '#suffix' => '</h2>',
     );
   }
   
