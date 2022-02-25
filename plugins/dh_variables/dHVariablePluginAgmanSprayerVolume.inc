@@ -1,7 +1,7 @@
 <?php
 
 $plugin = array(
-  'label' => t('AgMan - Sprayer Rate per Acre'),
+  'label' => t('AgMan - Sprayer Tank Volume'),
   'handler' =>  array(
     'class' => 'dHVariablePluginAgmanSprayerVolume',
     'file' => 'dHVariablePluginAppRates.class.php',
