@@ -114,7 +114,7 @@ $form_state['build_info']['args'] = array($farm_id, $chems);
 form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
 //dpm($form_state,'post form_load_include');
 $elements = drupal_build_form('om_agman_material_review_form', $form_state);
-if ($empty($form_state['setup'])) {
+if (empty($form_state['setup'])) {
   $elements['setup'] = array(
     '#type' => 'hidden',
     '#value' => $form_state['setup'],
