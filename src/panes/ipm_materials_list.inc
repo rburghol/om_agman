@@ -26,7 +26,7 @@ function om_agman_farm_materials($farm_id, $material_ftype = '') {
     $q .= "  and c.ftype = '$material_ftype' ";
   }
 
-  dpm($q,'q');
+  //dpm($q,'q');
   $chems = array();
   $brief_list = array();
   $result = db_query($q);
