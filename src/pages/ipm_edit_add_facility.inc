@@ -94,6 +94,7 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
   foreach ($hiddens as $hidethis) {
     if (isset($form[$hidethis])) {
       $form[$hidethis]['#type'] = 'hidden';
+      $form[$hidethis]['#disabled'] = TRUE;
     }
   }
   $form['dh_geofield']['#weight'] = intval($form['postal_code']['#weight']) + 1;
