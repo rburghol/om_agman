@@ -37,47 +37,48 @@ function om_agman_farm_materials($farm_id, $material_ftype = '') {
   return $chems;
 }
 // Get all chems for this farm
-$chems = om_agman_farm_materials($farm_id);
-// compile a list of the first 24 for display purposes
-$brief_list = array_column($chems, 'chem_name');
-if (count($brief_list) > 24) {
-  $brief_list = array_slice($brief_list, 0, 24);
-}
+if (!empty($farm_id)) {
+  $chems = om_agman_farm_materials($farm_id);
+  // compile a list of the first 24 for display purposes
+  $brief_list = array_column($chems, 'chem_name');
+  if (count($brief_list) > 24) {
+    $brief_list = array_slice($brief_list, 0, 24);
+  }
 
-$text = array();
+  $text = array();
 
-$l_title = t("Click here to manage add or remove materials from this list. ");
-$l_url = "/ipm-facility-materials/$farm_id";
-$l_manage = l( $l_title, $l_url, array(
-  'attributes' => array(
-      'class' => array('editlink')
+  $l_title = t("Click here to manage add or remove materials from this list. ");
+  $l_url = "/ipm-facility-materials/$farm_id";
+  $l_manage = l( $l_title, $l_url, array(
+    'attributes' => array(
+        'class' => array('editlink')
+      )
     )
-  )
-);
-$text['info'] = array(
-  '#weight' => 1, // we want this next
-  '#markup' => t("Below is a list of spray materials that are linked to ") . $farm->name . "."
-               . "<br>" . $l_manage
-);
+  );
+  $text['info'] = array(
+    '#weight' => 1, // we want this next
+    '#markup' => t("Below is a list of spray materials that are linked to ") . $farm->name . "."
+                 . "<br>" . $l_manage
+  );
 
-// Create the list of chemicals
-$brief_str = implode(", ", array_values($brief_list));
-$et_al = ".";
-if (count($brief_list) < count($chems)) {
-  $et_al = "<br> ... and " . (count($chems) - count($brief_list)) . " others.";
+  // Create the list of chemicals
+  $brief_str = implode(", ", array_values($brief_list));
+  $et_al = ".";
+  if (count($brief_list) < count($chems)) {
+    $et_al = "<br> ... and " . (count($chems) - count($brief_list)) . " others.";
+  }
+  $text['list'] = array(
+    '#theme' => 'item_list',
+    '#list_type' => 'ul',
+    '#items' => [$brief_str . $et_al],
+    '#wrapper_attributes' => ['class' => 'container'],
+    '#weight' => 2, // we want this next
+  );
+  //dpm($chems,'chems');
+  //dpm($brief_list,'brief_list chems');\
+  /*
+  */
+  $message = drupal_render($text);
+  echo $message;
 }
-$text['list'] = array(
-  '#theme' => 'item_list',
-  '#list_type' => 'ul',
-  '#items' => [$brief_str . $et_al],
-  '#wrapper_attributes' => ['class' => 'container'],
-  '#weight' => 2, // we want this next
-);
-//dpm($chems,'chems');
-//dpm($brief_list,'brief_list chems');\
-/*
-*/
-$message = drupal_render($text);
-echo $message;
-
 ?>
