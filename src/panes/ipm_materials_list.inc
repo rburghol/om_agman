@@ -50,7 +50,8 @@ $l_title = t("Click here to manage add or remove materials from this list. ");
 $l_url = "/ipm-facility-materials/$farm_id";
 $l_manage = l( $l_title, $l_url, array(
   'attributes' => array(
-    'class' => array('editlink')
+      'class' => array('editlink')
+    )
   )
 );
 $text['info'] = array(
