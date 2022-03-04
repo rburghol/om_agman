@@ -1,4 +1,6 @@
 <?php
+// use in any page with 1-line:
+//   module_load_include('inc', 'om_agman', 'src/pages/ipm_materials_list');
 $a = arg();
 $farm_id = $a[2];
 $farm = entity_load_single('dh_feature', $farm_id);
