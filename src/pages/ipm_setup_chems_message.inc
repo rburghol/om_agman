@@ -8,7 +8,7 @@ $p = drupal_get_query_parameters();
 $setup = isset($p['setup']) ? $p['setup'] : 0;
 $text = array();
 if ($setup) {
-  $elements['message'] = array(
+  $text['message'] = array(
     '#weight' => -6, // we want this at the very top
     '#markup' => t('Step 4 of 4: Search spray materials to add to your vineyard list.'),
     '#prefix' => '<h3>',
