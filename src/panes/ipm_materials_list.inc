@@ -75,7 +75,7 @@ if (!empty($farm_id)) {
     '#weight' => 2, // we want this next
   );
   dpm($chems,'chems');
-  dpm($brief_list,'brief_list chems');\
+  dpm($brief_list,'brief_list chems');
   /*
   */
   $message = drupal_render($text);
