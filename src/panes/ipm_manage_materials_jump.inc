@@ -16,7 +16,7 @@ if (count($a) <= 1) {
 }
 $urls = array(
   'list' => url(implode('/', array($a[0], $a[1]))),
-  'materials' => url(implode('/', array($a[0], $a[1], 'select'))),
+  //'materials' => url(implode('/', array($a[0], $a[1], 'select'))),
   'search' => url(implode('/', array($a[0], $a[1], 'search'))),
   'inventory' => url(implode('/', array($a[0], $a[1], 'inventory'))),
   'purchasing' => url(implode('/', array($a[0], $a[1], 'purchasing'))),
@@ -26,10 +26,30 @@ $options = array(
   'default_value' => url($_GET['q']),
 );
 $targets[$urls['list']] = 'List Materials';
-$targets[$urls['materials']] = 'Manage Materials';
-$targets[$urls['search']] = '**Search for New Materials (new)';
+//$targets[$urls['materials']] = 'Manage Materials';
+$targets[$urls['search']] = 'Search for New Materials';
 $targets[$urls['inventory']] = 'Update Inventory';
 $targets[$urls['purchasing']] = 'Estimate Purchasing';
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
-echo "<b>Go To:</b>" . drupal_render($output);
+
+// now, we test to see if this farm HAS chems already, because if it doesn't we want to 
+// NOT show this menu.
+
+$farm = entity_load_single('dh_feature', $a[1]);
+$farm_chems = $farm->field_link_agchem_material['und'];
+$farm_chems = array_column($farm_chems, 'target_id');
+
+if (count($farm_chems) > 0) {
+  echo "<b>Go To:</b>" . drupal_render($output);
+} else {
+  if ($a[2] <> 'search') {
+    // no chems, and not on search page, must go to search
+    $url = implode('/', array($a[0], $a[1], 'search'));
+    $options = array();
+    $options['query'] = array(
+      'setup' => 1,
+    );
+    drupal_goto($url, $options);
+  }
+}
 ?>

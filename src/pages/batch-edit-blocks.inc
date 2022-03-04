@@ -116,6 +116,42 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // Add some blanks
   }
   
+  // prepareQuery() sets up the EFQ to retrieve related
+  function buildForm(&$form, &$form_state) {
+    // add custom things here. 
+    parent::buildForm($form, $form_state);
+    $dh_feature = $form_state['build_info']['args'][0];
+    if (!is_object($dh_feature)) {
+      return $form;
+    }
+    // ********** Add special annotations and instructions 
+    // if this is a the first block of a given vineyard, we handle it specially
+    // if this is a blank row in a vineyard that already has one or more blocks, we add less info
+    $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
+    if (empty($blocks) or (!empty($form_state['setup']))) {
+      $form['message'] = array(
+        '#weight' => -6, // we want this at the very top
+        '#markup' => t('Step 2 of 4: Add blocks to your vineyard.'),
+        '#prefix' => '<h3>',
+        '#suffix' => '</h3>',
+      );
+      // also, add a special hidden variable to tell successive rebvuilds of this form that this is the 
+      // first time for a user on this form, in case they are adding multiple blocks, we still may need to 
+      // have custom, first time user buttons.
+      $form['setup'] = array(
+        '#type' => 'hidden',
+        '#value' => 1,
+      );
+    }
+    $form['info'] = array(
+      '#weight' => -5, // we want this next
+      '#markup' => t(
+        "In the fields below, please type the block name, the area in acres, (in order to enable spray calculations), and the  name of the variety or varieties planted in the block. <br> If you wish to add multiple blocks, click 'Save & Add Another'.  You can return to this screen by selecting 'Locations' from the main menu at any time to add more vineyard blocks."
+      ),
+    );
+    return $form;
+  }
+  
   public function formRowDefaults(&$rowform, $row) {
     parent::formRowDefaults($rowform, $row);
     $rowform['hydroid'] = array(
@@ -131,9 +167,6 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       '#coltitle' => 'Block Name', 
  //     '#element_validate' => array('om_agman_validate_block'),
     );
-    if (empty($row->hydroid)) {
-      $rowform['name']['#prefix'] = "Add New Block";
-    }
     //dpm($row->dh_areasqkm,'area');
     // Use property with plugin dHAgmanAreaMultiDim
     $area_prop = FALSE;
@@ -168,9 +201,6 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
       //'#required' => TRUE,
       '#size' => 10,
     );  
-    //if (empty($row->hydroid)) {
-    //  $rowform['area']['#title'] = t('Area (ac)');
-    //}
     // variety 
     //dpm($row,'row');
     //$variety = $row->{}
@@ -191,14 +221,44 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     );
     // variety 
     
+    // ********** Add special annotations and instructions 
+    // if this is a the first block of a given vineyard, we handle it specially
+    // if this is a blank row in a vineyard that already has one or more blocks, we add less info
+    if (empty($row->hydroid)) {
+      $rowform['name']['#suffix'] = t('Enter new block info here.');
+      $rowform['area']['#prefix'] = t('');
+      $rowform['agman_plant']['#prefix'] = t('');
+    }
+    
   }
   
   public function addFormActions(&$form, $form_state) {
     parent::addFormActions($form, $form_state);
-    $form['actions']['submit']['#submit'] = array('om_multiple_landunit_form_submit');
+    $dh_feature = $form_state['build_info']['args'][0];
+    if (!is_object($dh_feature)) {
+      return $form;
+    }
+    // ********** Add special annotations and instructions 
+    // if this is a the first block of a given vineyard, we handle it specially
+    // if this is a blank row in a vineyard that already has one or more blocks, we add less info
+    $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
+    if (empty($blocks) or (!empty($form_state['setup']))) {
+      // Show the next step in the work flow
+      $form['actions']['save_equip'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save & Next: Set Up Your Sprayer'),
+        '#weight' => 40,
+        '#submit' => array('om_multiple_landunit_form_save_equip')
+        // @todo: do this as ajax
+      );
+      unset($form['actions']['submit']);
+    } else {
+      // just show the regular save button
+      $form['actions']['submit']['#submit'] = array('om_multiple_landunit_form_submit');
+    }
     $form['actions']['submit_another'] = array(
       '#type' => 'submit',
-      '#value' => t('Save & Add Another'),
+      '#value' => t('Save & Add Another Block'),
       '#weight' => 40,
       '#submit' => array('om_multiple_landunit_form_save_another')
       // @todo: do this as ajax
@@ -287,7 +347,26 @@ function om_multiple_landunit_form_save_another($form, &$form_state) {
   om_multiple_landunit_form_save($form, $form_state);
   $vineyard_id = $form_state['values']['vineyard_id'];
   $url = "ipm-facility-info/$vineyard_id/all/editblocks";
-  drupal_goto($url);
+  $options = array();
+  if (!empty($form_state['setup'])) {
+    $options['query'] = array(
+      'setup' => 1,
+    );
+  }
+  drupal_goto($url, $options);
+}
+
+function om_multiple_landunit_form_save_equip($form, &$form_state) {
+  om_multiple_landunit_form_save($form, $form_state);
+  $vineyard_id = $form_state['values']['vineyard_id'];
+  $url = "ipm-facility-equip/$vineyard_id/all/edit";
+  $options = array(
+    'query' => array(
+      'setup' => 1,
+      'destination' => "ipm-facility-materials/$vineyard_id/search"
+    ),
+  );
+  drupal_goto($url, $options);
 }
 function om_multiple_landunit_form_submit($form, &$form_state) {
   om_multiple_landunit_form_save($form, $form_state);
@@ -304,6 +383,7 @@ function om_multiple_landunit_form_cancel($form, &$form_state) {
 
 global $user;
 $a = arg();
+$p = drupal_get_query_parameters();
 
 if (isset($a[1])) {
   $vid = $a[1];
@@ -319,6 +399,7 @@ if ($ok) {
   $form_state['wrapper_callback'] = 'entity_ui_main_form_defaults';
   $form_state['entity_type'] = 'dh_feature';
   $form_state['bundle'] = 'facility';
+  $form_state['setup'] = isset($p['setup']) ? $p['setup'] : 0;
   //$form_state['redirect'] = 'ipm-facility-info';
   form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   $form_state['build_info']['args'] = array($v, 'add', 'dh_feature');
@@ -330,7 +411,7 @@ if ($ok) {
   $elements = drupal_build_form('om_multiple_landunit_form', $form_state);
   //$elements = entity_ui_get_bundle_add_form('dh_feature', 'landunit');
   // entity_ui_get_form($entity_type, $entity, $op = 'edit', $form_state = array())
-  error_reporting(E_ALL);
+  //error_reporting(E_ALL);
   // just grab the regular form for proof of concept
   //$elements = entity_ui_get_form('dh_feature', $lu, $op, $form_state);
 

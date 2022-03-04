@@ -6,6 +6,7 @@
 select featureid, entity_type, propname, propvalue, propcode 
 from dh_properties 
 where varid in (
-  select hydroid from dh_variable_definition 
-  where propcode = ''
+  select hydroid from dh_variabledefinition 
+  where plugin = 'dHVariablePluginEfficacy'
 )
+;

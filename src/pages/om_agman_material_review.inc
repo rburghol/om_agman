@@ -75,7 +75,16 @@ function om_agman_material_review_save($form, &$form_state) {
   } else {
     $url = implode('/', array('ipm-facility-materials'));
   }
-  drupal_goto($url);
+  $options = array();
+  // now check to see if setup has been set
+  if (!empty($parms['setup'])) {
+    $url = implode('/', array('ipm-home'));
+    $options['query'] = array(
+      'setup' => 1,
+    );
+  }
+  
+  drupal_goto($url, $options);
 }
 
 
@@ -105,7 +114,12 @@ $form_state['build_info']['args'] = array($farm_id, $chems);
 form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
 //dpm($form_state,'post form_load_include');
 $elements = drupal_build_form('om_agman_material_review_form', $form_state);
-
+if (empty($form_state['setup'])) {
+  $elements['setup'] = array(
+    '#type' => 'hidden',
+    '#value' => $form_state['setup'],
+  );
+}
 //drupal_get_form('om_agman_material_search_form')
 //dpm($elements, 'form');
 echo drupal_render($elements);

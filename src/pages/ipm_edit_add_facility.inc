@@ -14,16 +14,23 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
     $dh_feature->name .= ' (cloned)';
     $dh_feature->bundle = '';
   }
-
-/*  $form['name'] = array(
-    '#title' => t('Label'),
-    '#type' => 'textfield',
-    '#default_value' => $dh_feature->name,
-    '#description' => t('The human-readable name of this dH Feature type.'),
-    '#required' => TRUE,
-    '#size' => 30,
-  );*/
-
+  if ($op == 'add') {
+    
+    $form['message'] = array(
+      '#weight' => -6, // we want this first
+      '#markup' => t('Step 1 of 4: Create a New Vineyard.'),
+      '#prefix' => '<h2>',
+      '#suffix' => '</h2>',
+    );
+  } else {
+    $form['message'] = array(
+      '#weight' => -6, // we want this first
+      '#markup' => t('Edit your vineyard information.'),
+      '#prefix' => '<h2>',
+      '#suffix' => '</h2>',
+    );
+  }
+  
   $form['name'] = array(
     '#title' => t('Vineyard Name'),
     '#type' => 'textfield',
@@ -87,8 +94,11 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
   foreach ($hiddens as $hidethis) {
     if (isset($form[$hidethis])) {
       $form[$hidethis]['#type'] = 'hidden';
+      $form[$hidethis]['#disabled'] = TRUE;
     }
   }
+  $form['dh_geofield']['#weight'] = intval($form['postal_code']['#weight']) + 1;
+  $form['dh_geofield']['und'][0]['geom']['#geolocation'] = 0; //Hide the Find Location button for now
   $form['dh_geofield']['und'][0]['geom']['#title'] = 'Location (latitude & longitude)';
   $form['dh_geofield']['und'][0]['geom']['#description'] = t('If you know the coordinates for your vineyard, enter them in the fields below the map labeled \'Latitude\' and \'Longitude\'. ');
   // for if using the Google Map geolocation
@@ -130,6 +140,7 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
     );
     break;
   }
+  //dpm($form,'form');
   return $form;
 }
 
@@ -159,8 +170,9 @@ global $user;
 $vineyard = NULL;
 $op = 'add';
 $a = arg();
-if (isset($a[2])) {
-  $vid = $a[2];
+//dpm($a,'args');
+if (isset($a[1])) {
+  $vid = $a[1];
 }
 if (isset($vid)) {
   $vineyard = entity_load_single('dh_feature', $vid);

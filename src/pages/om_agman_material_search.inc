@@ -20,11 +20,26 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     $frac_opts = $arr['propcode'];
   }
   
+  $form['name'] = array(
+    '#title' => t('Search by Material Name'),
+    '#type' => 'textfield',
+    '#default_value' => '',
+    '#description' => t('Search for material by brand name (i.e. Mancozeb, Captan, ...).'),
+    '#required' => FALSE,
+    '#size' => 30,
+  );  
   
+  $form['group1'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Additional Search Filters, FRAC, PHI, etc. (click to show/hide filters)'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,  
+  );
+
   $ftype_options = array('fungicide', 'herbicide', 'insecticide', 'fertilizer', 'other');
   $ftype_options = array_combine($ftype_options, $ftype_options);
   //dpm($phi_options,'phi');
-  $form['ftype'] = array(
+  $form['group1']['ftype'] = array(
     '#title' => t('Material Type'),
     '#type' => 'select',
     '#default_value' => array(),
@@ -35,17 +50,9 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#empty_option' => '- Any -',
     '#size' => 1,
   );  
-  $form['frac'] = $frac_opts;
-  $form['frac']['#title'] = 'Filter by Mode of Action';
-  $form['frac']['#empty_option'] = '- All Modes - ';
-  $form['name'] = array(
-    '#title' => t('Material Name'),
-    '#type' => 'textfield',
-    '#default_value' => '',
-    '#description' => t('Search for material mode of action such as FRAC and IRAC code.'),
-    '#required' => FALSE,
-    '#size' => 30,
-  );  
+  $form['group1']['frac'] = $frac_opts;
+  $form['group1']['frac']['#title'] = 'Filter by Mode of Action';
+  $form['group1']['frac']['#empty_option'] = '- All Modes - ';
 
   // get target organisms
   $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginIPMDisease');
@@ -56,7 +63,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   if ($class) {
     $src = new $class($config);
     $target_orgs = $src->incidentCodes();
-    $form['target_org'] = array(
+    $form['group1']['target_org'] = array(
       '#title' => t('Filter by Target Organism (fungicide only)'),
       '#type' => 'select',
       '#default_value' => array(),
@@ -71,7 +78,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     watchdog("Cannot get list of target organisms.  Please report to system administrator.");
   }
   
-  $form['ai'] = array(
+  $form['group1']['ai'] = array(
     '#title' => t('Active Ingredient'),
     '#type' => 'textfield',
     '#default_value' => '',
@@ -87,7 +94,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     $value .= ' days';
   });
   //dpm($phi_options,'phi');
-  $form['phi'] = array(
+  $form['group1']['phi'] = array(
     '#title' => t('Pre-Harvest Interval (PHI)'),
     '#type' => 'select',
     '#default_value' => array(),
@@ -146,7 +153,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   if (!empty($form_state['input']['target_org'])) {
     $criteria['target_org'] = array('value' => $form_state['input']['target_org']);
   }
-  // 
+  
   // 
   $new_chems = array();
   if (isset($form_state['input']['chems'])) {
@@ -202,7 +209,7 @@ dpm($form_state,'form state on next');
 
 function om_agman_material_search_prev($form, &$form_state) {
 //dpm($form_state,'form state on search');
-dpm($form_state,'form state on prev');
+//dpm($form_state,'form state on prev');
 //dpm($_POST,'post args');
   $form_state['rebuild'] = TRUE;
   return TRUE;
@@ -233,6 +240,9 @@ function om_agman_material_search_save($form, &$form_state) {
   foreach ( $new_chems as $chem_id) {
     $params['chems'][] = $chem_id;
   }
+  if (!empty($form_state['setup']) or empty($farm_chems) ) {
+    $params['setup'] = 1;
+  }
   //dpm($params,"search_search params");
   drupal_goto($path, array('query' => $params));
   return TRUE;
@@ -258,6 +268,20 @@ form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
 //dpm($form_state,'post form_load_include');
 $elements = drupal_build_form('om_agman_material_search_form', $form_state);
 
+// set a block for setup messages
+$farm = entity_load_single('dh_feature', $farm_id);
+$farm_chems = $farm->field_link_agchem_material['und'];
+$farm_chems = array_column($farm_chems, 'target_id');
+// since drupal_build_form() alters form_state by reference the setup var may be there on refresh
+if (empty($farm_chems) or (!empty($form_state['setup']))) {
+  // also, add a special hidden variable to tell successive rebvuilds of this form that this is the 
+  // first time for a user on this form, in case they are adding multiple blocks, we still may need to 
+  // have custom, first time user buttons.
+  $elements['setup'] = array(
+    '#type' => 'hidden',
+    '#value' => 1,
+  );
+}
 //drupal_get_form('om_agman_material_search_form')
 //dpm($elements, 'form');
 echo drupal_render($elements);
