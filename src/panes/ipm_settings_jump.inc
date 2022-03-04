@@ -6,7 +6,7 @@
 $a = arg();
 ctools_include('jump-menu');
 // if none, check for users farms 
-$farm_id = $a[2]; // 1 if in panel, 2 if testing in node
+$farm_id = $a[1]; // 1 if in panel, 2 if testing in node
 if (count($a) <= 1) {
   global $user;
   $farms = dh_get_user_mgr_features($user->uid, 'facility', 'vineyard');
