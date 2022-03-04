@@ -1,6 +1,6 @@
 <?php
 // use in any page with 1-line:
-//   module_load_include('inc', 'om_agman', 'src/pages/ipm_materials_list');
+//   module_load_include('inc', 'om_agman', 'src/panes/ipm_materials_list');
 $a = arg();
 $farm_id = $a[1];
 $farm = entity_load_single('dh_feature', $farm_id);
@@ -45,16 +45,10 @@ if (count($brief_list) > 24) {
 }
 
 $text = array();
-$text['message'] = array(
-  '#weight' => 0, // we want this first
-  '#markup' => t('Farm Spray Materials.'),
-  '#prefix' => '<h3>',
-  '#suffix' => '</h3>',
-);
 
-$l_title = t("Click here to manage add or remove materials from this list.");
+$l_title = t("Click here to manage add or remove materials from this list. ");
 $l_url = "/ipm-facility-materials/$farm_id";
-$l_manage = l( $l_title, $l_url);
+$l_manage = l( $l_title, $l_url, array('class' => array('editlink')));
 $text['info'] = array(
   '#weight' => 1, // we want this next
   '#markup' => t("Below is a list of spray materials that are linked to ") . $farm->name . "."
