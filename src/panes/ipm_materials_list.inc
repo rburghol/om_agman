@@ -1,0 +1,82 @@
+<?php
+$a = arg();
+$farm_id = $a[2];
+$farm = entity_load_single('dh_feature', $farm_id);
+$farm_chems = $farm->field_link_agchem_material['und'];
+//dpm($farm ,'farm ');
+$farm_chems = array_column($farm_chems, 'target_id');
+
+function om_agman_farm_materials($farm_id, $material_ftype = '') {
+  $q = "  select a.hydroid as farm_id, a.name as farm_name, ";
+  $q .= "   b.adminid, b.name as chem_name ";
+  $q .= " from dh_feature as a ";
+  $q .= " left outer join field_data_field_link_agchem_material as l ";
+  $q .= " on ( ";
+  $q .= "    a.hydroid = l.entity_id ";
+  $q .= "    and l.entity_type = 'dh_feature' ";
+  $q .= "  ) ";
+  $q .= "  left outer join dh_adminreg_feature as b ";
+  $q .= " on ( ";
+  $q .= "     b.adminid = l.field_link_agchem_material_target_id ";
+  $q .= "  ) ";
+  $q .= "  where a.hydroid = $farm_id ";
+  if ($material_ftype <> '') {
+    $q .= "  and c.ftype = '$material_ftype' ";
+  }
+
+  dpm($q,'q');
+  $chems = array();
+  $brief_list = array();
+  $result = db_query($q);
+
+  while ($chem = $result->fetchAssoc()) {
+   $chems[] = $chem;
+  }
+  return $chems;
+}
+// Get all chems for this farm
+$chems = om_agman_farm_materials($farm_id);
+// compile a list of the first 24 for display purposes
+$brief_list = array_column($chems, 'chem_name');
+if (count($brief_list) > 24) {
+  $brief_list = array_slice($brief_list, 0, 24);
+}
+
+$text = array();
+$text['message'] = array(
+  '#weight' => 0, // we want this first
+  '#markup' => t('Farm Spray Materials.'),
+  '#prefix' => '<h3>',
+  '#suffix' => '</h3>',
+);
+
+$l_title = t("Click here to manage add or remove materials from this list.");
+$l_url = "/ipm-facility-materials/$farm_id";
+$l_manage = l( $l_title, $l_url);
+$text['info'] = array(
+  '#weight' => 1, // we want this next
+  '#markup' => t("Below is a list of spray materials that are linked to ") . $farm->name . "."
+               . "<br>" . $l_manage
+);
+
+// Create the list of chemicals
+$brief_str = implode(", ", array_values($brief_list));
+$et_al = ".";
+if (count($brief_list) < count($chems)) {
+  $et_al = "<br> ... and " . (count($chems) - count($brief_list)) . " others.";
+}
+$text['list'] = array(
+  '#theme' => 'item_list',
+  '#list_type' => 'ul',
+  '#items' => [$brief_str . $et_al],
+  '#wrapper_attributes' => ['class' => 'container'],
+  '#weight' => 2, // we want this next
+);
+//dpm($chems,'chems');
+//dpm($brief_list,'brief_list chems');\
+/*
+*/
+$message = drupal_render($text);
+echo $message;
+
+?>

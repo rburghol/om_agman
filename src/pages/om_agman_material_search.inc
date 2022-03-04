@@ -274,12 +274,6 @@ $farm_chems = $farm->field_link_agchem_material['und'];
 $farm_chems = array_column($farm_chems, 'target_id');
 // since drupal_build_form() alters form_state by reference the setup var may be there on refresh
 if (empty($farm_chems) or (!empty($form_state['setup']))) {
-  $elements['message'] = array(
-    '#weight' => -6, // we want this at the very top
-    '#markup' => t('Step 4 of 4: Add spray materials to your vineyard.'),
-    '#prefix' => '<h3>',
-    '#suffix' => '</h3>',
-  );
   // also, add a special hidden variable to tell successive rebvuilds of this form that this is the 
   // first time for a user on this form, in case they are adding multiple blocks, we still may need to 
   // have custom, first time user buttons.
