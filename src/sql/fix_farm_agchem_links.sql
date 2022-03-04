@@ -3,7 +3,6 @@
 -- field_link_to_registered_agchem links agchem submittal doc to agchem 
 -- need to find all chems that are linked to events that this farms 
 -- blocks have applications for in case farm=>chem linkages get deleted
-insert into 
 select a.hydroid,
   count(sl.*),
   chem.name as chem_name,

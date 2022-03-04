@@ -58,7 +58,7 @@ if (!empty($farm_id)) {
   $text['info'] = array(
     '#weight' => 1, // we want this next
     '#markup' => t("Below is a list of spray materials that are linked to ") . $farm->name . "."
-                 . "<br>" . $l_manage
+                 . "<br>" . "<b>" . $l_manage . "</b>"
   );
 
   // Create the list of chemicals
@@ -74,8 +74,6 @@ if (!empty($farm_id)) {
     '#wrapper_attributes' => ['class' => 'container'],
     '#weight' => 2, // we want this next
   );
-  dpm($chems,'chems');
-  dpm($brief_list,'brief_list chems');
   /*
   */
   $message = drupal_render($text);
