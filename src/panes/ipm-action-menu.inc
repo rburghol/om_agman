@@ -27,7 +27,7 @@ $targets = array(
   'Growth Stages' => array(),
 );
 
-$gc = array('vocabulary' => 'vitis');
+$gc = array("vocabulary = 'vitis'");
 $growth_stages = dh_vardef_varselect_options($gc);
 dpm($growth_stages,'gc');
 
