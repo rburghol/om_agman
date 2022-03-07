@@ -15,17 +15,10 @@ $text = array();
 $text['info'] = array(
   '#weight' => 1, // we want this next
   '#markup' => 
-    t("You have no events upcoming for") . " <b>" . $vineyard->name . "</b>.  "
-    . t("In order to add events, select 'Add a Spray' from the 'Function List' above, or ") 
+    t("Below is a list of upcoming events for") . " <b>" . $vineyard->name . "</b>.  "
+    . t("In order to add more events, select 'Add a Spray' from the 'Function List' above, or ") 
     . "<b>$add_spray_link</b>"
 );
-
-// Could do a list if it works best
-//       '#theme' => 'item_list',
-//       '#list_type' => 'ul',
-//       '#items' => [
-//        "<b> Item 1: </b>" . $i1,
-//        "<b> Item 2: </b>" . $i2,
 $content = drupal_render($text);
 echo $content;
 ?>

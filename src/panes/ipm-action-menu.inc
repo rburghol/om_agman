@@ -20,10 +20,11 @@ if (count($a) <= 1) {
 $finaldest = 'ipm-home';
 $vineyard = $a[1];
 
-dpm($a,'args');
-
 $targets = array(
   'Spray Events' => array(
+    url("ipm-live-events/all/materials/add/$vineyard&finaldest=$finaldest") => 'Add a Spray',
+  ),
+  'Growth Stages' => array(
     url("ipm-live-events/all/materials/add/$vineyard&finaldest=$finaldest") => 'Add a Spray',
   ),
 );
@@ -31,10 +32,10 @@ $targets = array(
 $options = array(
   'default_value' => url($_GET['q']),
 );
-dpm($targets,'targs');
+//dpm($targets,'targs');
 //dpm($options,'options');
 
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);  
-echo "<b>Select Function (adds sprays events, reports, etc.):</b><br>" . drupal_render($output);
+echo "<b>Function List </b>(adds sprays events, reports, etc.):<br>" . drupal_render($output);
 
 ?>
