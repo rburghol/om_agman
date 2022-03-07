@@ -1,6 +1,6 @@
 <?php
 // use this to call this file 
-// module_load_include('inc', 'om_agman', 'src/panes/ipm-reports-menu');
+// module_load_include('inc', 'om_agman', 'src/panes/ipm-action-menu');
 // argument default
 // if user has only one facility, return its ID, otherwise return 'multiple'
 $a = arg();
@@ -20,39 +20,20 @@ if (count($a) <= 1) {
 $finaldest = 'ipm-home';
 $vineyard = $a[1];
 
-$pages = array(
-  'add_spray' => array(
-    'uri' => url(
-      "ipm-live-events/all/materials/add/$vineyard",
-      array('query' => array('finaldest'=>$finaldest))
-    ),
-    'label' => 'Add a Spray'
+
+$targets = array(
+  'Spray Events' => array(
+    url("ipm-live-events/all/materials/add/$vineyard&finaldest=$finaldest") => 'Add a Spray',
   ),
-  
 );
 
-$urls = array(
-  'season' => url(implode('/', array_replace($a, array(3=>'season')) )),
-  'material' => url(implode('/', array_replace($a, array(3=>'material')) )),
-  'frac' => url(implode('/', array_replace($a, array(3=>'frac')) )),
-  'usda-private' => url(implode('/', array_replace($a, array(3=>'usda-private')) )),
-  'phi' => url(implode('/', array_replace($a, array(3=>'phi')) )),
-  'ipmir' => url(implode('/', array_replace($a, array(3=>'ipmir')) )),
-//  'search' => url(implode('/', array_replace($a, array(3=>'season')) )),
-);
-$targets = array();
 $options = array(
   'default_value' => url($_GET['q']),
 );
+//dpm($targets,'targs');
 //dpm($options,'options');
-$targets[$urls['season']] = 'Season Overview (shows all events)';
-$targets[$urls['material']] = 'Spray Summary by Material';
-$targets[$urls['frac']] = 'Spray Summary by FRAC';
-$targets[$urls['usda-private']] = 'USDA Private Grower Report';
-$targets[$urls['phi']] = 'Pre-Harvest Interval Date Report';
-$targets[$urls['ipmir']] = 'Community IPM Reports';
-//$targets[$urls['search']] = 'Search';
-$output = drupal_get_form('ctools_jump_menu', $targets, $options);
-echo "<b>Show Report:</b><br>" . drupal_render($output);
+
+$output = drupal_get_form('ctools_jump_menu', $targets, $options);  
+echo "<b>Select Function (adds sprays events, reports, etc.):</b><br>" . drupal_render($output);
 
 ?>
