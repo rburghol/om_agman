@@ -36,7 +36,7 @@ function om_agman_varJump($varkeys) {
     $vinfo = dh_vardef_info($varid);
     $uri = url("ipm-events/$vineyard/tsform/?edit&featureid=$vineyard&edit&varid=$varid&destination=ipm-home/$vineyard");
     // dh_vardef_varselect_options gives funky formatting, so we override here
-    $targets['Growth Stages'][$uri] = $vinfo->varname;
+    $targets[$uri] = $vinfo->varname;
   }
   return $targets;
 }
