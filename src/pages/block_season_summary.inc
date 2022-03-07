@@ -9,6 +9,7 @@ module_load_include('module', 'dh_adminreg');
 //dpm($plugin,'plug');
 // get the arguments from URL, they come in the form farm_hydroid/sub_page_name/event_adminid
 $a = arg();
+$parms = drupal_get_query_parameters();
 $fix = ($a[0] == 'node') ? 3 : 2; // use 3 for the page, 2 for a node during development
 if (!isset($a[$fix])) {
   dsm( "There was a problem, block can not be found.");
@@ -26,10 +27,14 @@ if (!isset($a[$fix])) {
   //dpm($fid,'using block');
 }
 $a[$fix] = $fid; // make sure all links reflect the current block.
-if (isset($a[$fix + 2])) {
-  $year = $a[$fix + 2];
+if (!empty($parms['year'])) {
+    $year = $parms['year'];
 } else {
-  $year = date('Y');
+  if (isset($a[$fix + 2])) {
+    $year = $a[$fix + 2];
+  } else {
+    $year = date('Y');
+  }
 }
 $start_date = $year . "/01/01";
 $end_date = $year . "/12/31";
