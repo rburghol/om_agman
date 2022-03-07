@@ -20,6 +20,7 @@ if (count($a) <= 1) {
 $finaldest = 'ipm-home';
 $vineyard = $a[1];
 
+dpm($a,'args');
 
 $targets = array(
   'Spray Events' => array(
