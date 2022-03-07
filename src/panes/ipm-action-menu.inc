@@ -28,7 +28,7 @@ $targets = array(
 );
 
 $gc = array('vocabulary' => 'vitis');
-$growth_stages = dh_vardef_varselect_options($conditions = array()
+$growth_stages = dh_vardef_varselect_options($gc);
 dpm($growth_stages,'gc');
 foreach ($growth_stages as $gs) {
   $vid = $gs['hydroid'];
