@@ -32,11 +32,8 @@ $vardef = dh_vardef_info($tsdef['varid']);
 
 $text['info'] = array(
   '#weight' => -1, // we want this next
-  '#attributes' => array(
-    'style' => 'page-header'
-  ),    
   '#markup' => 
-    t(ucwords($op)) . " " . t($vardef->varname)
+    "<h3>" . t(ucwords($op)) . " " . t($vardef->varname) . "</h3>"
 );
 // just grab the regular form for proof of concept
 $elements = entity_ui_get_form('dh_timeseries', $ts, $op, $form_state);
