@@ -28,12 +28,13 @@ if (isset($tsid)) {
 }
 
 $ts = is_object($ts) ? $ts : entity_create('dh_timeseries', $tsdef);
+$vardef = dh_vardef_info($tsdef['varid']);
 
 $text['info'] = array(
   '#weight' => -1, // we want this next
   '#class' => array('page-header'), 
   '#markup' => 
-    t(ucwords($op)) . " " . t($ts->varname)
+    t(ucwords($op)) . " " . t($vardef->varname)
 );
 // just grab the regular form for proof of concept
 $elements = entity_ui_get_form('dh_timeseries', $ts, $op, $form_state);
