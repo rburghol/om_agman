@@ -33,7 +33,7 @@ dpm($growth_stages,'gc');
 
 foreach ($growth_stages as $varid => $vname) {
   $vinfo = dh_vardef_info($varid);
-  $uri = "ipm-events/$vineyard/tsform/?edit&featureid=$vineyard&edit&varid=$varid&destination=ipm-home/$vineyard";
+  $uri = url("ipm-events/$vineyard/tsform/?edit&featureid=$vineyard&edit&varid=$varid&destination=ipm-home/$vineyard");
   // dh_vardef_varselect_options gives funky formatting, so we override here
   $targets['Growth Stages'][$uri] = $vinfo->varname;
 }
