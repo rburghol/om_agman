@@ -2,6 +2,10 @@
 // use this to call this file 
 // module_load_include('inc', 'om_agman', 'src/panes/ipm-upcoming-no-results');
 $args = arg();
+if ($a[0] == 'admin') {
+  // we are in a views preview, just grab arg 7 and fudge it for testing
+  $a = array('ipm-facility-materials', $a[7]);
+}
 $args[0] = 'ipm-facility-sprayplan';
 $add_spray_link = l("Click here to add a new spray event.", implode('/',$args));
 
