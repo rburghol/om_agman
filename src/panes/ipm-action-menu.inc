@@ -24,11 +24,17 @@ $targets = array(
   'Spray Events' => array(
     url("ipm-live-events/all/materials/add/$vineyard&finaldest=$finaldest") => 'Add a Spray',
   ),
-  'Growth Stages' => array(
-    url("ipm-live-events/all/materials/add/$vineyard&finaldest=$finaldest") => 'Add a Spray',
-  ),
+  'Growth Stages' => array(),
 );
- 
+
+$gc = array('vocabulary' => 'vitis');
+$growth_stages = dh_vardef_varselect_options($conditions = array()
+dpm($growth_stages,'gc');
+foreach ($growth_stages as $gs) {
+  $vid = $gs['hydroid'];
+  $uri = "ipm-events/$vineyard/tsform/?edit&featureid=$vineyard&edit&varid=$vid&destination=ipm-home/$vineyard";
+  $targets['Growth Stages'][$uri] = $gs['varname'];
+}
 $options = array(
   'default_value' => url($_GET['q']),
 );
