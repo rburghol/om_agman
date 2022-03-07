@@ -1,4 +1,6 @@
 <?php
+// use this to call this file 
+// module_load_include('inc', 'om_agman', 'src/panes/ipm-upcoming-no-results');
 $args = arg();
 $args[0] = 'ipm-facility-sprayplan';
 $add_spray_link = l("Click here to add a new spray event.", implode('/',$args));
@@ -14,4 +16,6 @@ $text['info'] = array(
     . $add_spray_link
     . "."
 );
+$content = drupal_render($text);
+echo $content;
 ?>
