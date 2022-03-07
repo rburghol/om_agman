@@ -27,7 +27,7 @@ $targets = array(
   'Growth Stages' => array(),
 );
 
-$gc = array("vocabulary = 'vitis'");
+$gc = array("varkey in ('vitis_bud_swell', 'vitis_bud_break', 'vitis_veraison' , 'vitis_med_shoot_length', 'vitis_bunch_closure')");
 $growth_stages = dh_vardef_varselect_options($gc);
 dpm($growth_stages,'gc');
 
