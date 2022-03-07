@@ -33,7 +33,7 @@ $text['info'] = array(
   '#weight' => -1, // we want this next
   '#class' => array('page-header'), 
   '#markup' => 
-    t(strtoupper($op)) . " " . t($varname)
+    t(ucwords($op)) . " " . t($ts->varname)
 );
 // just grab the regular form for proof of concept
 $elements = entity_ui_get_form('dh_timeseries', $ts, $op, $form_state);
