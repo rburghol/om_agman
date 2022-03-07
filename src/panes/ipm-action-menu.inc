@@ -30,7 +30,7 @@ $targets = array(
 $options = array(
   'default_value' => url($_GET['q']),
 );
-//dpm($targets,'targs');
+dpm($targets,'targs');
 //dpm($options,'options');
 
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);  
