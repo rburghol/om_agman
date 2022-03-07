@@ -55,6 +55,12 @@ $vks = array('ipm_event', 'ipm_frost', 'ipm_outbreak', 'om_agman_svform' , 'ipm_
 $targets['Disease/Insect/Weather Recording'] = om_agman_varJump($vks);
 
 
+//*******************************************
+// Canopy Management/Fruit Sampling/Other
+//*********************************************
+$vks = array('agman_pruning', 'agman_sample_petiole', 'agman_fruit_chem', 'agman_harvest' );
+$targets['Canopy Management/Fruit Sampling/Harvest'] = om_agman_varJump($vks);
+
 
 $options = array(
   'default_value' => url($_GET['q']),
