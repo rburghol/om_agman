@@ -15,9 +15,9 @@ $text = array();
 $text['info'] = array(
   '#weight' => 1, // we want this next
   '#markup' => 
-    t("Below is a list of upcoming events for") . " <b>" . $vineyard->name . "</b>.  "
-    . t("In order to add more events, select 'Add a Spray' from the 'Function List' above, or ") 
-    . "<b>$add_spray_link</b>"
+    t("Below is a list of upcoming events for") . $vineyard->name . ".  "
+    . "<br>" . t("In order to add new events, select 'Add a Spray' from the 'Function List' above, or ") 
+    . "<br>" . "<b>$add_spray_link</b>"
 );
 $content = drupal_render($text);
 echo $content;
