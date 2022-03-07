@@ -18,7 +18,7 @@ $text['info'] = array(
   '#weight' => 1, // we want this next
   '#markup' => 
     t("You have no events upcoming for") . " <b>" . $vineyard->name . "</b>.  "
-    . t("In order to add events, select 'Add a Spray' from the 'Function List' above, or ") 
+   // . t("In order to add events, select 'Add a Spray' from the 'Function List' above, or ") 
     . "<b>$add_spray_link</b>"
 );
 
