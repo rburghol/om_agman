@@ -9,7 +9,7 @@ if ($a[0] == 'admin') {
   // we are in a views preview, just grab arg 7 and fudge it for testing
   $a = array('ipm-facility-materials', $a[7]);
 }
-dpm($a,'args');
+//dpm($a,'args');
 $vineyard = entity_load_single('dh_feature', $a[1]);
 $text = array();
 
