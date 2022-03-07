@@ -16,11 +16,13 @@ $text = array();
 $text['info'] = array(
   '#weight' => 1, // we want this next
   '#markup' => 
-    t("Below is a list of spray materials that will appear in the spray material list for ") . "<b>" . $vineyard->name . "</b>.  "
+    t("Below is a list of spray materials that have been added to the spray material list for ") . "<b>" . $vineyard->name . "</b>.  "
     . t("In order to add more materials, select 'Search for New Materials' from the drop-down list above, or ") 
     . l(t("Click here to find new spray materials"), implode('/', array($a[0], $a[1], 'search')))
     . "."
 );
 $message = drupal_render($text);
 echo $message;
+
+// @todo: add SQL based super-fast material list code here
 ?>
