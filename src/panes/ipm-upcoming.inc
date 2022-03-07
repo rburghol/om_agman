@@ -6,8 +6,10 @@ if ($a[0] == 'admin') {
   // we are in a views preview, just grab arg 7 and fudge it for testing
   $a = array('ipm-facility-materials', $a[7]);
 }
-$a[0] = 'ipm-facility-sprayplan';
-$add_spray_link = l(t("Click here to add a new spray event."), implode('/',$a));
+$date = date('Y-m-d');
+$vineyard = $a[1];
+$uri = "ipm-live-events/all/materials/add/$vineyard/$date";
+$add_spray_link = l(t("Click here to add a new spray event."), $uri);
 
 $vineyard = entity_load_single('dh_feature', $a[1]);
 $text = array();
