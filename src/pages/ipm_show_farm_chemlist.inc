@@ -16,7 +16,7 @@ $text = array();
 $text['info'] = array(
   '#weight' => 1, // we want this next
   '#markup' => 
-    t("Below is a list of spray materials that will appear in the spray material list for ") . $vineyard->name . ".  "
+    t("Below is a list of spray materials that will appear in the spray material list for ") . "<b>" . $vineyard->name . "</b>.  "
     . t("In order to add more materials, select 'Search for New Materials' from the drop-down list above, or ") 
     . l(t("Click here to find new spray materials"), url(implode('/', array($a[0], $a[1], 'search'))))
     . "."
