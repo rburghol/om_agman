@@ -569,7 +569,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $description .= '\nw/' . $feature->chem_list;
         $description .= '\nPHI:' ."$feature->phi_date ($feature->phi_chem)";
         $description .= '\nREI:' ."$feature->rei_date ($feature->rei_chem)";
-        $description .= "<br><div class='smaller'>Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.</div>";
+        $description .= "<br><div class='update-results'>Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.</div>";
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
