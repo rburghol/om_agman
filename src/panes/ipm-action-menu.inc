@@ -23,20 +23,38 @@ $vineyard = $a[1];
 $targets = array(
   'Spray Events' => array(
     url("ipm-live-events/all/materials/add/$vineyard&finaldest=$finaldest") => 'Add a Spray',
+    url("ipm-facility-sprayplan/$vineyard/all") => 'Go to Season Spray Planner',
   ),
-  'Growth Stages' => array(),
+  'Disease/Insect/Weather Recording' => array(),
 );
 
-$gc = array("varkey in ('vitis_bud_swell', 'vitis_bud_break', 'vitis_veraison' , 'vitis_med_shoot_length', 'vitis_bunch_closure')");
-$growth_stages = dh_vardef_varselect_options($gc);
-dpm($growth_stages,'gc');
-
-foreach ($growth_stages as $varid => $vname) {
-  $vinfo = dh_vardef_info($varid);
-  $uri = url("ipm-events/$vineyard/tsform/?edit&featureid=$vineyard&edit&varid=$varid&destination=ipm-home/$vineyard");
-  // dh_vardef_varselect_options gives funky formatting, so we override here
-  $targets['Growth Stages'][$uri] = $vinfo->varname;
+function om_agman_varJump($varkeys) {
+  $targets = array();
+  $gc = "varkey in ('", . implode("', '", $varkeys) . "')";
+  $vars = dh_vardef_varselect_options($gc);
+  foreach ($vars as $varid => $vname) {
+    $vinfo = dh_vardef_info($varid);
+    $uri = url("ipm-events/$vineyard/tsform/?edit&featureid=$vineyard&edit&varid=$varid&destination=ipm-home/$vineyard");
+    // dh_vardef_varselect_options gives funky formatting, so we override here
+    $targets['Growth Stages'][$uri] = $vinfo->varname;
+  }
+  return $targets;
 }
+
+//*******************************************
+// Growth Stages 
+//*********************************************
+$vks = array("varkey in ('vitis_bud_swell', 'vitis_bud_break', 'vitis_veraison' , 'vitis_med_shoot_length', 'vitis_bunch_closure')");
+$targets['Growth Stage Recording'] = om_agman_varJump($vks);
+
+//*******************************************
+// Disease/Insect/Weather Recording
+//*********************************************
+$vks = array('vitis_bud_swell', 'vitis_bud_break', 'vitis_veraison' , 'vitis_med_shoot_length', 'vitis_bunch_closure');
+$targets['Disease/Insect/Weather Recording'] = om_agman_varJump($vks);
+
+
+
 $options = array(
   'default_value' => url($_GET['q']),
 );
