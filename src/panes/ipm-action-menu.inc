@@ -41,6 +41,7 @@ function om_agman_varJump($varkeys) {
   return $targets;
 }
 
+/*
 //*******************************************
 // Growth Stages 
 //*********************************************
@@ -54,7 +55,7 @@ $vks = array('vitis_bud_swell', 'vitis_bud_break', 'vitis_veraison' , 'vitis_med
 $targets['Disease/Insect/Weather Recording'] = om_agman_varJump($vks);
 
 
-
+*/
 $options = array(
   'default_value' => url($_GET['q']),
 );
