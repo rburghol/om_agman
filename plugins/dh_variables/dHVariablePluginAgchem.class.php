@@ -1108,7 +1108,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         //$content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
         $content['body']['#markup'] .= "<b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
         $content['body']['#markup'] .= "<br><b>REI:</b> $feature->rei_date ($feature->rei_chem)";
-        $content['body']['#markup'] .= '<br><i>Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.</i>' . $suf;
+        $content['body']['#markup'] .= "<br><div class='smaller'>Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.</div>" . $suf;
 
         $entity->title = $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
