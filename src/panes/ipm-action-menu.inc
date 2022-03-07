@@ -31,7 +31,7 @@ $targets = array(
 function om_agman_varJump($varkeys) {
   $targets = array();
   $gc = "varkey in ('" . implode("', '", $varkeys) . "')";
-  $vars = dh_vardef_varselect_options($gc);
+  $vars = dh_vardef_varselect_options(array($gc));
   foreach ($vars as $varid => $vname) {
     $vinfo = dh_vardef_info($varid);
     $uri = url("ipm-events/$vineyard/tsform/?edit&featureid=$vineyard&edit&varid=$varid&destination=ipm-home/$vineyard");
