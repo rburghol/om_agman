@@ -31,9 +31,9 @@ $options = array(
   'default_value' => url($_GET['q']),
 );
 //dpm($options,'options');
-$targets[$urls['season']] = 'Season Timeline';
-$targets[$urls['material']] = 'By Material';
-$targets[$urls['frac']] = 'By FRAC';
+$targets[$urls['season']] = 'Season Overview (shows all events)';
+$targets[$urls['material']] = 'Spray Summary by Material';
+$targets[$urls['frac']] = 'Spray Summary by FRAC';
 $targets[$urls['usda-private']] = 'USDA Private Grower Report';
 $targets[$urls['phi']] = 'Pre-Harvest Interval Date Report';
 $targets[$urls['ipmir']] = 'Community IPM Reports';

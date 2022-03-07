@@ -569,6 +569,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $description .= '\nw/' . $feature->chem_list;
         $description .= '\nPHI:' ."$feature->phi_date ($feature->phi_chem)";
         $description .= '\nREI:' ."$feature->rei_date ($feature->rei_chem)";
+        $description .= '\n Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.';
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
@@ -1070,6 +1071,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
         $content['body']['#markup'] .= "<br><b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
         $content['body']['#markup'] .= "<br><b>REI: .$feature->rei_date ($feature->rei_chem)";
+        $content['body']['#markup'] .= '<br><i>Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.</i>';
       break;
       
       case 'tiny':
@@ -1105,7 +1107,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['body']['#markup'] .= "<br><b>Materials:</b> $chem_list";
         //$content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
         $content['body']['#markup'] .= "<b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
-        $content['body']['#markup'] .= "<br><b>REI:</b> $feature->rei_date ($feature->rei_chem)" . $suf;
+        $content['body']['#markup'] .= "<br><b>REI:</b> $feature->rei_date ($feature->rei_chem)";
+        $content['body']['#markup'] .= '<br><i>Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.</i>' . $suf;
 
         $entity->title = $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
