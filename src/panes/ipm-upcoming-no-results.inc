@@ -18,7 +18,6 @@ $text['info'] = array(
     t("Below is a list of upcoming events for") . " <b>" . $vineyard->name . "</b>.  "
     . t("In order to add more events, select 'Add a Spray' from the 'Function List' above, or ") 
     . $add_spray_link
-    . "."
 );
 $content = drupal_render($text);
 echo $content;
