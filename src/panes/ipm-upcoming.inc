@@ -1,13 +1,13 @@
 <?php
 // use this to call this file 
-// module_load_include('inc', 'om_agman', 'src/panes/ipm-upcoming-no-results');
-$args = arg();
+// module_load_include('inc', 'om_agman', 'src/panes/ipm-upcoming');
+$a = arg();
 if ($a[0] == 'admin') {
   // we are in a views preview, just grab arg 7 and fudge it for testing
   $a = array('ipm-facility-materials', $a[7]);
 }
-$args[0] = 'ipm-facility-sprayplan';
-$add_spray_link = l(t("Click here to add a new spray event."), implode('/',$args));
+$a[0] = 'ipm-facility-sprayplan';
+$add_spray_link = l(t("Click here to add a new spray event."), implode('/',$a));
 
 $vineyard = entity_load_single('dh_feature', $a[1]);
 $text = array();
