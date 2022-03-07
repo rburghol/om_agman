@@ -32,7 +32,11 @@ $vardef = dh_vardef_info($tsdef['varid']);
 
 $text['info'] = array(
   '#weight' => -1, // we want this next
-  '#class' => array('page-header'), 
+  '#attributes' => array(
+    'class' => array(
+      'page-header'
+    ),
+  ),    
   '#markup' => 
     t(ucwords($op)) . " " . t($vardef->varname)
 );
