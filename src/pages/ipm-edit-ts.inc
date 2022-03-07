@@ -28,7 +28,7 @@ if (isset($tsid)) {
 }
 
 $ts = is_object($ts) ? $ts : entity_create('dh_timeseries', $tsdef);
-$vardef = dh_vardef_info($tsdef['varid']);
+$vardef = dh_vardef_info($ts->varid);
 
 $text['info'] = array(
   '#weight' => -1, // we want this next
