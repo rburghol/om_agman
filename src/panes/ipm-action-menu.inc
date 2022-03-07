@@ -28,7 +28,7 @@ $targets = array(
   'Disease/Insect/Weather Recording' => array(),
 );
 
-function om_agman_varJump($varkeys) {
+function om_agman_varJump($varkeys, $vineyard) {
   $targets = array();
   $gc = "varkey in ('" . implode("', '", $varkeys) . "')";
   $vars = dh_vardef_varselect_options(array($gc));
@@ -46,20 +46,20 @@ function om_agman_varJump($varkeys) {
 // Growth Stages 
 //*********************************************
 $vks = array('vitis_bud_swell', 'vitis_bud_break', 'vitis_veraison' , 'vitis_med_shoot_length', 'vitis_bunch_closure');
-$targets['Growth Stage Recording'] = om_agman_varJump($vks);
+$targets['Growth Stage Recording'] = om_agman_varJump($vks, $vineyard);
 
 //*******************************************
 // Disease/Insect/Weather Recording
 //*********************************************
 $vks = array('ipm_event', 'ipm_frost', 'ipm_outbreak', 'om_agman_svform' , 'ipm_hail', 'ipm_spray_injury');
-$targets['Disease/Insect/Weather Recording'] = om_agman_varJump($vks);
+$targets['Disease/Insect/Weather Recording'] = om_agman_varJump($vks, $vineyard);
 
 
 //*******************************************
 // Canopy Management/Fruit Sampling/Other
 //*********************************************
 $vks = array('agman_pruning', 'agman_sample_petiole', 'agman_fruit_chem', 'agman_harvest' );
-$targets['Canopy Management/Fruit Sampling/Harvest'] = om_agman_varJump($vks);
+$targets['Canopy Management/Fruit Sampling/Harvest'] = om_agman_varJump($vks, $vineyard);
 
 
 $options = array(
