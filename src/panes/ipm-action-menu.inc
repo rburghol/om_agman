@@ -30,7 +30,7 @@ $targets = array(
 
 function om_agman_varJump($varkeys) {
   $targets = array();
-  $gc = "varkey in ('", . implode("', '", $varkeys) . "')";
+  $gc = "varkey in ('" . implode("', '", $varkeys) . "')";
   $vars = dh_vardef_varselect_options($gc);
   foreach ($vars as $varid => $vname) {
     $vinfo = dh_vardef_info($varid);
