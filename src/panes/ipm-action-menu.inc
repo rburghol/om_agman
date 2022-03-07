@@ -51,7 +51,7 @@ $targets['Growth Stage Recording'] = om_agman_varJump($vks);
 //*******************************************
 // Disease/Insect/Weather Recording
 //*********************************************
-$vks = array('vitis_bud_swell', 'vitis_bud_break', 'vitis_veraison' , 'vitis_med_shoot_length', 'vitis_bunch_closure');
+$vks = array('ipm_event', 'ipm_frost', 'ipm_outbreak', 'om_agman_svform' , 'ipm_hail', 'ipm_spray_injury');
 $targets['Disease/Insect/Weather Recording'] = om_agman_varJump($vks);
 
 
