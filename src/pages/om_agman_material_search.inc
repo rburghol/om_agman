@@ -31,7 +31,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   
   $form['group1'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Click Here to Show/Hide Additional Search Filters, FRAC, PHI, etc.'),
+    '#title' => t('+ Click Here to Show/Hide Additional Search Filters, FRAC, PHI, etc.'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,  
   );
