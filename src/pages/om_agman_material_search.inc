@@ -1,5 +1,8 @@
 <?php
 
+// add to any page with:
+// module_load_include('inc', 'om_agman', 'src/pages/om_agman_material_search');
+
 module_load_include('module', 'om_agman');
 module_load_include('inc', 'om_agman', 'src/lib/om_agman_search_fn');
 

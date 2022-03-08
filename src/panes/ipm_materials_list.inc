@@ -3,6 +3,7 @@
 //   module_load_include('inc', 'om_agman', 'src/panes/ipm_materials_list');
 $a = arg();
 $farm_id = $a[1];
+$max_length = 50;
 $farm = entity_load_single('dh_feature', $farm_id);
 $farm_chems = $farm->field_link_agchem_material['und'];
 //dpm($farm ,'farm ');
@@ -41,8 +42,8 @@ if (!empty($farm_id)) {
   $chems = om_agman_farm_materials($farm_id);
   // compile a list of the first 24 for display purposes
   $brief_list = array_column($chems, 'chem_name');
-  if (count($brief_list) > 24) {
-    $brief_list = array_slice($brief_list, 0, 24);
+  if (count($brief_list) > $max_length) {
+    $brief_list = array_slice($brief_list, 0, $max_length);
   }
 
   $text = array();
@@ -56,9 +57,8 @@ if (!empty($farm_id)) {
     )
   );
   $text['info'] = array(
-    '#weight' => 1, // we want this next
+    '#weight' => 1, // we want this first
     '#markup' => t("Below is a list of spray materials that are linked to ") . $farm->name . "."
-                 . "<br>" . "<b>" . $l_manage . "</b>"
   );
 
   // Create the list of chemicals
@@ -74,8 +74,14 @@ if (!empty($farm_id)) {
     '#wrapper_attributes' => ['class' => 'container'],
     '#weight' => 2, // we want this next
   );
-  /*
-  */
+  // only show the link to edit if we are NOT on the list edit page.
+  dpm($a,'a');
+  if ($a[0] <> 'ipm-facility-materials') {
+    $text['link'] = array(
+      '#weight' => 3, // we want this last
+      '#markup' => "<b>" . $l_manage . "</b>"
+    );
+  }
   $message = drupal_render($text);
   echo $message;
 }
