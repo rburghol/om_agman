@@ -49,7 +49,7 @@ if (!empty($farm_id)) {
   $text = array();
 
   $l_title = t("Click here to manage add or remove materials from this list. ");
-  $l_url = "/ipm-facility-materials/$farm_id";
+  $l_url = "/ipm-facility-materials/$farm_id/search";
   $l_manage = l( $l_title, $l_url, array(
     'attributes' => array(
         'class' => array('editlink')
