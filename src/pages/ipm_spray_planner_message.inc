@@ -17,7 +17,7 @@ $text['message'] = array(
 // Show this header 
 $message = drupal_render($text);
 echo $message;
-$edit_icon = "<a href='' class='edit_link'>&nbsp;</a>";
+$edit_icon = "<a href='' class='.edit_link'>&nbsp;</a>";
 // show the planning info header 
 $text = array();
 $text['info'] = array(
