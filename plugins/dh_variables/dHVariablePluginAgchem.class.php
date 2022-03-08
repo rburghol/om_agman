@@ -1092,7 +1092,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $pre = "<s>";
           $suf = "</s>";
         }
-        $content['title']['#markup'] = $pre . '<b>Date:</b>' . $edit_l . '  &nbsp;' . $copy_l . '  &nbsp;' . $delete_l . $suf;
+        $content['title']['#markup'] = $pre . '<b>Date:</b> ' . $edit_l . '  &nbsp;' . $copy_l . '  &nbsp;' . $delete_l . $suf;
         $content['title']['#title'] = format_date($feature->startdate, 'short') . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',

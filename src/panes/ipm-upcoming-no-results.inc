@@ -9,7 +9,7 @@ if ($a[0] == 'admin') {
 $date = date('Y-m-d');
 $vineyard = $a[1];
 $uri = "ipm-live-events/all/materials/add/$vineyard/$date";
-$add_spray_link = l(t("Click here to add a new spray event."), $uri);
+$add_spray_link = l(t("Click here to add a new spray event."), $uri, array('query' => array('finaldest' => 'ipm-home')));
 
 $vineyard = entity_load_single('dh_feature', $a[1]);
 $text = array();
