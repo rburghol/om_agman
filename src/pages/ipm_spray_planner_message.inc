@@ -24,8 +24,9 @@ $text = array();
 $text['info'] = array(
   '#weight' => -5, // we want this next
   '#markup' => 
-    t("This page shows a list of all spray activities, grouped by week. ")
-  . t("The section on this page entitled 'High Risk FRAC Warnings' will show information about specific FRAC categories that may be used too often in a single year. ")
+    t("This page shows a list of all spray activities, grouped by week.")
+    . t("You may view previous or future seasons by clicking on the list labelled 'Select Year'.")
+    . t("The section on this page entitled 'High Risk FRAC Warnings' will show information about specific FRAC categories that may be used too often in a single year. ")
 );
 $text['list'] = array(
   '#theme' => 'item_list',
