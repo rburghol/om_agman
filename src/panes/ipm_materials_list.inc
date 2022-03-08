@@ -59,6 +59,7 @@ if (!empty($farm_id)) {
   $text['info'] = array(
     '#weight' => 1, // we want this first
     '#markup' => t("The following spray materials are linked to ") . $farm->name . "."
+                 . (" and will appear in your spray planning screens.") 
   );
 
   // Create the list of chemicals
