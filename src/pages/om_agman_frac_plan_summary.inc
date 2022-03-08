@@ -39,7 +39,13 @@ if (count($display['#rows']) > 0) {
   $output = render($display);
   echo $output;
 } else {
-  echo "None.";
+  $text = array();
+  $text['info'] = array(
+    '#markup' => "<b>" . t("You have no high-risk FRAC usage warnings.") . "</b>"
+    ),
+  );
+  $output = drupal_render($text);
 }
-	
+
+echo $output;
 ?>
