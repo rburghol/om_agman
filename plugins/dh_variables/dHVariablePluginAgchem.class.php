@@ -1026,7 +1026,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       ),
     );
     // Edit standalone href link
-    $edit_l = l(format_date('short', $feature->startdate) . ' ' . $title, $uri, array('attributes' => array('class' => 'editlink')));
+    $edit_l = l(format_date($feature->startdate, 'short') . ' ' . $title, $uri, array('attributes' => array('class' => 'editlink')));
     $wo_uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/workorder/$feature->adminid&destination=$page";
     $wo_tiny = l(' ', $wo_uri);
     // Other URIs
