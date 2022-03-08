@@ -23,7 +23,7 @@ $options = array(
 $rq = array('query' => array('destination' => "ipm-facility-equip/$farm_id"));
 $urls = array(
   'equipment' => url(implode('/', array('ipm-facility-equip', $farm_id, 'all', 'edit')), $rq),
-  'materials' => url(implode('/', array('ipm-facility-materials', $farm_id, 'search')), $rq),
+  'materials' => url(implode('/', array('ipm-facility-materials', $farm_id)), $rq),
   'locations' => url(implode('/', array('ipm-facility-info', $farm_id, 'all', 'editblocks')), $rq),
   'vineyard' => url(implode('/', array('ipm-edit-vineyard', $farm_id)), $rq),
 );
