@@ -1026,7 +1026,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       ),
     );
     // Edit standalone href link
-    $edit_l = l(date('Y-m-d', $feature->startdate) . ' ' . $title, $uri, array('attributes' => array('class' => 'editlink')));
+    $edit_l = l(format_date('short', $feature->startdate) . ' ' . $title, $uri, array('attributes' => array('class' => 'editlink')));
     $wo_uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/workorder/$feature->adminid&destination=$page";
     $wo_tiny = l(' ', $wo_uri);
     // Other URIs
@@ -1104,7 +1104,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           array('attributes' => array('class' => array('print-page')))
         );
         $content['body']['#markup'] .= $print_link;
-        $content['body']['#markup'] .= '<b>Blocks:</b> ' . $feature->block_names;
+        $content['body']['#markup'] .= '<br><b>Blocks:</b> ' . $feature->block_names;
         if ($now > $entity->tstime) {
           $content['body']['#prefix'] = '<div class="help-block">';
           $content['body']['#suffix'] = '</div>';
