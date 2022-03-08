@@ -24,7 +24,7 @@ $text = array();
 $text['info'] = array(
   '#weight' => -5, // we want this next
   '#markup' => 
-    t("This page shows a list of all yearly spray activities, grouped by week. " 
+    t("This page shows a list of all yearly spray activities, grouped by week. " )
     . t("Estimated efficacy of planned sprays is shown for preventing outbreaks of Powdery Mildew (PM), Black Rot (BR), Downy Mildew (DM), Phomopsis (Pho) and Botrytis (Bot).")
     . t("The section entitled 'High Risk FRAC Warnings' shows warnings for over-used FRAC categories. ")
 );
