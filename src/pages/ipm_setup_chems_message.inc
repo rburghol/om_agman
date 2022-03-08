@@ -22,6 +22,16 @@ if ($setup) {
     '#suffix' => '</h3>',
   );
 }
+// Show this header 
+$message = drupal_render($text);
+echo $message;
+
+
+// Show the currently linked chems 
+module_load_include('inc', 'om_agman', 'src/panes/ipm_materials_list');
+
+// show the search info header 
+$text = array();
 $text['info'] = array(
   '#weight' => -5, // we want this next
   '#markup' => t(

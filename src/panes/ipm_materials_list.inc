@@ -58,7 +58,7 @@ if (!empty($farm_id)) {
   );
   $text['info'] = array(
     '#weight' => 1, // we want this first
-    '#markup' => t("Below is a list of spray materials that are linked to ") . $farm->name . "."
+    '#markup' => t("The following spray materials are linked to ") . $farm->name . "."
   );
 
   // Create the list of chemicals
