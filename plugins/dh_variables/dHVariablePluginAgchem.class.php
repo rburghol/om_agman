@@ -1093,11 +1093,18 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $suf = "</s>";
         }
         $content['title']['#markup'] = $pre . $edit_l . '  &nbsp;' . $copy_l . '  &nbsp;' . $delete_l . $suf;
-        $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
+        $content['title']['#title'] = date('d-m-Y', $feature->startdate) . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => $pre . '<b>Blocks:</b> ' . $feature->block_names,
+          '#markup' => ''
         );
+        $print_link = l(
+          "Click here to print this spray record", 
+          "print/dh_adminreg_feature/$entity->featureid/print/agchem_app",
+          array('attributes' => array('class' => array('print-page')))
+        );
+        $content['body']['#markup'] .= $print_link;
+        $content['body']['#markup'] .= '<b>Blocks:</b> ' . $feature->block_names;
         if ($now > $entity->tstime) {
           $content['body']['#prefix'] = '<div class="help-block">';
           $content['body']['#suffix'] = '</div>';
