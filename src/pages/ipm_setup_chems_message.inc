@@ -35,7 +35,7 @@ $text = array();
 $text['info'] = array(
   '#weight' => -5, // we want this next
   '#markup' => t(
-    "Below is a list of spray materials that are in our database.  Select the materials that you wish to appear in your spray planning list.  You may use the 'Search Filters' fields to filter on Material (Brand) Name, Material Type, Mode of Action, Target Organism (fungicide only), Active Ingredient and Pre-Harvest Interval (PHI)."
+    "To add additional materials to your vineyard spray planning list, click the checkboxes in the search results below.  You may use the 'Search Filters' fields to filter on Material (Brand) Name, Material Type, Mode of Action, Target Organism (fungicide only), Active Ingredient and Pre-Harvest Interval (PHI)."
   ),
 );
 $message = drupal_render($text);
