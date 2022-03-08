@@ -37,8 +37,11 @@ $text['info'] = array(
 );
 // just grab the regular form for proof of concept
 $elements = entity_ui_get_form('dh_timeseries', $ts, $op, $form_state);
+// disable this because the widget formats date and time as separate sub-elements
+$elements['tstime']['#title'] = '';
+
 $elements['info'] = $text['info'];
-dpm($elements,'final form');
+//dpm($elements,'final form');
 // now handled in 
 //dh_timeseries_formRowPlugins($elements, $ts, 'dh_timeseries');
 $form = drupal_render($elements);
