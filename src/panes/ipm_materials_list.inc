@@ -75,7 +75,7 @@ if (!empty($farm_id)) {
     '#weight' => 2, // we want this next
   );
   // only show the link to edit if we are NOT on the list edit page.
-  dpm($a,'a');
+  //dpm($a,'a');
   if ($a[0] <> 'ipm-facility-materials') {
     $text['link'] = array(
       '#weight' => 3, // we want this last
