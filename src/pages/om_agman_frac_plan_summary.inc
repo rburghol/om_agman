@@ -42,7 +42,6 @@ if (count($display['#rows']) > 0) {
   $text = array();
   $text['info'] = array(
     '#markup' => "<b>" . t("You have no high-risk FRAC usage warnings.") . "</b>"
-    ),
   );
   $output = drupal_render($text);
 }
