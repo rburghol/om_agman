@@ -241,8 +241,10 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // ********** Add special annotations and instructions 
     // if this is a the first block of a given vineyard, we handle it specially
     // if this is a blank row in a vineyard that already has one or more blocks, we add less info
+    $sprayer = om_get_property(array('propname' => 'agchem_sprayer_vol'), $singularity = 'name');
+    // OR if it has NO sprayer set up it needs to go there as well.
     $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
-    if (empty($blocks) or (!empty($form_state['setup']))) {
+    if (empty($blocks) or (!empty($form_state['setup']) !is_object($sprayer))) {
       // Show the next step in the work flow
       $form['actions']['save_equip'] = array(
         '#type' => 'submit',
@@ -363,7 +365,7 @@ function om_multiple_landunit_form_save_equip($form, &$form_state) {
   $options = array(
     'query' => array(
       'setup' => 1,
-      'destination' => "ipm-facility-materials/$vineyard_id/search"
+      'destination' => "ipm-facility-materials/$vineyard_id/search&setup=1"
     ),
   );
   drupal_goto($url, $options);
