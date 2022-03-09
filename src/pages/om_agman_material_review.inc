@@ -18,7 +18,7 @@ function om_agman_material_review_form($form, &$form_state, $farm_id, $new_chems
   );
   $form['actions']['save'] = array(
     '#type' => 'submit',
-    '#value' => t('Add Selected to Inventory'),
+    '#value' => t('+ Add Selected to Inventory'),
     '#weight' => 2,
     '#submit' => array('om_agman_material_review_save')
   );
