@@ -36,7 +36,7 @@ $text['info'] = array(
   '#weight' => -5, // we want this next
   '#markup' => t(
     "To add additional materials to your vineyard spray planning list, click the checkboxes next to the desired material in the search results below.")
-	. t("A") . " <input type='checkbox' checked>" . t(" indicates that this material is already in your list.")
+	. "<br>" . t("A") . " <input type='checkbox' checked>" . t(" indicates that this material is already in your list.")
     . t("	You may use the 'Search Filters' fields to filter on Material (Brand) Name, Material Type, Mode of Action, Target Organism (fungicide only), Active Ingredient and Pre-Harvest Interval (PHI).")
   ,
 );
