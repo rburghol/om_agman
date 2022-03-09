@@ -6,6 +6,12 @@
 
 $p = drupal_get_query_parameters();
 $setup = isset($p['setup']) ? $p['setup'] : 0;
+$farm = entity_load_single('dh_feature', $form_state['values']['farm_id']);
+$farm_chems = $farm->field_link_agchem_material['und'];
+$farm_chems = array_column($farm_chems, 'target_id');
+if (empty($farm_chems)) {
+  $setup = 1;
+}
 $text = array();
 if ($setup) {
   $text['message'] = array(
