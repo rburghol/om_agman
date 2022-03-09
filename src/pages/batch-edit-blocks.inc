@@ -241,7 +241,8 @@ class dHFacilityBlocks extends EntityGroupConfigurator {
     // ********** Add special annotations and instructions 
     // if this is a the first block of a given vineyard, we handle it specially
     // if this is a blank row in a vineyard that already has one or more blocks, we add less info
-    $sprayer = om_get_property(array('propname' => 'agchem_sprayer_vol'), $singularity = 'name');
+    $sinfo = array('propname' => 'agchem_sprayer_vol');
+    $sprayer = om_get_property($sinfo, $singularity = 'name');
     // OR if it has NO sprayer set up it needs to go there as well.
     $blocks = dh_get_facility_mps($dh_feature->hydroid, 'landunit');
     if (empty($blocks) or (!empty($form_state['setup']) !is_object($sprayer))) {
