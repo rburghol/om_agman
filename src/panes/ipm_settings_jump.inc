@@ -30,7 +30,7 @@ $urls = array(
   'materials' => url(implode('/', array('ipm-facility-materials', $farm_id)), $rq),
   'locations' => url(implode('/', array('ipm-facility-info', $farm_id, 'all', 'editblocks')), $rq),
   'vineyard' => url(implode('/', array('ipm-edit-vineyard', $farm_id)), $rq),
-  'allfarms' => url(implode('/', array('ipm-user-farms', $farm_id)), $rq),
+  'allfarms' => url(implode('/', array('ipm-user-farms', $farm_id))),
 );
 $targets = array();
 $targets[$urls['overview']] = t('Farm Settings Overview');
@@ -40,9 +40,9 @@ $targets[$urls['locations']] = t('Vineyard Blocks');
 $targets[$urls['vineyard']] = t('Vineyard Info');
 $targets[$urls['allfarms']] = t('Manage All Farms');
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
-dpm($options,'options');
-dpm($targets,'targs');
-dpm($_GET,'_GET');
+//dpm($options,'options');
+//dpm($targets,'targs');
+//dpm($_GET,'_GET');
 // show the menu
 echo "<b>Change Settings for:</b>" . drupal_render($output);
   
