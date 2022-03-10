@@ -434,7 +434,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     );
     $this->eventprops = $eventprops;
     $this->chemgrid = $chemgrid;
-    //dpm($form,'form');
+    dpm($form,'form');
   }
   public function submitForm(array &$form, $form_state) {
     //dpm($form_state,'form_state');
