@@ -2,8 +2,9 @@
 // use this to call this file 
 // module_load_include('inc', 'om_agman', 'src/panes/ipm_setup_complete');
 $parms = drupal_get_query_parameters();
+$a = arg();
 if (!empty($parms['setup'])) {
-  $farm = entity_load_single('dh_feature', $form_state['values']['farm_id']);
+  $farm = entity_load_single('dh_feature', $a[1]);
   
   $text = array();
   $text['message'] = array(
