@@ -20,9 +20,12 @@ if (count($a) <= 1) {
 $options = array(
   'default_value' => url($_GET['q']),
 );
+// Note: pass $rq, the 'destination' of edit forms, in as url option ONLY for 
+//       if the page is certainly called with a destination, otherwise the 
+//       menu will not show the correct match
 $rq = array('query' => array('destination' => "ipm-facility-equip/$farm_id"));
 $urls = array(
-  'overview' => url(implode('/', array('ipm-facility-equip', $farm_id, 'all')), $rq),
+  'overview' => url(implode('/', array('ipm-facility-equip', $farm_id, 'all'))),
   'equipment' => url(implode('/', array('ipm-facility-equip', $farm_id, 'all', 'edit')), $rq),
   'materials' => url(implode('/', array('ipm-facility-materials', $farm_id)), $rq),
   'locations' => url(implode('/', array('ipm-facility-info', $farm_id, 'all', 'editblocks')), $rq),
@@ -39,6 +42,7 @@ $targets[$urls['allfarms']] = t('Manage All Farms');
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
 dpm($options,'options');
 dpm($targets,'targs');
+dpm($_GET,'_GET');
 // show the menu
 echo "<b>Change Settings for:</b>" . drupal_render($output);
   
