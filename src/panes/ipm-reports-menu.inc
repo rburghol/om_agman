@@ -30,7 +30,7 @@ $targets = array();
 $options = array(
   'default_value' => url($_GET['q']),
 );
-//dpm($options,'options');
+dpm($options,'urls');
 $targets[$urls['season']] = 'Season Overview (shows all events)';
 $targets[$urls['material']] = 'Spray Summary by Material';
 $targets[$urls['frac']] = 'Spray Summary by FRAC';
