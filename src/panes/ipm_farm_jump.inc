@@ -40,6 +40,8 @@ if ( $a[1] <> 'all' ) {
 }
 if (count($a) < 3) {
   $a[2] = 'all';
+  // reload the page so that all URLs will have 2 arguments minimum
+  $red = TRUE;
 }
 
 if (empty($farms)) {
@@ -51,7 +53,7 @@ if (empty($farms)) {
 
 
 if ($red) {
-  //dpm($a,'final args');
+  dpm($a,'final args');
   drupal_goto(implode('/',$a));
 }
 
