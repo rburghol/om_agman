@@ -10,8 +10,7 @@ if (!empty($parms['setup'])) {
   $text = array();
   $text['message'] = array(
     '#weight' => -6, // we want this at the very top
-    '#markup' => '<b>' 
-      . t('Congratulations!') 
+    '#markup' => '<b>' . t('Congratulations!') . '</b>'
       . t('You have completed setting up your vineyard. ')
       . t('You may now begin using this application to assist you with Integrated Pest Management. ')
       . t('Follow the links below  or select \'Planning\' from the main menu to plan your spray events.')
