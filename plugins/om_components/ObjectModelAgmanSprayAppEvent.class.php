@@ -307,7 +307,6 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#weight' => 2,
     );
     //dpm($this->dh_adminreg_feature,"event object");
-    /*
     $form['show_agchem_event_area'] = array(
       '#prefix' => t('Total Area to Spray: '),
       '#attributes' => array( 'class' => array('control-label')),
@@ -316,7 +315,6 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       //'#description' => t('Event Description'),
       '#weight' => 4,
     );
-    */
     //dpm($this->dh_adminreg_feature,"event object");
     $form['agchem_event_area'] = array(
       '#title' => t('Total Area to Spray'),
