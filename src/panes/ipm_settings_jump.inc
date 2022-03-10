@@ -26,12 +26,14 @@ $urls = array(
   'materials' => url(implode('/', array('ipm-facility-materials', $farm_id)), $rq),
   'locations' => url(implode('/', array('ipm-facility-info', $farm_id, 'all', 'editblocks')), $rq),
   'vineyard' => url(implode('/', array('ipm-edit-vineyard', $farm_id)), $rq),
+  'allfarms' => url(implode('/', array('ipm-user-farms', $farm_id)), $rq),
 );
 $targets = array();
-$targets[$urls['equipment']] = 'Spray Equipment';
-$targets[$urls['materials']] = 'Spray Materials';
-$targets[$urls['locations']] = 'Vineyard Blocks';
-$targets[$urls['vineyard']] = 'Vineyard Info';
+$targets[$urls['equipment']] = t('Spray Equipment');
+$targets[$urls['materials']] = t('Spray Materials');
+$targets[$urls['locations']] = t('Vineyard Blocks');
+$targets[$urls['vineyard']] = t('Vineyard Info');
+$targets[$urls['vineyard']] = t('Manage All Farms');
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
 
 // show the menu
