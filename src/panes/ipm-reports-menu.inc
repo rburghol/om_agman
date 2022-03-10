@@ -19,7 +19,7 @@ if (count($a) <= 1) {
 }
 $urls = array(
   'season' => url(implode('/', array_replace($a, array(3=>'season')) )),
-  'material' => url("ipm-user-reports/$arg[1]/all" ),
+  'material' => url("ipm-user-reports/$a[1]/all" ),
   'frac' => url(implode('/', array_replace($a, array(3=>'frac')) )),
   'usda-private' => url(implode('/', array_replace($a, array(3=>'usda-private')) )),
   'phi' => url(implode('/', array_replace($a, array(3=>'phi')) )),
