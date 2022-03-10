@@ -54,7 +54,16 @@ if (empty($farms)) {
 
 if ($red) {
   //dpm($a,'final args');
-  drupal_goto(implode('/',$a));
+  $parms = drupal_get_query_parameters();
+  $url = implode('/', $a);
+  $options = array();
+  // now check to see if setup has been set
+  if (!empty($parms['setup'])) {
+    $options['query'] = array(
+      'setup' => 1,
+    );
+  }
+  drupal_goto($url, $options);
 }
 
 // save the current values for the session
