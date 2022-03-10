@@ -120,16 +120,14 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
     '#value' => t('Save Vineyard Info'),
     '#weight' => 40,
   );
+  $form['actions']['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cancel'),
+    '#weight' => 45,
+    '#limit_validation_errors' => array(),
+    '#submit' => array('dh_vineyard_form_submit_cancel')
+  );
   switch ($op) {
-    case 'add':
-    $form['actions']['cancel'] = array(
-      '#type' => 'submit',
-      '#value' => t('Cancel'),
-      '#weight' => 45,
-      '#limit_validation_errors' => array(),
-      '#submit' => array('dh_vineyard_form_submit_cancel')
-    );
-    break;
     case 'edit':
     $form['actions']['delete'] = array(
       '#type' => 'submit',
