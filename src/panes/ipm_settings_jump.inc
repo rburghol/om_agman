@@ -30,7 +30,7 @@ $urls = array(
   'materials' => url(implode('/', array('ipm-facility-materials', $farm_id)), $rq),
   'locations' => url(implode('/', array('ipm-facility-info', $farm_id, 'all', 'editblocks')), $rq),
   'vineyard' => url(implode('/', array('ipm-edit-vineyard', $farm_id)), $rq),
-  'allfarms' => url(implode('/', array('ipm-user-farms', $farm_id))),
+  'allfarms' => url(implode('/', array('ipm-user-farms', $farm_id, 'all'))),
 );
 $targets = array();
 $targets[$urls['overview']] = t('Farm Settings Overview');
