@@ -53,7 +53,7 @@ if (empty($farms)) {
 
 
 if ($red) {
-  dpm($a,'final args');
+  //dpm($a,'final args');
   drupal_goto(implode('/',$a));
 }
 
