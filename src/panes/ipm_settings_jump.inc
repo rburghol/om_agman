@@ -33,7 +33,7 @@ $targets[$urls['equipment']] = t('Spray Equipment');
 $targets[$urls['materials']] = t('Spray Materials');
 $targets[$urls['locations']] = t('Vineyard Blocks');
 $targets[$urls['vineyard']] = t('Vineyard Info');
-$targets[$urls['vineyard']] = t('Manage All Farms');
+$targets[$urls['allfarms']] = t('Manage All Farms');
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
 
 // show the menu
