@@ -3,6 +3,7 @@
 // module_load_include('inc', 'om_agman', 'src/panes/ipm_setup_complete');
 $parms = drupal_get_query_parameters();
 $a = arg();
+/*
 if (!empty($parms['setup'])) {
   $farm = entity_load_single('dh_feature', $a[1]);
   
@@ -23,5 +24,5 @@ if (!empty($parms['setup'])) {
   echo $message;
 
 }
-  
+*/  
 ?>
