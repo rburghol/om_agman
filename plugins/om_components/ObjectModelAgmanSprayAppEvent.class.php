@@ -319,7 +319,7 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['agchem_event_area'] = array(
       '#title' => t('Total Area to Spray'),
       '#type' => 'hidden',
-      '#suffix' => $this->dh_adminreg_feature->dh_properties['agchem_event_area']->varunits,
+      //'#suffix' => $this->dh_adminreg_feature->dh_properties['agchem_event_area']->varunits,
       '#default_value' => empty($this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue) ? 0 : $this->dh_adminreg_feature->dh_properties['agchem_event_area']->propvalue,
       //'#description' => t('Event Description'),
       '#disabled' => FALSE,
