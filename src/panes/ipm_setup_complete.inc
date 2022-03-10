@@ -8,6 +8,7 @@ if (!empty($parms['setup'])) {
   //$farm = entity_load_single('dh_feature', $a[1]);
   
   $text = array();
+  /*
   $text['message'] = array(
     '#weight' => -6, // we want this at the very top
     '#markup' => '<b>' 
@@ -19,6 +20,7 @@ if (!empty($parms['setup'])) {
     '#prefix' => '<h4>',
     '#suffix' => '</h4>',
   );
+  */
   // Show this header 
   $message = drupal_render($text);
   echo $message;
