@@ -37,7 +37,8 @@ $targets[$urls['locations']] = t('Vineyard Blocks');
 $targets[$urls['vineyard']] = t('Vineyard Info');
 $targets[$urls['allfarms']] = t('Manage All Farms');
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
-
+dpm($options,'options');
+dpm($targets,'targs');
 // show the menu
 echo "<b>Change Settings for:</b>" . drupal_render($output);
   
