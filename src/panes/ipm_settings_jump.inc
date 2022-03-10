@@ -22,6 +22,7 @@ $options = array(
 );
 $rq = array('query' => array('destination' => "ipm-facility-equip/$farm_id"));
 $urls = array(
+  'overview' => url(implode('/', array('ipm-facility-equip', $farm_id, 'all')), $rq),
   'equipment' => url(implode('/', array('ipm-facility-equip', $farm_id, 'all', 'edit')), $rq),
   'materials' => url(implode('/', array('ipm-facility-materials', $farm_id)), $rq),
   'locations' => url(implode('/', array('ipm-facility-info', $farm_id, 'all', 'editblocks')), $rq),
@@ -29,6 +30,7 @@ $urls = array(
   'allfarms' => url(implode('/', array('ipm-user-farms', $farm_id)), $rq),
 );
 $targets = array();
+$targets[$urls['overview']] = t('Farm Settings Overview');
 $targets[$urls['equipment']] = t('Spray Equipment');
 $targets[$urls['materials']] = t('Spray Materials');
 $targets[$urls['locations']] = t('Vineyard Blocks');
