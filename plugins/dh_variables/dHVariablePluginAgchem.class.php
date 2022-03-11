@@ -1098,12 +1098,17 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           '#type' => 'item',
           '#markup' => ''
         );
-        $print_link = l(
-          "Click here to print this spray record", 
+        $epa_print_link = l(
+          "Click here to print VDACS/EPA Report", 
           "print/dh_adminreg_feature/$entity->featureid/print/agchem_app",
           array('attributes' => array('class' => array('print-page')))
         );
-        $content['body']['#markup'] .= $print_link;
+        $work_order_print_link = l(
+          "Work Order", 
+          "print/ipm-live-events/" . $feature->vineyard->hydroid . "/workorder/$feature->adminid",
+          array('attributes' => array('class' => array('print-page')))
+        );
+        $content['body']['#markup'] .= $epa_print_link . " / " . $work_order_print_link;
         $content['body']['#markup'] .= '<br><b>Blocks:</b> ' . $feature->block_names;
         if ($now > $entity->tstime) {
           $content['body']['#prefix'] = '<div class="help-block">';
