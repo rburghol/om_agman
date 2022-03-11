@@ -1099,12 +1099,12 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           '#markup' => ''
         );
         $epa_print_link = l(
-          "Click here to print WPS Report", 
+          "Print WPS Report", 
           "print/dh_adminreg_feature/$entity->featureid/print/agchem_app",
           array('attributes' => array('class' => array('print-page')))
         );
         $work_order_print_link = l(
-          "Work Order", 
+          "Print Work Order", 
           "print/ipm-live-events/" . $feature->vineyard->hydroid . "/workorder/$feature->adminid",
           array('attributes' => array('class' => array('print-page')))
         );
