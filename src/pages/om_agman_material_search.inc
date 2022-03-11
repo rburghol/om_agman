@@ -24,7 +24,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   }
   
   $form['name'] = array(
-    '#title' => t('Search by Material Name'),
+    '#title' => t('Search by Material Name (Brand or Trade name)'),
     '#type' => 'textfield',
     '#default_value' => '',
     '#description' => t('Search for material by brand name (i.e. Mancozeb, Captan, ...).'),
