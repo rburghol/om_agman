@@ -1108,7 +1108,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           "print/ipm-live-events/" . $feature->vineyard->hydroid . "/workorder/$feature->adminid",
           array('attributes' => array('class' => array('print-page')))
         );
-        $content['body']['#markup'] .= $epa_print_link . "/" . $work_order_print_link;
+        $content['body']['#markup'] .= $epa_print_link . " /" . $work_order_print_link;
         $content['body']['#markup'] .= '<br><b>Blocks:</b> ' . $feature->block_names;
         if ($now > $entity->tstime) {
           $content['body']['#prefix'] = '<div class="help-block">';
