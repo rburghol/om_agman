@@ -38,7 +38,6 @@ echo "<h3>High Risk FRAC Warnings ($startdate to $enddate):</h3>";
 
 if (count($display['#rows']) > 0) {
   $output = render($display);
-  echo $output;
 } else {
   $text = array();
   $text['info'] = array(
