@@ -45,7 +45,7 @@ function om_agman_varJump($varkeys, $vineyard) {
 //*******************************************
 // Growth Stages 
 //*********************************************
-$vks = array('vitis_bud_swell', 'vitis_bud_break', 'vitis_veraison' , 'vitis_med_shoot_length', 'vitis_bunch_closure');
+$vks = array('vitis_bud_swell', 'vitis_bud_break', 'vitis_bud_bloom', 'vitis_veraison' , 'vitis_med_shoot_length', 'vitis_bunch_closure');
 $targets['Growth Stage Recording'] = om_agman_varJump($vks, $vineyard);
 
 //*******************************************
