@@ -24,6 +24,7 @@ $urls = array(
   'usda-private' => url(implode('/', array_replace($a, array(3=>'usda-private')) )),
   'phi' => url(implode('/', array_replace($a, array(3=>'phi')) )),
   'ipmir' => url(implode('/', array_replace($a, array(3=>'ipmir')) )),
+  'agman_fruit_chem' => url(implode('/', array_replace($a, array(3=>'agman_fruit_chem')) )),
 //  'search' => url(implode('/', array_replace($a, array(3=>'season')) )),
 );
 $targets = array();
@@ -37,6 +38,7 @@ $targets[$urls['frac']] = 'Spray Summary by FRAC';
 $targets[$urls['usda-private']] = 'USDA Private Grower Report';
 $targets[$urls['phi']] = 'Pre-Harvest Interval Date Report';
 $targets[$urls['ipmir']] = 'Community IPM Reports';
+$targets[$urls['agman_fruit_chem']] = 'Fruit Chemistry Samples';
 //$targets[$urls['search']] = 'Search';
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
 echo "<b>Show Report:</b><br>" . drupal_render($output);
