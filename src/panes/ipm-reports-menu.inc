@@ -25,7 +25,6 @@ $urls = array(
   'phi' => url(implode('/', array_replace($a, array(3=>'phi')) )),
   'ipmir' => url(implode('/', array_replace($a, array(3=>'ipmir')) )),
   'agman_fruit_chem' => url(implode('/', array_replace($a, array(3=>'agman_fruit_chem')) )),
-//  'search' => url(implode('/', array_replace($a, array(3=>'season')) )),
 );
 $targets = array();
 $options = array(

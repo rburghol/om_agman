@@ -23,6 +23,7 @@ $vineyard = $a[1];
 $targets = array(
   'Spray Events' => array(
     url("ipm-live-events/all/materials/add/$vineyard&finaldest=$finaldest") => 'Add a Spray',
+    url("ipm-facility-materials/$vineyard/search") => 'Manage Spray Materials',
     url("ipm-facility-sprayplan/$vineyard/all") => 'Go to Season Spray Planner',
   ),
   'Disease/Insect/Weather Recording' => array(),
