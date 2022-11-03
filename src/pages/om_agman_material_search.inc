@@ -54,7 +54,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#size' => 1,
   );  
   $form['group1']['frac'] = $frac_opts;
-  $form['group1']['frac']['#title'] = 'Filter by Mode of Action';
+  $form['group1']['frac']['#title'] = 'Filter by Mode of Action (FRAC code)';
   $form['group1']['frac']['#empty_option'] = '- All Modes - ';
 
   // get target organisms
