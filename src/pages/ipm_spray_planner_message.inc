@@ -34,7 +34,7 @@ $text['list'] = array(
   '#items' => array(
     t("To add an event in any week, click on 'Add Spray' and follow the instructions. ") . " ",
     t("To edit an existing spray event, click on the title, indicated by the edit icon ") . $edit_icon . " ",
-    t("To make a copy of a spray event, click on copy icon ") . $copy_icon . " "
+    t("To make a copy of a spray event, click on copy icon ") . $copy_icon . " ",
 	l("ipm-facility-materials/$vineyard/search", t("Click here to Manage Spray Materials"))
   ),
   '#wrapper_attributes' => ['class' => 'container'],
