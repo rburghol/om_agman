@@ -39,7 +39,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#type' => 'fieldset',
     '#title' => t('+ Click Here to Show/Hide Additional Search Filters, FRAC, PHI, etc.'),
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE,  
+    '#collapsed' => $advanced_collapsed,  
   );
 
   $ftype_options = array('fungicide', 'herbicide', 'insecticide', 'fertilizer', 'other');
