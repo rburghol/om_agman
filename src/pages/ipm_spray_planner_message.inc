@@ -7,7 +7,7 @@
 $p = drupal_get_query_parameters();
 $setup = isset($p['setup']) ? $p['setup'] : 0;
 $text = array();
-$a = args();
+$a = arg();
 
 $text['message'] = array(
   '#weight' => -6, // we want this at the very top
