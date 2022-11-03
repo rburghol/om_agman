@@ -75,7 +75,7 @@ function dh_app_plan_form($form, &$form_state, $dh_adminreg_feature = null, $op 
   $date_format = 'Y-m-d';
   // should have code in here to guess based on the phase/or passed in from the URL
   $form['startdate'] = array(
-    '#title' => t('Application Date'),
+    '#prefix' => "<b>" . t('Application Date') . "</b>",
     '#description' => t('Planned date for this spray.'),
     '#required' => TRUE,
     '#default_value' => empty($dh_adminreg_feature->startdate) ? $dh_adminreg_feature->startdate : date($date_format,$dh_adminreg_feature->startdate),

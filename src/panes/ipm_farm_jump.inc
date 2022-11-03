@@ -40,6 +40,8 @@ if ( $a[1] <> 'all' ) {
 }
 if (count($a) < 3) {
   $a[2] = 'all';
+  // reload the page so that all URLs will have 2 arguments minimum
+  $red = TRUE;
 }
 
 if (empty($farms)) {
@@ -52,7 +54,16 @@ if (empty($farms)) {
 
 if ($red) {
   //dpm($a,'final args');
-  drupal_goto(implode('/',$a));
+  $parms = drupal_get_query_parameters();
+  $url = implode('/', $a);
+  $options = array();
+  // now check to see if setup has been set
+  if (!empty($parms['setup'])) {
+    $options['query'] = array(
+      'setup' => 1,
+    );
+  }
+  drupal_goto($url, $options);
 }
 
 // save the current values for the session
@@ -84,7 +95,7 @@ foreach ($farms as $farm) {
 
 $jump_menu = drupal_get_form('ctools_jump_menu', $targets, $options);
 //dpm($jump_menu['jump'],'form');
-$jump_menu['jump']['#title'] .= "Show Farm:";
+$jump_menu['jump']['#title'] .= t("Show Vineyard:");
 //dpm($jump_menu['jump'],'form 2');
 echo drupal_render($jump_menu);
 

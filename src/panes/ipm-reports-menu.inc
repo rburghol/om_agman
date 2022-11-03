@@ -19,24 +19,25 @@ if (count($a) <= 1) {
 }
 $urls = array(
   'season' => url(implode('/', array_replace($a, array(3=>'season')) )),
-  'material' => url(implode('/', array_replace($a, array(3=>'material')) )),
+  'material' => url("ipm-user-reports/$a[1]/all" ),
   'frac' => url(implode('/', array_replace($a, array(3=>'frac')) )),
   'usda-private' => url(implode('/', array_replace($a, array(3=>'usda-private')) )),
   'phi' => url(implode('/', array_replace($a, array(3=>'phi')) )),
   'ipmir' => url(implode('/', array_replace($a, array(3=>'ipmir')) )),
-//  'search' => url(implode('/', array_replace($a, array(3=>'season')) )),
+  'agman_fruit_chem' => url(implode('/', array_replace($a, array(3=>'agman_fruit_chem')) )),
 );
 $targets = array();
 $options = array(
   'default_value' => url($_GET['q']),
 );
-//dpm($options,'options');
-$targets[$urls['season']] = 'Season Timeline';
-$targets[$urls['material']] = 'By Material';
-$targets[$urls['frac']] = 'By FRAC';
+//dpm($urls,'urls');
+$targets[$urls['season']] = 'Season Overview (shows all events)';
+$targets[$urls['material']] = 'Spray Summary by Material';
+$targets[$urls['frac']] = 'Spray Summary by FRAC';
 $targets[$urls['usda-private']] = 'USDA Private Grower Report';
 $targets[$urls['phi']] = 'Pre-Harvest Interval Date Report';
 $targets[$urls['ipmir']] = 'Community IPM Reports';
+$targets[$urls['agman_fruit_chem']] = 'Fruit Chemistry Samples';
 //$targets[$urls['search']] = 'Search';
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
 echo "<b>Show Report:</b><br>" . drupal_render($output);

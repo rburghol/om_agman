@@ -1,5 +1,8 @@
 <?php
 
+// add to any page with:
+// module_load_include('inc', 'om_agman', 'src/pages/om_agman_material_search');
+
 module_load_include('module', 'om_agman');
 module_load_include('inc', 'om_agman', 'src/lib/om_agman_search_fn');
 
@@ -21,7 +24,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   }
   
   $form['name'] = array(
-    '#title' => t('Search by Material Name'),
+    '#title' => t('Search by Material Name (Brand or Trade name)'),
     '#type' => 'textfield',
     '#default_value' => '',
     '#description' => t('Search for material by brand name (i.e. Mancozeb, Captan, ...).'),
@@ -31,7 +34,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   
   $form['group1'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Additional Search Filters, FRAC, PHI, etc. (click to show/hide filters)'),
+    '#title' => t('+ Click Here to Show/Hide Additional Search Filters, FRAC, PHI, etc.'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,  
   );

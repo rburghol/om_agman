@@ -44,6 +44,6 @@ foreach ($years as $year) {
 //dpm($targets,'targs');
 
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
-echo "<b>Show Year:</b><br>" . drupal_render($output);
+echo "<b>" . t("Select Year:") . "</b><br>" . drupal_render($output);
 
 ?>

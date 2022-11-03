@@ -35,7 +35,7 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
     '#title' => t('Vineyard Name'),
     '#type' => 'textfield',
     '#default_value' => $dh_feature->name,
-    '#description' => t('Name'),
+    '#suffix' => t('Name'),
     '#required' => TRUE,
     '#size' => 30,
   );  
@@ -100,9 +100,9 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
   $form['dh_geofield']['#weight'] = intval($form['postal_code']['#weight']) + 1;
   $form['dh_geofield']['und'][0]['geom']['#geolocation'] = 0; //Hide the Find Location button for now
   $form['dh_geofield']['und'][0]['geom']['#title'] = 'Location (latitude & longitude)';
-  $form['dh_geofield']['und'][0]['geom']['#description'] = t('If you know the coordinates for your vineyard, enter them in the fields below the map labeled \'Latitude\' and \'Longitude\'. ');
+  $form['dh_geofield']['und'][0]['geom']['#suffix'] = t('If you know the coordinates for your vineyard, enter them in the fields below the map labeled \'Latitude\' and \'Longitude\'. ');
   // for if using the Google Map geolocation
-  //$form['dh_geofield']['und'][0]['geom']['#description'] = t('If you know the coordinates for your vineyard, enter them in the fields below the map labeled \'Latitude\' and \'Longitude\'. If not, you can enter your address below in the field labelled \'Geocode address\' and it will estimate your latitude and lkongitude automatically.  Finally, you can drag the map to the location of your vineyard to set the lat/lon fields to the appropriate coordinates.');
+  //$form['dh_geofield']['und'][0]['geom']['#suffix'] = t('If you know the coordinates for your vineyard, enter them in the fields below the map labeled \'Latitude\' and \'Longitude\'. If not, you can enter your address below in the field labelled \'Geocode address\' and it will estimate your latitude and lkongitude automatically.  Finally, you can drag the map to the location of your vineyard to set the lat/lon fields to the appropriate coordinates.');
   global $user;
   //dpm($user->roles,'roles');
   //if (in_array(array('ipm_admin','administrator'), $user->roles)) {
@@ -120,16 +120,14 @@ function dh_vineyard_form($form, &$form_state, $dh_feature = null, $op = 'edit')
     '#value' => t('Save Vineyard Info'),
     '#weight' => 40,
   );
+  $form['actions']['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cancel'),
+    '#weight' => 45,
+    '#limit_validation_errors' => array(),
+    '#submit' => array('dh_vineyard_form_submit_cancel')
+  );
   switch ($op) {
-    case 'add':
-    $form['actions']['cancel'] = array(
-      '#type' => 'submit',
-      '#value' => t('Cancel'),
-      '#weight' => 45,
-      '#limit_validation_errors' => array(),
-      '#submit' => array('dh_vineyard_form_submit_cancel')
-    );
-    break;
     case 'edit':
     $form['actions']['delete'] = array(
       '#type' => 'submit',

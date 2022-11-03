@@ -569,6 +569,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $description .= '\nw/' . $feature->chem_list;
         $description .= '\nPHI:' ."$feature->phi_date ($feature->phi_chem)";
         $description .= '\nREI:' ."$feature->rei_date ($feature->rei_chem)";
+        $description .= "<br><div class='small'>Note: Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.</div>";
         // see docs for drupal function l() for link config syntax
         // get list of blocks
         // get list of chems
@@ -1025,7 +1026,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
       ),
     );
     // Edit standalone href link
-    $edit_l = l(date('Y-m-d', $feature->startdate) . ' ' . $title, $uri, array('attributes' => array('class' => 'editlink')));
+    $edit_l = l(format_date($feature->startdate, 'short') . ' ' . $title, $uri, array('attributes' => array('class' => 'editlink')));
     $wo_uri = "ipm-live-events/" . $feature->vineyard->hydroid . "/workorder/$feature->adminid&destination=$page";
     $wo_tiny = l(' ', $wo_uri);
     // Other URIs
@@ -1070,6 +1071,7 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
         $content['body']['#markup'] .= "<br><b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
         $content['body']['#markup'] .= "<br><b>REI: .$feature->rei_date ($feature->rei_chem)";
+        $content['body']['#markup'] .= "<br><div class='small'>Note: Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.</div>";
       break;
       
       case 'tiny':
@@ -1090,12 +1092,24 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
           $pre = "<s>";
           $suf = "</s>";
         }
-        $content['title']['#markup'] = $pre . $edit_l . '  &nbsp;' . $copy_l . '  &nbsp;' . $delete_l . $suf;
-        $content['title']['#title'] = date('Y-m-d', $feature->startdate) . ": " . $title;
+        $content['title']['#markup'] = $pre . '<b>Date:</b> ' . $edit_l . '  &nbsp;' . $copy_l . '  &nbsp;' . $delete_l . $suf;
+        $content['title']['#title'] = format_date($feature->startdate, 'short') . ": " . $title;
         $content['body'] = array(
           '#type' => 'item',
-          '#markup' => $pre . '<b>Blocks:</b> ' . $feature->block_names,
+          '#markup' => ''
         );
+        $epa_print_link = l(
+          "Print WPS Report", 
+          "print/dh_adminreg_feature/$entity->featureid/print/agchem_app",
+          array('attributes' => array('class' => array('print-page')))
+        );
+        $work_order_print_link = l(
+          "Print Work Order", 
+          "print/ipm-live-events/" . $feature->vineyard->hydroid . "/workorder/$feature->adminid",
+          array('attributes' => array('class' => array('print-page')))
+        );
+        $content['body']['#markup'] .= $epa_print_link . " /" . $work_order_print_link;
+        $content['body']['#markup'] .= '<br><b>Blocks:</b> ' . $feature->block_names;
         if ($now > $entity->tstime) {
           $content['body']['#prefix'] = '<div class="help-block">';
           $content['body']['#suffix'] = '</div>';
@@ -1105,7 +1119,8 @@ class dHAgchemApplicationEvent extends dHVariablePluginDefault {
         $content['body']['#markup'] .= "<br><b>Materials:</b> $chem_list";
         //$content['body']['#markup'] .= "<br><b>Materials:</b> $feature->chem_list";
         $content['body']['#markup'] .= "<b>PHI:</b> $feature->phi_date ($feature->phi_chem)";
-        $content['body']['#markup'] .= "<br><b>REI:</b> $feature->rei_date ($feature->rei_chem)" . $suf;
+        $content['body']['#markup'] .= "<br><b>REI:</b> $feature->rei_date ($feature->rei_chem)";
+        $content['body']['#markup'] .= "<br><div class='small'>Note: Pre-Harvest Interval (PHI) and Re-Entry Intervals (REI) are based on the material with the longest interval.</div>" . $suf;
 
         $entity->title = $title;
         $content['modified']['#markup'] = '(modified on ' . date('Y-m-d', $feature->modified) . ")"; 
