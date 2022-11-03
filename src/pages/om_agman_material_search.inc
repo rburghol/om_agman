@@ -10,7 +10,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
 //dpm($farm_id, 'farm id');
   //dpm($form_state,'form to om_agman_material_search_form');
   //if ($form_state['input']['op'] == 'Search') {
-  //  dpm($form_state['input'],'Searching');
+    dpm($form_state['input'],'Searching');
   //}
   $plugin = ctools_get_plugins('dh', 'dh_variables', 'dHVariablePluginFRAC');
   $class = ctools_plugin_get_class($plugin, 'handler');
@@ -32,6 +32,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#size' => 30,
   );  
   
+  $advanced_collapsed = TRUE; // if there are items set here, we should set this to FALSE 
   $form['group1'] = array(
     '#type' => 'fieldset',
     '#title' => t('+ Click Here to Show/Hide Additional Search Filters, FRAC, PHI, etc.'),
