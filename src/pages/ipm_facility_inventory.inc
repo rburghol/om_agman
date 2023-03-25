@@ -2,7 +2,7 @@
 echo "First line";
 module_load_include('inc', 'dh', 'plugins/dh.display');
 module_load_include('inc', 'dh', 'dh.admin');
-
+/*
 function dh_agchem_inventory_form($form, &$form_state, $dh_properties = null, $op = 'edit') {
   // load base form from
   //dpm($form_state,'form_state');
@@ -248,5 +248,5 @@ if (isset($a[$facarg])) {
 } else {
   echo "Usage: ipm-facility-materials/[farm hydroid]/inventory.";
 }
-
+*/
 ?>
