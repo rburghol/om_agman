@@ -1,5 +1,5 @@
 <?php
-
+echo "First line";
 module_load_include('inc', 'dh', 'plugins/dh.display');
 module_load_include('inc', 'dh', 'dh.admin');
 
