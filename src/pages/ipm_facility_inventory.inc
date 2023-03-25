@@ -1,5 +1,6 @@
 <?php
 echo "First line";
+echo "What is going on?";
 module_load_include('inc', 'dh', 'plugins/dh.display');
 module_load_include('inc', 'dh', 'dh.admin');
 
