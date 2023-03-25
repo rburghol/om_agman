@@ -206,6 +206,7 @@ module_load_include('module', 'dh');
 $a = arg();
 $facarg = 1; //  
 $bundle = 'dh_properties';
+echo "<b>Inventory</b>";
 if (isset($a[$facarg])) {
   $facid = $a[$facarg];
   $vars = dh_varkey2varid('agchem_inventory_event');
