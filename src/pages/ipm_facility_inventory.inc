@@ -4,6 +4,7 @@
 // argument default
 // if user has only one facility, return its ID, otherwise return 'multiple'
 
+print("Inventory Management");
 module_load_include('inc', 'dh', 'plugins/dh.display');
 module_load_include('inc', 'dh', 'dh.admin');
 
