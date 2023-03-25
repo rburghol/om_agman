@@ -3,9 +3,7 @@
 // module_load_include('inc', 'om_agman', 'src/panes/ipm-action-menu');
 // argument default
 // if user has only one facility, return its ID, otherwise return 'multiple'
-$a = arg();
-dpm($a,'args');
-/*
+
 module_load_include('inc', 'dh', 'plugins/dh.display');
 module_load_include('inc', 'dh', 'dh.admin');
 
@@ -252,5 +250,5 @@ if (isset($a[$facarg])) {
 } else {
   echo "Usage: ipm-facility-materials/[farm hydroid]/inventory.";
 }
-*/
+
 ?>
