@@ -204,6 +204,7 @@ $op = 'add';
 $date = date('Y-m-d');
 module_load_include('module', 'dh');
 $a = arg();
+dpm($a,'args');
 $facarg = 1; //  
 $bundle = 'dh_properties';
 echo "<b>Inventory</b>";
