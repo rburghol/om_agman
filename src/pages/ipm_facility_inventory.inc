@@ -83,6 +83,7 @@ function dh_agchem_inventory_form($form, &$form_state, $dh_properties = null, $o
   $inventory_grid = dh_agchem_inventory_grid($dh_properties, $form_state);
   if ($inventory_grid) {
     $inventory_grid->getData();
+    dpm($inventory_grid,'inventory_grid post getData()');
     foreach ($inventory_grid->data as $key => $prop) {
       $prop->varname = '';
       $inventory_grid->data[$key] = $prop;
