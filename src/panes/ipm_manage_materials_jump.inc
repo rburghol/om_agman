@@ -31,7 +31,8 @@ $targets[$urls['list']] = 'List Materials';
 $targets[$urls['search']] = 'Search for New Materials';
 $targets[$urls['inventory']] = 'Update Inventory';
 $targets[$urls['purchasing']] = 'Estimate Purchasing';
-if ($user->uid == 1) {
+// change -9999 to 1 if admin should see this also
+if ($user->uid == -9999) {
   $urls['materials'] = url(implode('/', array($a[0], $a[1], 'select')));
   $targets[$urls['materials']] = 'Manage Materials';
 }
