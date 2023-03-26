@@ -207,7 +207,7 @@ function om_agman_material_search_search($form, &$form_state) {
 
 
 function om_agman_material_search_next($form, &$form_state) {
-dpm($form_state,'form state on next');
+//dpm($form_state,'form state on next');
 //dpm($form_state,'form state on search');
 //dpm($_POST,'post args');
   $form_state['rebuild'] = TRUE;

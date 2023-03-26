@@ -36,3 +36,12 @@ select entity_id from (
 where count > 1
 group by entity_id;
 
+-- find dupe eref_ids for a single facility
+select entity_id, field_link_agchem_material_erefid from (
+  select field_link_agchem_material_erefid, entity_id, count(*)
+  from field_data_field_link_agchem_material
+  group by field_link_agchem_material_erefid, entity_id
+) as foo
+where count > 1
+group by entity_id, field_link_agchem_material_erefid
+order by entity_id;

@@ -60,14 +60,15 @@ function om_agman_material_review_save($form, &$form_state) {
   $sel_chems = array_values(array_filter($form_state['values']['chems']));
   $farm = entity_load_single('dh_feature', $form_state['values']['farm_id']);
   $farm_chems = $farm->field_link_agchem_material['und'];
+  dpm($farm_chems, 'farm_chems');
   $farm_chems = array_column($farm_chems, 'target_id');
   // array_diff returns null if one of the args is not an array
   $new_chems = empty($farm_chems) ? $sel_chems : array_diff($sel_chems, $farm_chems);
-  //dpm($new_chems, 'new_chems');
+  dpm($new_chems, 'new_chems');
   foreach ($new_chems as $chem_id) {
     $farm->field_link_agchem_material['und'][] = array('target_id' => $chem_id);
   }
-  //dpm($farm, 'farm');
+  dpm($farm, 'farm');
   $farm->save();
   // got to the review and save page 
   if (isset($parms['finaldest'])) {
