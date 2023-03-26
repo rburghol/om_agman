@@ -1,6 +1,6 @@
 <?php
 // use this to call this file 
-// module_load_include('inc', 'om_agman', 'src/panes/ipm-action-menu');
+// module_load_include('inc', 'om_agman', 'src/pages/ipm_facility_inventory');
 // argument default
 // if user has only one facility, return its ID, otherwise return 'multiple'
 
@@ -152,7 +152,7 @@ function dh_agchem_inventory_grid($dh_properties, $form_state) {
     $inventory_grid->conf['display']['properties']['startdate']['title'] = t('Inventory Date');
     $inventory_grid->conf['display']['properties']['startdate']['default'] = '';
     $inventory_grid->prepareQuery();
-    //dpm($inventory_grid,'grid');
+    dpm($inventory_grid,'grid');
     return $inventory_grid;
   } else {
     return FALSE;
