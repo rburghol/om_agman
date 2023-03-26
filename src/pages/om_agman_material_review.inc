@@ -66,6 +66,12 @@ function om_agman_material_review_save($form, &$form_state) {
   // array_diff returns null if one of the args is not an array
   $new_chems = empty($farm_chems) ? $sel_chems : array_diff($sel_chems, $farm_chems);
   dpm($new_chems, 'new_chems');
+  $farm->field_link_agchem_material['und'] = array(); // we need to remove the old erefid from this?  formapi does.
+  // add the existing ones back
+  foreach ($farm_chems as $chem_id) {
+    $farm->field_link_agchem_material['und'][] = array('target_id' => $chem_id);
+  }
+  // add the new ones
   foreach ($new_chems as $chem_id) {
     $farm->field_link_agchem_material['und'][] = array('target_id' => $chem_id);
   }
