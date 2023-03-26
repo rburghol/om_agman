@@ -1,5 +1,10 @@
 <?php
+// use this to call this file 
+// module_load_include('inc', 'om_agman', 'src/pages/ipm_facility_inventory');
+// argument default
+// if user has only one facility, return its ID, otherwise return 'multiple'
 
+print("Inventory Management");
 module_load_include('inc', 'dh', 'plugins/dh.display');
 module_load_include('inc', 'dh', 'dh.admin');
 
@@ -78,6 +83,7 @@ function dh_agchem_inventory_form($form, &$form_state, $dh_properties = null, $o
   $inventory_grid = dh_agchem_inventory_grid($dh_properties, $form_state);
   if ($inventory_grid) {
     $inventory_grid->getData();
+    dpm($inventory_grid,'inventory_grid post getData()');
     foreach ($inventory_grid->data as $key => $prop) {
       $prop->varname = '';
       $inventory_grid->data[$key] = $prop;
@@ -109,7 +115,7 @@ function dh_agchem_inventory_form($form, &$form_state, $dh_properties = null, $o
     '#limit_validation_errors' => array(),
     '#submit' => array('dh_manage_materials_form_submit_cancel')
   );
-  dpm($form);
+  //dpm($form);
   return $form;
 }
 

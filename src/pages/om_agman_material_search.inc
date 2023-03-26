@@ -32,12 +32,17 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#size' => 30,
   );  
   
+  $advanced_filters = array('ftype', 'frac', 'phi', 'ai', 'target_org');
+  $advanced_set = array_intersect($advanced_filters, array_keys($form_state['input']));
+  //dpm($advanced_set, 'adv filters');
+  $advanced_collapsed = count($advanced_set) > 0 ? FALSE : TRUE; // if there are items set here, we should set this to FALSE 
   $form['group1'] = array(
     '#type' => 'fieldset',
     '#title' => t('+ Click Here to Show/Hide Additional Search Filters, FRAC, PHI, etc.'),
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE,  
+    '#collapsed' => $advanced_collapsed,  
   );
+  //dpm($form['group1'],'element');
 
   $ftype_options = array('fungicide', 'herbicide', 'insecticide', 'fertilizer', 'other');
   $ftype_options = array_combine($ftype_options, $ftype_options);
@@ -54,7 +59,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#size' => 1,
   );  
   $form['group1']['frac'] = $frac_opts;
-  $form['group1']['frac']['#title'] = 'Filter by Mode of Action';
+  $form['group1']['frac']['#title'] = 'Filter by Mode of Action (FRAC code)';
   $form['group1']['frac']['#empty_option'] = '- All Modes - ';
 
   // get target organisms
@@ -202,7 +207,7 @@ function om_agman_material_search_search($form, &$form_state) {
 
 
 function om_agman_material_search_next($form, &$form_state) {
-dpm($form_state,'form state on next');
+//dpm($form_state,'form state on next');
 //dpm($form_state,'form state on search');
 //dpm($_POST,'post args');
   $form_state['rebuild'] = TRUE;

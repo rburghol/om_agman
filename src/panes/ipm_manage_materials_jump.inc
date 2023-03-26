@@ -1,6 +1,7 @@
 <?php
 // argument default
 // if user has only one facility, return its ID, otherwise return 'multiple'
+global $user;
 $a = arg();
 ctools_include('jump-menu');
 // if none, check for users farms 
@@ -30,6 +31,11 @@ $targets[$urls['list']] = 'List Materials';
 $targets[$urls['search']] = 'Search for New Materials';
 $targets[$urls['inventory']] = 'Update Inventory';
 $targets[$urls['purchasing']] = 'Estimate Purchasing';
+// change -9999 to 1 if admin should see this also
+if ($user->uid == -9999) {
+  $urls['materials'] = url(implode('/', array($a[0], $a[1], 'select')));
+  $targets[$urls['materials']] = 'Manage Materials';
+}
 $output = drupal_get_form('ctools_jump_menu', $targets, $options);
 
 // now, we test to see if this farm HAS chems already, because if it doesn't we want to 
