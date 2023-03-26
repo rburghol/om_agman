@@ -30,9 +30,9 @@ while ($entity = $result->fetchAssoc()) {
   foreach ($farm_chems as $chem_id) {
     $farm->field_link_agchem_material['und'][] = array('target_id' => $chem_id);
   }
-  echo("would be changed to: " . print_r($farm->field_link_agchem_material['und'],1));
-  //$farm->save();
-  echo("would have Saved $farm->name / $farm->hydroid \n");
+  echo("changed to: " . print_r($farm->field_link_agchem_material['und'],1));
+  $farm->save();
+  echo("Saved $farm->name / $farm->hydroid \n");
   //dpm($farm, 'farm');
   $updated = TRUE;
 }
