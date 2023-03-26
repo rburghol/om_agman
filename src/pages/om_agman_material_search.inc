@@ -34,7 +34,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
   
   $advanced_filters = array('ftype', 'frac', 'phi', 'ai', 'target_org');
   $advanced_set = array_intersect($advanced_filters, array_keys($form_state['input']));
-  dpm($advanced_set, 'adv filters');
+  //dpm($advanced_set, 'adv filters');
   $advanced_collapsed = count($advanced_set) > 0 ? FALSE : TRUE; // if there are items set here, we should set this to FALSE 
   $form['group1'] = array(
     '#type' => 'fieldset',
@@ -42,7 +42,7 @@ function om_agman_material_search_form($form, &$form_state, $farm_id) {
     '#collapsible' => TRUE,
     '#collapsed' => $advanced_collapsed,  
   );
-  dpm($form['group1'],'element');
+  //dpm($form['group1'],'element');
 
   $ftype_options = array('fungicide', 'herbicide', 'insecticide', 'fertilizer', 'other');
   $ftype_options = array_combine($ftype_options, $ftype_options);
