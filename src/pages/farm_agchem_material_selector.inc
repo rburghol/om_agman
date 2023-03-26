@@ -156,11 +156,11 @@ function dh_manage_materials_form_submit_cancel($form, &$form_state) {
  */
 function dh_manage_materials_form_submit(&$form, &$form_state) {
   drupal_set_message("Materials List Updated");
-form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
+  form_load_include($form_state, 'inc', 'entity', 'includes/entity.ui');
   form_load_include($form_state, 'inc', 'dh', 'dh.admin');
   // BREAKS HERE
   $dh_feature = entity_ui_form_submit_build_entity($form, $form_state);
-  dpm($dh_feature, 'farm');
+  //dpm($dh_feature, 'farm');
   $dh_feature->save();
   $parms = drupal_get_query_parameters();
   if (isset($parms['finaldest'])) {
