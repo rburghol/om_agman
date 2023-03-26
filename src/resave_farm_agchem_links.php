@@ -24,13 +24,15 @@ while ($entity = $result->fetchAssoc()) {
   // we need to remove the old erefid from this?  formapi does. so we do it here.
   // we did NOT do this prior and had problems with duplicate erefid fields, which caused inventory issues
   $farm_chems = array_column($farm_chems, 'target_id');
+  echo("Existing: " . print_r($farm->field_link_agchem_material['und'],1));
   $farm->field_link_agchem_material['und'] = array(); 
   // add the existing ones back
   foreach ($farm_chems as $chem_id) {
     $farm->field_link_agchem_material['und'][] = array('target_id' => $chem_id);
   }
-  $farm->save();
-  echo("Saved $farm->name \n");
+  echo("would be changed to: " . print_r($farm->field_link_agchem_material['und'],1));
+  //$farm->save();
+  echo("would have Saved $farm->name / $farm->hydroid \n");
   //dpm($farm, 'farm');
   $updated = TRUE;
 }
