@@ -115,7 +115,7 @@ function dh_agchem_inventory_form($form, &$form_state, $dh_properties = null, $o
     '#limit_validation_errors' => array(),
     '#submit' => array('dh_manage_materials_form_submit_cancel')
   );
-  dpm($form);
+  //dpm($form);
   return $form;
 }
 
@@ -153,7 +153,7 @@ function dh_agchem_inventory_grid($dh_properties, $form_state) {
     $inventory_grid->conf['display']['properties']['startdate']['title'] = t('Inventory Date');
     $inventory_grid->conf['display']['properties']['startdate']['default'] = '';
     $inventory_grid->prepareQuery();
-    dpm($inventory_grid,'grid');
+    //dpm($inventory_grid,'grid');
     return $inventory_grid;
   } else {
     return FALSE;

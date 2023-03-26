@@ -175,7 +175,7 @@ class DHErefPropGrid extends dhPropertiesGroup {
     $this->data = array();
     $q = db_query($this->query);
     foreach ($q as $prow) {
-      //dpm($prow, "initial data");
+      dpm($prow, "initial data");
       if ($prow->pid == NULL) {
         // this is an insert request
         $prow->propname = $prow->varkey;
@@ -199,7 +199,7 @@ class DHErefPropGrid extends dhPropertiesGroup {
         $this->data[] = $dh_properties;
       }
     }
-    //dpm($this->data, "Final data");
+    dpm($this->data, "Final data");
     // now, go through the returned data and if we have "show_blank" property set
     // we append new object form entries for these
     // create a matrix of entity_type, property_conditions & field_conditions?
