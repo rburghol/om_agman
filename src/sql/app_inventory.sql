@@ -1,5 +1,5 @@
 -- get the base inventory query
-\set facid 1162
+\set facid 6298
 select target_label, from_id, featureid AS eref_id, target_id, pid, propvalue from (
   select var.hydroid as varid,  var.varname, var.varkey, var.varunits,  p.pid, eref.field_link_agchem_material_erefid as featureid,  'field_link_agchem_material' AS entity_type, p.bundle,   p.startdate, p.enddate, p.propname, p.propcode,  p.propvalue, p.modified,  targ.name as target_label,  ent.hydroid as from_id, eref.field_link_agchem_material_target_id as target_id  
   from dh_feature as ent  

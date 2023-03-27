@@ -45,7 +45,7 @@ function dh_om_erefprop_form_admin_info($subtype, $conf, $contexts) {
  * Callback to configure options for the entity add/edit form in a pane.
  */
 function dh_om_erefprop_form_edit_form($form, &$form_state) {
-  dpm($form_state, "Form_state to dh_om_erefprop_form_edit_form");
+  //dpm($form_state, "Form_state to dh_om_erefprop_form_edit_form");
   $plugindefs = array(
     array('module'=>'dh', 'type' => 'dh_components', 'groupname'=>'eref_props', 'name'=>'DHErefPropGrid'),
   );
@@ -56,11 +56,11 @@ function dh_om_erefprop_form_edit_form($form, &$form_state) {
     $conf['groupname'] = empty($conf['groupname']) ? $groupname : $conf['groupname'];
     ctools_include('plugins');
     $plugins = ctools_get_plugins($plugindef['module'], $plugindef['type']);
-    dpm($plugins,"all plugins ctools_get_plugins($plugindef[module], $plugindef[type])");
+    //dpm($plugins,"all plugins ctools_get_plugins($plugindef[module], $plugindef[type])");
     $plugin = ctools_get_plugins($plugindef['module'], $plugindef['type'], $plugindef['name']);
-    dpm($plugin,'plugin');
+    //dpm($plugin,'plugin');
     $class = ctools_plugin_get_class($plugin, 'handler');
-    dpm($class,'class');
+    //dpm($class,'class');
     if ($class) {
       $pob = new $class($conf);
       $pob->buildOptionsForm($form, $form_state);
@@ -68,7 +68,7 @@ function dh_om_erefprop_form_edit_form($form, &$form_state) {
       watchdog('dh_om', "$plugindef[name]: problem handling plugin");
     }
   }
-  dpm($form,'form from dh_om_erefprop_form_edit_form');
+  //dpm($form,'form from dh_om_erefprop_form_edit_form');
   return $form;
 }
 
@@ -95,7 +95,7 @@ function dh_om_erefprop_form_edit_form_submit($form, &$form_state) {
       }
     }
   }
-  dpm($form_state['conf'],'final form_state[conf]');
+  //dpm($form_state['conf'],'final form_state[conf]');
 }
 
 function dh_om_erefprop_form($form, &$form_state, $dh_feature = null, $op = 'edit') {
@@ -105,7 +105,7 @@ function dh_om_erefprop_form($form, &$form_state, $dh_feature = null, $op = 'edi
   $plugindefs = array(
     array('module'=>'dh', 'type' => 'dh_components', 'groupname'=>'eref_props', 'name'=>'DHErefPropGrid'),
   );
-  dpm($form_state,'form_state');
+  //dpm($form_state,'form_state');
   foreach ($plugindefs as $plugindef) {
     $groupname = $plugindef['groupname'];
     $legacy_conf = isset($form_state['values']['entity_settings']) ? $form_state['values']['entity_settings'] : $form_state['conf']['entity_settings'];
