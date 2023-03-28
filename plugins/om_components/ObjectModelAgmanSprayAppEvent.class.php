@@ -87,9 +87,9 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $conf['varid'] = array(
       'agchem_total_spray_rate_galac', 
       'agchem_batch_gal', 
-      'agchem_event_canopy_frac', 
       'agchem_spray_vol_gal', 
       'agchem_event_area', 
+      'agchem_event_canopy_frac', 
     );
     $criteria = array();    // load necessary properties for this event
     $vars = dh_vardef_varselect_options(array("varkey in ('" . implode("', '", array_values($conf['varid'])) . "')"));
