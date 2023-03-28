@@ -806,13 +806,16 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       // calculate volume of h2o per acre for info purposes
       $scaled_galac = round($cf * $this->agchem_total_spray_rate_galac,2);
       $rate_select_key = $r/100.0;
+      // note: this uses the position of the canopy_frac field in the containing form to vary to recomended rate
+      //       since it is positional, it will break if we change the location of that field.
+      // Foir example, it changed from the 3rd to the 5th field and the scaler disappeared.
       $rowform['rate_range']["rate_$r"] = array(
         '#type' => 'item',
         '#markup' => '&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy'
           . '<br>&nbsp;&nbsp; <i>Estimated Amount to Be Sprayed</i> &nbsp;= ' . $rs . ' in ' . $scaled_galac . ' gals of water/acre',
         '#states' => array(
           'visible' => array(
-            ':input[name="event_settings[3][propvalue]"]' => array('value' => "$rate_select_key"),
+            ':input[name="event_settings[5][propvalue]"]' => array('value' => "$rate_select_key"),
           ),
         ),
       );
