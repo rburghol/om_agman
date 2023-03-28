@@ -750,6 +750,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     // $scale is used here NOT canopy_frac since scale is canopy_frac adjusted in case of concentration based
     // disabled to insure new work flow
     //$row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
+    $total_span = 'batch_total';
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Chosen Rate',
       '#title' => 'Rate for ' . $row->name,
@@ -761,7 +762,10 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#element_validate' => array('element_validate_number'),
       '#size' => 8,
       //'#attributes' => array('disabled' => 'disabled'),
-      '#attributes' => array( 'size' => 8),
+      '#attributes' => array( 
+        'size' => 8,
+        '#attributes' => array('onchange' => 'om_agman_rate_total(this.selectedIndex, ' . $total_span . ')')
+      ),
       '#default_value' => $row->rate_propvalue,
     );
     

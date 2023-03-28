@@ -16,6 +16,9 @@ function mymodule_form_alter(&$form, &$form_state, $form_id) {
   }
 */
 
+function om_agman_rate_total(rate_field_index, span_field_index) {
+	document.getElementById(span_field_index).innerHTML = document.getElementById(rate_field_index).value;
+}
 
 (function ($) {
   Drupal.behaviors.om_agman = {
