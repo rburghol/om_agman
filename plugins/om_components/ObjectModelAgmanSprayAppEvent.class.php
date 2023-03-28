@@ -412,8 +412,12 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['chem_rates']['#weight'] = 6;
     $form['chem_rates']['#prefix'] = '<div class="input-group input-group-lg">';
     $form['chem_rates']['#prefix'] .= '<span class="warning">';
-    $form['chem_rates']['#prefix'] .= t('Notice:  The field above labeled "Select a percentage of canopy to be covered" will be used to provide an estimate of the volume of chemical to be added to the tank in the box below labeled "Material Label Range & Canopy Scale Rates". However, the actual change in the volume has to be entered by you in the field labeled "Chosen Rate".');
-    $form['chem_rates']['#prefix'] .= "<br>" . t('Notice: This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.');
+    $form['chem_rates']['#prefix'] .= t('Notice:'); 
+    $form['chem_rates']['#prefix'] .= '<ul>'; 
+    $form['chem_rates']['#prefix'] .= '<li>' . t('The field above labeled <b>Select a percentage of canopy to be covered</b> will be used to provide an estimate of the volume of chemical to be added to the tank in the box below labeled <b>Material Label Range & Canopy Scale Rates</b>. However, the actual change in the volume has to be entered by you in the field labeled "Chosen Rate".') . '</li>';
+    $form['chem_rates']['#prefix'] .= '<li>' . t('The field below labeled <b>Per Tank/Total</b> will be updated to reflect your chosen rates after you save this spray plan.  If you would like to verify the rate, click on <b>Update Totals</b> at the bottom of the form.') . '</li>';
+    $form['chem_rates']['#prefix'] .= "<li>" . t('Notice: This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.') . '</li>'; 
+    $form['chem_rates']['#prefix'] .= '</ul>'; 
     $form['chem_rates']['#prefix'] .= '</span>';
     $form['chem_rates']['#suffix'] = '</div">';
     //dpm($this->dh_adminreg_feature,'ar fe');
