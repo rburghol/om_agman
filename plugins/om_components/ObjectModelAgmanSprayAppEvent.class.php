@@ -437,6 +437,10 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#value' => t('Save Block Info'),
       '#weight' => 40,
     );
+    $form['#attached']['js'][] = array(
+      'data' => drupal_get_path('module', 'om_agman') . '/js/om_agman.js',
+      'type' => 'file', 
+    );
     $this->eventprops = $eventprops;
     $this->chemgrid = $chemgrid;
     //dpm($form,'form');
