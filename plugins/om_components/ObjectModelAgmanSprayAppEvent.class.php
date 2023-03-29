@@ -764,7 +764,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       //'#attributes' => array('disabled' => 'disabled'),
       '#attributes' => array( 
         'size' => 8,
-        'onchange' => 'om_agman_rate_total(this.selectedIndex, ' . $total_span . ')',
+        'onchange' => 'om_agman_rate_total(this.selectedIndex, "' . $total_span . '")',
       ),
       '#default_value' => $row->rate_propvalue,
     );
