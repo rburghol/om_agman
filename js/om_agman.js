@@ -19,10 +19,11 @@ function om_agman_rate_total(span_field_index) {
 	units = document.getElementById(units_id).value
 	total_amount = rate * unit_conv
 	console.log(total_amount)
+	// uses rounding muti digit advice in javascript from https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary
 	if (total_amount > 10) {
-		total_amount = Math.round(total_amount,1);
+		total_amount = Math.round( ( total_amount + Number.EPSILON ) * 10 ) / 10;
 	} else {
-		total_amount = Math.round(total_amount,2);
+		total_amount = Math.round( ( total_amount + Number.EPSILON ) * 100 ) / 100;
     }
 	//total_amount = (total_amount > 10) ? Math.round(total_amount,1) : Math.round(total_amount,2);
 	batch_amount = total_amount * batch_vol / total_vol;
