@@ -829,11 +829,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         ),
       );
     }
-    
-    // batch total
-    // this can be refreshed in the form via javascript?
-    // check if batch size is > total volume to spray, make match = total
-    $this->batch_amount = ($this->batch_amount > $this->total_amount) ? $this->total_amount : $this->batch_amount;
     // @todo: make this based on units, right now it just assumes rate is in oz/ac
     if ($this->event_area > 0) {
       $unitconv = 1.0 * $this->event_area;
@@ -841,6 +836,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $unitconv = 1.0;
     }
     $unitconv = $this->rateFactor($this->event_area, $this->total_amount, $rate_units);
+    // data for the auto-updating total columns 
     $rowform['unitconv'] = array(
       '#type' => 'hidden',
       '#default_value' => $unitconv,
@@ -848,6 +844,33 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         'id' => 'unitconv-' . trim($row->form_element_index)
       )
     );
+    $amount_units = empty($row->rate_units) ? '' : $this->convertRateUnitsAmount($row->rate_units); 
+    $rowform['amount_units'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $amount_units,
+      '#attributes' => array(
+        'id' => 'amount_units-' . trim($row->form_element_index)
+      )
+    );
+    // batch total
+    // this can be refreshed in the form via javascript?
+    // check if batch size is > total volume to spray, make match = total
+    $this->batch_amount = ($this->batch_amount > $this->total_amount) ? $this->total_amount : $this->batch_amount;
+    $rowform['batch_vol'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $this->batch_amount,
+      '#attributes' => array(
+        'id' => 'batch-vol-' . trim($row->form_element_index)
+      )
+    );
+    $rowform['total_vol'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $this->total_amount,
+      '#attributes' => array(
+        'id' => 'total-vol-' . trim($row->form_element_index)
+      )
+    );
+    
     // total applied
     $total_val = $row->rate_propvalue * $unitconv;
     $total_val = ($total_val > 10) ? round($total_val,1) : round($total_val,2);
@@ -858,7 +881,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         $batch_val = ($batch_val > 10) ? round($batch_val,1) : round($batch_val,2);
       break;
     }
-    $amount_units = empty($row->rate_units) ? '' : $this->convertRateUnitsAmount($row->rate_units);
     $rowform['batch_total'] = array(
       '#coltitle' => 'Per Tank / Total',
       //'#markup' => $batch_val . " $amount_units",
