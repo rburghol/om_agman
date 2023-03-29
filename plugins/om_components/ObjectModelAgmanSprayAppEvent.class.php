@@ -889,14 +889,14 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $total_str = $total_val . " $amount_units";
     $batch_str = '';
     if ($batch_val < $total_val) {
-      $batch_str .= "<br>" . $batch_val . " $amount_units" . " per batch";
+      $batch_str .= "<br>" . $batch_val . " $amount_units" . " per full tank";
     }
     // helper conversions for recs in qt and pint
     $con_small = array(
       'pt' => 16.0, 'qt' => 32.0
     );
-    $rac = $con_small[$num];
     list($num, $denom) = explode('/',$row->rate_units);
+    $rac = $con_small[$num];
     $total_conv_str = '';
     $batch_conv_str = '';
     if ( ($total_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
