@@ -10,7 +10,7 @@ function om_agman_rate_total(span_field_index) {
 	console.log(unitconv_id)
 	area_id = "edit-event-settings-4-propvalue"
 	area_acres = document.getElementById(area_id).value
-	unit_conv = document.getElementById(unitconv_id).value
+	unit_conv = document.getElementById(unitconv_id)
 	total_amount = rate
 	console.log(total_amount)
 	console.log(unit_conv)
