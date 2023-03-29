@@ -849,7 +849,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#type' => 'hidden',
       '#default_value' => $amount_units,
       '#attributes' => array(
-        'id' => 'amount_units-' . trim($row->form_element_index)
+        'id' => 'amount-units-' . trim($row->form_element_index)
       )
     );
     // batch total
