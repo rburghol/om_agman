@@ -882,7 +882,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       break;
     }
     $rowform['batch_total'] = array(
-      '#coltitle' => 'Per Tank / Total',
+      '#coltitle' => 'Total Applied',
       //'#markup' => $batch_val . " $amount_units",
       '#markup' => "<span id='$total_span_id'>" . $batch_val . " $amount_units" . " / " . $total_val . " $amount_units" . "</span>",
     );
