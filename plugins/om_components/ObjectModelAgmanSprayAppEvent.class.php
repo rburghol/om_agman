@@ -764,7 +764,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       //'#attributes' => array('disabled' => 'disabled'),
       '#attributes' => array( 
         'size' => 8,
-        'onchange' => 'om_agman_rate_total(this.selectedIndex, "' . $total_span . '")',
+        'onchange' => 'om_agman_rate_total()',
       ),
       '#default_value' => $row->rate_propvalue,
     );
@@ -855,6 +855,9 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#coltitle' => 'Per Tank / Total',
       //'#markup' => $batch_val . " $amount_units",
       '#markup' => $batch_val . " $amount_units" . " / " . $total_val . " $amount_units",
+      '#attributes' => array( 
+        'onfocus' => 'om_agman_rate_total()',
+      ),
     );
     // helper conversions for recs in qt and pint
     $con_small = array(
