@@ -414,7 +414,8 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['chem_rates']['#prefix'] .= '<span class="warning">';
     $form['chem_rates']['#prefix'] .= t('Notice:'); 
     $form['chem_rates']['#prefix'] .= '<ul>'; 
-    $form['chem_rates']['#prefix'] .= '<li>' . t('<b>Chosen Rate:</b>You must enter the desirec rate for each material in this field.  The box below labeled <b>Material Label Range & Canopy Scale Rates</b> will give recomnmendation for adjusted rates based on <b>Select a percentage of canopy to be covered</b>') . '</li>';
+    $form['chem_rates']['#prefix'] .= '<li>' . t('<b>Chosen Rate:</b>You must enter the desirec rate for each material in this field.') . '</li>';
+    $form['chem_rates']['#prefix'] .= '<li>' . t('<b>Material Label Range & Canopy Scale Rates</b> This field will give recomnmendations for your chosen rates based on <b>Select a percentage of canopy to be covered</b>') . '</li>';
     $form['chem_rates']['#prefix'] .= '<li>' . t('<b>Total Applied</b> column will be updated to reflect your chosen rates when you make changes to the.') . '</li>';
     $form['chem_rates']['#prefix'] .= "<li>" . t('Notice: This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.') . '</li>'; 
     $form['chem_rates']['#prefix'] .= '</ul>'; 
