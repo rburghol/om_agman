@@ -896,7 +896,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $total_conv_str = '';
     $batch_conv_str = '';
     if ( ($total_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
-      $total_conv_str = "(" . round($total_val * $rac, 2) . ' floz)';
+      $total_conv_str = " (" . round($total_val * $rac, 2) . ' floz)';
     }
     $batch_str = '';
     if ($batch_val < $total_val) {
