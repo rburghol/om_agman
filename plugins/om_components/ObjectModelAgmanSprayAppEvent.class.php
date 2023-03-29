@@ -751,7 +751,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     // $scale is used here NOT canopy_frac since scale is canopy_frac adjusted in case of concentration based
     // disabled to insure new work flow
     //$row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
-    $total_span = 'batch_total';
+    $total_span_id = 'batch-total-' . trim($row->form_element_index);
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Chosen Rate',
       '#title' => 'Rate for ' . $row->name,
@@ -765,7 +765,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       //'#attributes' => array('disabled' => 'disabled'),
       '#attributes' => array( 
         'size' => 8,
-        'onchange' => 'om_agman_rate_total()',
+        'onchange' => "om_agman_rate_total('$total_span_id')",
       ),
       '#default_value' => $row->rate_propvalue,
     );
@@ -855,10 +855,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $rowform['batch_total'] = array(
       '#coltitle' => 'Per Tank / Total',
       //'#markup' => $batch_val . " $amount_units",
-      '#markup' => "<span id='batch-total-" . trim($row->form_element_index) . "'>" . $batch_val . " $amount_units" . " / " . $total_val . " $amount_units" . "</span>",
-      '#attributes' => array( 
-        'onfocus' => 'om_agman_rate_total()',
-      ),
+      '#markup' => "<span id='$total_span_id'>" . $batch_val . " $amount_units" . " / " . $total_val . " $amount_units" . "</span>",
     );
     // helper conversions for recs in qt and pint
     $con_small = array(
