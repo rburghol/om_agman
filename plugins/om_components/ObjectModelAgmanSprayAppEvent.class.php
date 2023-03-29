@@ -884,27 +884,30 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $rowform['batch_total'] = array(
       '#coltitle' => 'Total Applied',
       //'#markup' => $batch_val . " $amount_units",
-      '#markup' => "<span id='$total_span_id'>" . $total_val . " $amount_units" . "</span>",
+      '#markup' => "",
     );
+    $total_str = $total_val . " $amount_units";
+    $batch_str = '';
     if ($batch_val < $total_val) {
-      $rowform['batch_total']['#markup'] .= "(" . $batch_val . " $amount_units" . " per batch)";
+      $batch_str .= "<br>" . $batch_val . " $amount_units" . " per batch";
     }
     // helper conversions for recs in qt and pint
     $con_small = array(
       'pt' => 16.0, 'qt' => 32.0
     );
+    $rac = $con_small[$num];
     list($num, $denom) = explode('/',$row->rate_units);
-    //dpm($con_small," $num, $denom, $row->rate_units ");
-    if ( ($batch_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
-      // @todo add a conversion to floz 
-      $rac = $con_small[$num];
-      $rowform['batch_total']['#markup'] .= 
-        '<br>(' 
-        . round($batch_val * $rac, 2) 
-        . ' / ' . round($total_val * $rac, 2) 
-        . ' floz)'
-      ;
+    $total_conv_str = '';
+    $batch_conv_str = '';
+    if ( ($total_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
+      $total_conv_str = "(" . round($total_val * $rac, 2) . ' floz)';
     }
+    if ( ($batch_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
+      // @todo add a conversion to others? like weights?
+      $batch_conv_str = " (" . round($batch_val * $rac, 2) . ' floz)';
+    }
+    // in the end wrap it up so java script can change it
+    $rowform['batch_total']['#markup'] = "<span id='$total_span_id'>" . $total_str . $total_conv_str . $batch_str . $batch_conv_str "</span>";
     /*
     $rowform['amount_propvalue'] = array(
       '#coltitle' => 'Total Spray',
