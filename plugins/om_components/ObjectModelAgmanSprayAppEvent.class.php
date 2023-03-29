@@ -841,6 +841,10 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $unitconv = 1.0;
     }
     $unitconv = $this->rateFactor($this->event_area, $this->total_amount, $rate_units);
+    $rowform['unitconv'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $unitconv,
+    );
     // total applied
     $total_val = $row->rate_propvalue * $unitconv;
     $total_val = ($total_val > 10) ? round($total_val,1) : round($total_val,2);
