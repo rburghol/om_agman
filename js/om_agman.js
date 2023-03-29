@@ -12,6 +12,7 @@ function om_agman_rate_total(span_field_index) {
 	unit_conv = document.getElementById(unitconv_id).value
 	total_amount = rate
 	console.log(total_amount)
+	console.log(unitconv_id)
 	console.log(unit_conv)
 	//document.getElementById(span_field_index).innerHTML = total_amount;
 }
