@@ -6,10 +6,11 @@ function om_agman_rate_total(span_field_index) {
     rf_pieces = rfid.split('-')
 	rfix = rf_pieces[3]
 	rate = document.getElementById(rfid).value
-	unitconv_id = ''
+	unitconv_id = 'edit-unitconv-' + rfix
 	area_id = "edit-event-settings-4-propvalue"
 	area_acres = document.getElementById(area_id).value
 	total_amount = rate
 	console.log(total_amount)
+	console.log(unitconv_id)
 	//document.getElementById(span_field_index).innerHTML = total_amount;
 }
