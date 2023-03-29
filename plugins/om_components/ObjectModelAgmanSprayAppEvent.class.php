@@ -907,7 +907,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $batch_conv_str = " (" . round($batch_val * $rac, 2) . ' floz)';
     }
     // in the end wrap it up so java script can change it
-    $rowform['batch_total']['#markup'] = "<span id='$total_span_id'>" . $total_str . $total_conv_str . $batch_str . $batch_conv_str "</span>";
+    $rowform['batch_total']['#markup'] = "<span id='$total_span_id'>" . $total_str . $total_conv_str . $batch_str . $batch_conv_str . "</span>";
     /*
     $rowform['amount_propvalue'] = array(
       '#coltitle' => 'Total Spray',
