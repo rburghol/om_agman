@@ -844,6 +844,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $rowform['unitconv'] = array(
       '#type' => 'hidden',
       '#default_value' => $unitconv,
+      '#value' => $unitconv,
     );
     // total applied
     $total_val = $row->rate_propvalue * $unitconv;
