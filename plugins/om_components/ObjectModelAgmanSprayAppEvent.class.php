@@ -884,8 +884,11 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $rowform['batch_total'] = array(
       '#coltitle' => 'Total Applied',
       //'#markup' => $batch_val . " $amount_units",
-      '#markup' => "<span id='$total_span_id'>" . $batch_val . " $amount_units" . " / " . $total_val . " $amount_units" . "</span>",
+      '#markup' => "<span id='$total_span_id'>" . $total_val . " $amount_units" . "</span>",
     );
+    if ($batch_val < $total_val) {
+      $rowform['batch_total']['#markup'] .= "(" . $batch_val . " $amount_units" . " per batch)";
+    }
     // helper conversions for recs in qt and pint
     $con_small = array(
       'pt' => 16.0, 'qt' => 32.0
