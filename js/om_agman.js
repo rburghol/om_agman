@@ -18,6 +18,7 @@ function om_agman_rate_total(span_field_index) {
 	total_vol = document.getElementById(total_id).value
 	units = document.getElementById(units_id).value
 	total_amount = rate * unit_conv
+	total_amount = (total_amount > 10) ? Math.round(total_amount,1) : Math.round(total_amount,2);
 	batch_amount = total_amount * batch_vol / total_vol;
     batch_amount = (batch_amount > 10) ? Math.round(batch_amount,1) : Math.round(batch_amount,2);
 	console.log(rate)
