@@ -729,8 +729,8 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#required' => TRUE,
     );
     */
-    dpm($rowform,'rowform');
-    dpm($row,'row');
+    //dpm($rowform,'rowform');
+    //dpm($row,'row');
     // set up rate limits now so we can make a default guess if this is a new record
     $rate_limits = array();
     if ($row->rate_lo > 0) {
