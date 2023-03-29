@@ -855,7 +855,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     $rowform['batch_total'] = array(
       '#coltitle' => 'Per Tank / Total',
       //'#markup' => $batch_val . " $amount_units",
-      '#markup' => "<span id=spanid>" . $batch_val . " $amount_units" . " / " . $total_val . " $amount_units" . "</span>",
+      '#markup' => "<span id='batch-total-'" . $row->form_element_index . ">" . $batch_val . " $amount_units" . " / " . $total_val . " $amount_units" . "</span>",
       '#attributes' => array( 
         'onfocus' => 'om_agman_rate_total()',
       ),
