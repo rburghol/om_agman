@@ -887,10 +887,6 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#markup' => "",
     );
     $total_str = $total_val . " $amount_units";
-    $batch_str = '';
-    if ($batch_val < $total_val) {
-      $batch_str .= "<br>" . $batch_val . " $amount_units" . " per full tank";
-    }
     // helper conversions for recs in qt and pint
     $con_small = array(
       'pt' => 16.0, 'qt' => 32.0
@@ -902,9 +898,13 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     if ( ($total_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
       $total_conv_str = "(" . round($total_val * $rac, 2) . ' floz)';
     }
-    if ( ($batch_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
-      // @todo add a conversion to others? like weights?
-      $batch_conv_str = " (" . round($batch_val * $rac, 2) . ' floz)';
+    $batch_str = '';
+    if ($batch_val < $total_val) {
+      $batch_str .= "<br>" . $batch_val . " $amount_units" . " per full tank";
+      if ( ($batch_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
+        // @todo add a conversion to others? like weights?
+        $batch_conv_str = " (" . round($batch_val * $rac, 2) . ' floz)';
+      }
     }
     // in the end wrap it up so java script can change it
     $rowform['batch_total']['#markup'] = "<span id='$total_span_id'>" . $total_str . $total_conv_str . $batch_str . $batch_conv_str . "</span>";
