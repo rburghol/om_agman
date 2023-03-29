@@ -897,8 +897,8 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $rac = $con_small[$num];
       $rowform['batch_total']['#markup'] .= 
         '<br>(' 
-        . round($batch_val * $rac, 1) 
-        . ' / ' . round($total_val * $rac, 1) 
+        . round($batch_val * $rac, 2) 
+        . ' / ' . round($total_val * $rac, 2) 
         . ' floz)'
       ;
     }
