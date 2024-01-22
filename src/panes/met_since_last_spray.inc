@@ -13,7 +13,7 @@ $parms = drupal_get_query_parameters();
 $farmid = $a[1];
 
 $event_query = " WITH last_spray_date as ( ";
-$event_query .= " 	select block.hydroid as blockid, sensor.hydroid as sensor_id, ";
+//$event_query .= " 	select block.hydroid as blockid, sensor.hydroid as sensor_id, ";
 $event_query .= " block.name, max(ar_spray.startdate) as spray_date";
 $event_query .= " 	FROM dh_feature as farm ";
 $event_query .= " 	LEFT OUTER JOIN field_data_dh_link_facility_mps as link_block";
