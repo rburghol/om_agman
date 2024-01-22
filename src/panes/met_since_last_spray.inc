@@ -71,7 +71,7 @@ $event_query .= " group by blockid, name, spray_date, sensor_id";
 $rez = db_query(
   $event_query
 );
-$recs = $rez->fetchAllAssoc('blockid', PDO::FETCH_ASSOC);
+$recs = $rez->fetchAllAssoc('name', PDO::FETCH_ASSOC);
 dpm($recs, 'recs');
 dpm($event_query);
 $row_one = $recs[array_shift(array_keys($recs))];
