@@ -1,9 +1,11 @@
 -- get all events that are associated with this vineyard, including blocks, or adminreg records for vineyards/blocks
 -- notes: 
---   - varid 192 is created for each block that is linked to an adminreg/spray record.  
---     so, you hgacve to filter out those records, OR, *only* get records atached to the block, but then load the 
---     corresponding Adminreg record -- but really, the adminreg record is a problem since we want to get the 
---     timeseries record that the adminreg record is linked to, since that has the tidy summary.
+--   * varid 192 is created for each block that is linked to an adminreg/spray record.  
+--     so, you hace to filter out those records, OR, *only* get records attached 
+--     to the block, but then load the corresponding Adminreg record 
+--     but really, the adminreg record is a problem since we want to get the 
+--     timeseries record that the adminreg record is linked to, since that has the 
+--     tidy summary.
 --     but really, the tidy summary should be accesible from the linked ts rec 
 (
 	select ts.tid, ts.tstime, to_timestamp(ts.tstime), ts.tsvalue, ts.tscode, ts.entity_type, ts.varid,
