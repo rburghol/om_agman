@@ -11,7 +11,7 @@ module_load_include('module', 'dh_adminreg');
 $a = arg();
 $parms = drupal_get_query_parameters();
 $farmid = $a[1];
-
+print("<b>Meteorological Conditions since last spray</b><br>");
 $event_query = " WITH last_spray_date as ( ";
 $event_query .= " 	select block.hydroid as blockid, sensor.hydroid as sensor_id, ";
 $event_query .= " block.name, max(ar_spray.startdate) as spray_date";
