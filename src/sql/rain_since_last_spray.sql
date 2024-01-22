@@ -37,7 +37,7 @@ WITH last_spray_date as (
 	where featureid in (select sensor_id from last_spray_date)
 	and tstime > (select min(spray_date) from last_spray_date)
 )
-select blockid, sensor_id, to_timestamp(spray_date), sum(met.rain) * 0.0393701 as rain_in
+select blockid, name, sensor_id, to_timestamp(spray_date), sum(met.rain) * 0.0393701 as rain_in
 from last_spray_date
 left outer join
 weather_subset as met 
@@ -48,5 +48,5 @@ on (
 )
 WHERE met.tstime < extract(epoch from now()) 
   and met.varid = 2
-group by blockid, spray_date, sensor_id
+group by blockid, name, spray_date, sensor_id
 ;
