@@ -13,8 +13,8 @@ $parms = drupal_get_query_parameters();
 $farmid = $a[1];
 
 $event_query = " WITH last_spray_date as ( ";
-$event_query .= " 	select block.hydroid as blockid, block.name, ";
-$event_query .= " sensor.hydroid as sensor_id, max(ar_spray.startdate) as spray_date";
+$event_query .= " 	select block.hydroid as blockid, sensor.hydroid as sensor_id, ";
+$event_query .= " block.name, max(ar_spray.startdate) as spray_date";
 $event_query .= " 	FROM dh_feature as farm ";
 $event_query .= " 	LEFT OUTER JOIN field_data_dh_link_facility_mps as link_block";
 $event_query .= " 	on (";
@@ -75,7 +75,10 @@ $recs = $rez->fetchAllAssoc('blockid', PDO::FETCH_ASSOC);
 dpm($recs, 'recs');
 dpm($event_query);
 $row_one = $recs[array_shift(array_keys($recs))];
-$header = array("blockid", "name", "sensor_id", "Spray Date","Rain(in)", "Wetness(mins)");
+// use if showin IDs
+//$header = array("blockid", "Name", "sensor_id", "Spray Date","Rain(in)", "Wetness(mins)");
+$header = array("Block Name", "Spray Date","Rain(in)", "Wetness(mins)");
+
 $event_table = array(
   '#theme' => 'table',
   '#header' => $header,
