@@ -51,6 +51,7 @@ $event_query .= " ), weather_subset as (";
 $event_query .= "     select * from dh_timeseries_weather ";
 $event_query .= " 	where featureid in (select sensor_id from last_spray_date)";
 $event_query .= " 	and tstime > (select min(spray_date) from last_spray_date)";
+$event_query .= "   and ar_spray.startdate < extract(epoch from now())";
 $event_query .= " )";
 $event_query .= " select name, to_timestamp(spray_date),";
 $event_query .= " round((sum(met.rain) * 0.0393701)::numeric,1) as rain_in, sum(met.wet_time) as wet_time ";
@@ -65,7 +66,6 @@ $event_query .= " )";
 $event_query .= " WHERE met.tstime < extract(epoch from now()) ";
 $event_query .= "   and met.varid = 2";
 # this insures that we don't get tripped up by future sprays
-$event_query .= "   and ar_spray.startdate < extract(epoch from now())";
 $event_query .= " group by blockid, name, spray_date, sensor_id";
 
 
