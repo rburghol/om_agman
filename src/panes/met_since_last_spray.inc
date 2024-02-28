@@ -64,6 +64,8 @@ $event_query .= "   and met.tstime > spray_date";
 $event_query .= " )";
 $event_query .= " WHERE met.tstime < extract(epoch from now()) ";
 $event_query .= "   and met.varid = 2";
+# this insures that we don't get tripped up by future sprays
+$event_query .= "   and ar_spray.startdate < extract(epoch from now())";
 $event_query .= " group by blockid, name, spray_date, sensor_id";
 
 
