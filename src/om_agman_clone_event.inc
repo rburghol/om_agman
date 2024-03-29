@@ -51,11 +51,13 @@
 	$thisyear = date_format('Y');
 	$srcyear = date_format('Y',$dh_adminreg_feature->startdate);
   $def_ts = $dh_adminreg_feature->startdate;
+  dpm("$thisyear $srcyear - $def_ts");
 	if ( ($thisyear > $srcyear) or ( ($thisyear == $srcyear) and $thismo >= 11) ) {
 	  // assume we are copying previous years events to this year and increment
 	  $src_mo = date_format('m',$dh_adminreg_feature->startdate);
 	  $src_day = date_format('d',$dh_adminreg_feature->startdate);
     $def_ts = dh_handletimestamp("$thisyear-$src_mo-$src_day");
+    dpm($def_ts, "dh_handletimestamp('$thisyear-$src_mo-$src_day')");
 	}
     $form['startdate'] = array(
       '#title' => t('Application Date'),
