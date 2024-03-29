@@ -42,7 +42,7 @@
         'cancelled' => t('Cancelled'),
         'post_harvest' => t('Post-Harvest'),
       ),
-      '#default_value' => empty($dh_adminreg_feature->fstatus) ? 'planned' : $dh_adminreg_feature->fstatus,
+      '#default_value' => 'planned',
       '#required' => TRUE,
       '#multiple' => FALSE,
     );
@@ -51,13 +51,13 @@
 	$thisyear = date('Y');
 	$srcyear = date('Y',$dh_adminreg_feature->startdate);
   $def_ts = $dh_adminreg_feature->startdate;
-  dpm("$thisyear $srcyear - $def_ts");
+  //dpm("$thisyear $srcyear - $def_ts");
 	if ( ($thisyear > $srcyear) or ( ($thisyear == $srcyear) and $thismo >= 11) ) {
 	  // assume we are copying previous years events to this year and increment
 	  $src_mo = date('m',$dh_adminreg_feature->startdate);
 	  $src_day = date('d',$dh_adminreg_feature->startdate);
     $def_ts = dh_handletimestamp("$thisyear-$src_mo-$src_day");
-    dpm($def_ts, "dh_handletimestamp('$thisyear-$src_mo-$src_day')");
+    //dpm($def_ts, "dh_handletimestamp('$thisyear-$src_mo-$src_day')");
 	}
     $form['startdate'] = array(
       '#title' => t('Application Date'),
@@ -85,7 +85,7 @@
     // RWB - replace this:
     //om_agman_form_block_select($form_copy['dh_link_feature_submittal'], $farmid);
     //$form['dh_link_feature_submittal'] = $form_copy['dh_link_feature_submittal'];
-    dpm($dh_adminreg_feature,'dh_adminreg_feature');
+    //dpm($dh_adminreg_feature,'dh_adminreg_feature');
     // with THIS:
     $block_select = om_agman_form_block_select2($dh_adminreg_feature);
     $form['dh_link_feature_submittal'] = $block_select;
