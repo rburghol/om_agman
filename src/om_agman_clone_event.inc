@@ -48,11 +48,20 @@
     );
     $date_format = 'Y-m-d';
     // should have code in here to guess based on the phase/or passed in from the URL
+	$thisyear = date_format('Y');
+	$srcyear = date_format('Y',$dh_adminreg_feature->startdate);
+  $def_ts = $dh_adminreg_feature->startdate;
+	if ($thisyear > $srcyear) {
+	  // assume we are copying previous years events to this year and increment
+	  $src_mo = date_format('m',$dh_adminreg_feature->startdate);
+	  $src_day = date_format('d',$dh_adminreg_feature->startdate);
+    $def_ts = dh_handletimestamp("$thisyear-$src_mo-$src_day");
+	}
     $form['startdate'] = array(
       '#title' => t('Application Date'),
       '#description' => t('Planned date for this spray.'),
       '#required' => TRUE,
-      '#default_value' => empty($dh_adminreg_feature->startdate) ? $dh_adminreg_feature->startdate : date($date_format,$dh_adminreg_feature->startdate),
+      '#default_value' => date($date_format,$def_ts),
       '#date_format' => $date_format,
       '#type' => 'date_select',
       '#date_year_range' => '-5:+5',
