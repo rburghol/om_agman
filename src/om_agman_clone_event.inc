@@ -74,7 +74,7 @@
     $dur_hours = ($dur_hours > 16) ? 16.0 : ceil($dur_hours * 2) / 2;// round to next greatest half hour
     $drange = range(0.5, 16, 0.5);
     $form['duration'] = array(
-      '#title' => t('Estimated Duration'),
+      '#title' => t('Estimated Duration (hrs)'),
       '#type' => 'select',
       '#default_value' => $dur_hours,
       '#multiple' => FALSE,
