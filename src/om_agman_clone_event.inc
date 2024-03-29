@@ -49,13 +49,13 @@
     $date_format = 'Y-m-d';
     // should have code in here to guess based on the phase/or passed in from the URL
 	$thisyear = date_format('Y');
-	$srcyear = date_format('Y',$dh_adminreg_feature->startdate);
+	$srcyear = date_format($dh_adminreg_feature->startdate,'Y');
   $def_ts = $dh_adminreg_feature->startdate;
   dpm("$thisyear $srcyear - $def_ts");
 	if ( ($thisyear > $srcyear) or ( ($thisyear == $srcyear) and $thismo >= 11) ) {
 	  // assume we are copying previous years events to this year and increment
-	  $src_mo = date_format('m',$dh_adminreg_feature->startdate);
-	  $src_day = date_format('d',$dh_adminreg_feature->startdate);
+	  $src_mo = date_format($dh_adminreg_feature->startdate, 'm');
+	  $src_day = date_format($dh_adminreg_feature->startdate, 'd');
     $def_ts = dh_handletimestamp("$thisyear-$src_mo-$src_day");
     dpm($def_ts, "dh_handletimestamp('$thisyear-$src_mo-$src_day')");
 	}
