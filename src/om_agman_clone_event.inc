@@ -28,7 +28,7 @@
     $form['name'] = array(
       '#title' => t('Event Name'),
       '#type' => 'textfield',
-      '#default_value' => empty($dh_adminreg_feature->name) ? 'New Event' : $dh_adminreg_feature->name . '(' . t('copy') . ')',
+      '#default_value' => empty($dh_adminreg_feature->name) ? 'New Event' : $dh_adminreg_feature->name,
       '#description' => t('Name for new event'),
       '#required' => TRUE,
       '#size' => 30,
