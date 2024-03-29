@@ -74,8 +74,8 @@ $rez = db_query(
   $event_query
 );
 $recs = $rez->fetchAllAssoc('name', PDO::FETCH_ASSOC);
-dpm($recs, 'recs');
-dpm($event_query);
+//dpm($recs, 'recs');
+//dpm($event_query);
 $row_one = $recs[array_shift(array_keys($recs))];
 // use if showin IDs
 //$header = array("blockid", "Name", "sensor_id", "Spray Date","Rain(in)", "Wetness(mins)");
