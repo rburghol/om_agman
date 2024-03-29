@@ -51,7 +51,7 @@
 	$thisyear = date_format('Y');
 	$srcyear = date_format('Y',$dh_adminreg_feature->startdate);
   $def_ts = $dh_adminreg_feature->startdate;
-	if ($thisyear > $srcyear) {
+	if ( ($thisyear > $srcyear) or ( ($thisyear == $srcyear) and $thismo >= 11) ) {
 	  // assume we are copying previous years events to this year and increment
 	  $src_mo = date_format('m',$dh_adminreg_feature->startdate);
 	  $src_day = date_format('d',$dh_adminreg_feature->startdate);
