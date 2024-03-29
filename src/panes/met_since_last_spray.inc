@@ -80,7 +80,7 @@ $recs = $rez->fetchAllAssoc('name', PDO::FETCH_ASSOC);
 $row_one = $recs[array_shift(array_keys($recs))];
 // use if showin IDs
 //$header = array("blockid", "Name", "sensor_id", "Spray Date","Rain(in)", "Wetness(mins)");
-$header = array("Block Name", "Spray Date","Rain(in)", "Wetness(mins)");
+$header = array("Block Name", "Spray Date","Rain(in)", "Wetness(hours)");
 
 $event_table = array(
   '#theme' => 'table',
