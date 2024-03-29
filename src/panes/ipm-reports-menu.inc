@@ -20,6 +20,7 @@ if (count($a) <= 1) {
 $urls = array(
   'season' => url(implode('/', array_replace($a, array(3=>'season')) )),
   'material' => url("ipm-user-reports/$a[1]/all" ),
+  'purchasing' => url(implode('/', array_replace($a, array(3=>'purchasing')) )),
   'frac' => url(implode('/', array_replace($a, array(3=>'frac')) )),
   'usda-private' => url(implode('/', array_replace($a, array(3=>'usda-private')) )),
   'phi' => url(implode('/', array_replace($a, array(3=>'phi')) )),
@@ -33,6 +34,7 @@ $options = array(
 //dpm($urls,'urls');
 $targets[$urls['season']] = 'Season Overview (shows all events)';
 $targets[$urls['material']] = 'Spray Summary by Material';
+$targets[$urls['purchasing']] = 'Estimate Spray Material Purchasing';
 $targets[$urls['frac']] = 'Spray Summary by FRAC';
 $targets[$urls['usda-private']] = 'USDA Private Grower Report';
 $targets[$urls['phi']] = 'Pre-Harvest Interval Date Report';

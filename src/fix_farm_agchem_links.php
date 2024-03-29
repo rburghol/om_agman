@@ -1,5 +1,10 @@
 #!/user/bin/env drush
 <?php
+// this is for farms that accidentically had their agchem links removed.
+// or removed on purpose, but they want them back.
+// it goes through events associated with that farm and finds the chems 
+// that were sprayed, since those are not deleted when a farm removes a 
+// chem from a previous spray.
 $farm_id = 146;
 
 $q = "

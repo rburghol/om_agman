@@ -1,32 +1,40 @@
 // Work in progress - goal is to do all auto-calcs
-/*
-function mymodule_form_alter(&$form, &$form_state, $form_id) {
-  //dpm($form_id);
-  if($form_id == 'equipment_node_form'){
-	 $rate = variable_get('small_fixes_current_dollar_rate');
-	 $form['live_result'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Amount Purchased (USD)'),
-		'#disabled' => TRUE,
-	 );
 
-	 drupal_add_js(drupal_get_path('module', 'mymodule') . '/small_fixes_live.js');
-	 drupal_add_js(array('small_fixes' => array('currentrate' => $rate)), 'setting');
-	 
-  }
-*/
-
-
-(function ($) {
-  Drupal.behaviors.om_agman = {
-	attach: function () {
-		document.getElementById("edit-live-result").defaultValue = document.getElementById('edit-field-amount-ngn-each-und-0-value').value; //this line sets default value for the field
-		$('#edit-field-amount-ngn-each-und-0-value').keyup(function(e) {
-			var currentRate = Drupal.settings.om_agman.currentrate;
-		    var ngn = document.getElementById('edit-field-amount-ngn-each-und-0-value').value;
-			
-			 $("#edit-live-result").val(ngn/currentRate);
-		});
+function om_agman_rate_total(span_field_index) {
+	//console.log(event.target.id)
+	rfid = event.target.id // in form of edit-chem-rates-N-rate-propvalue
+    rf_pieces = rfid.split('-')
+	rfix = rf_pieces[3]
+	rate = document.getElementById(rfid).value
+	unitconv_id = 'unitconv-' + rfix
+	batch_id = 'batch-vol-' + rfix
+	total_id = 'total-vol-' + rfix
+	units_id = 'amount-units-' + rfix
+	//console.log(unitconv_id)
+	area_id = "edit-event-settings-4-propvalue"
+	area_acres = document.getElementById(area_id).value
+	unit_conv = document.getElementById(unitconv_id).value
+	batch_vol = document.getElementById(batch_id).value
+	total_vol = document.getElementById(total_id).value
+	units = document.getElementById(units_id).value
+	total_amount = rate * unit_conv
+	//console.log(total_amount)
+	// uses rounding muti digit advice in javascript from https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary
+	if (total_amount > 10) {
+		total_amount = Math.round( ( total_amount + Number.EPSILON ) * 10 ) / 10;
+	} else {
+		total_amount = Math.round( ( total_amount + Number.EPSILON ) * 100 ) / 100;
+    }
+	//total_amount = (total_amount > 10) ? Math.round(total_amount,1) : Math.round(total_amount,2);
+	batch_amount = total_amount * batch_vol / total_vol;
+    batch_amount = (batch_amount > 10) ? Math.round(batch_amount,1) : Math.round(batch_amount,2);
+	//console.log(rate)
+	//console.log(unit_conv)
+	//console.log(total_amount)
+	//console.log(batch_amount)
+	amt_str = total_amount + ' ' + units
+	if (batch_vol < total_vol) {
+		amt_str = amt_str + " (" + batch_amount + ' ' + units + ' per tank'
 	}
-  };
-})(jQuery);
+	document.getElementById(span_field_index).innerHTML = amt_str;
+}

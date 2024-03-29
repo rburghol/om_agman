@@ -87,9 +87,9 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $conf['varid'] = array(
       'agchem_total_spray_rate_galac', 
       'agchem_batch_gal', 
-      'agchem_event_canopy_frac', 
       'agchem_spray_vol_gal', 
       'agchem_event_area', 
+      'agchem_event_canopy_frac', 
     );
     $criteria = array();    // load necessary properties for this event
     $vars = dh_vardef_varselect_options(array("varkey in ('" . implode("', '", array_values($conf['varid'])) . "')"));
@@ -412,7 +412,13 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
     $form['chem_rates']['#weight'] = 6;
     $form['chem_rates']['#prefix'] = '<div class="input-group input-group-lg">';
     $form['chem_rates']['#prefix'] .= '<span class="warning">';
-    $form['chem_rates']['#prefix'] .= t('Notice: This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.');
+    $form['chem_rates']['#prefix'] .= t('Notice:'); 
+    $form['chem_rates']['#prefix'] .= '<ul>'; 
+    $form['chem_rates']['#prefix'] .= '<li>' . t('<b>Chosen Rate:</b>You must enter the desirec rate for each material in this field.') . '</li>';
+    $form['chem_rates']['#prefix'] .= '<li>' . t('<b>Material Label Range & Canopy Scale Rates</b> This shows recomnmendations for <b>Chosen Rates</b> based on the <b>Select a percentage of canopy to be covered</b>(above).') . '</li>';
+    $form['chem_rates']['#prefix'] .= '<li>' . t('<b>Total Applied</b> column will be automatically updated to reflect your chosen rates when you make changes.') . '</li>';
+    $form['chem_rates']['#prefix'] .= "<li>" . t('Notice: This application is designed to be an aid to help your pesticide use planning. However, it is your responsibility to keep, read, and follow the labels and SDS.') . '</li>'; 
+    $form['chem_rates']['#prefix'] .= '</ul>'; 
     $form['chem_rates']['#prefix'] .= '</span>';
     $form['chem_rates']['#suffix'] = '</div">';
     //dpm($this->dh_adminreg_feature,'ar fe');
@@ -431,6 +437,10 @@ class ObjectModelAgmanSprayAppEvent extends ObjectModelComponentsDefaultHandler 
       '#type' => 'submit',
       '#value' => t('Save Block Info'),
       '#weight' => 40,
+    );
+    $form['#attached']['js'][] = array(
+      'data' => drupal_get_path('module', 'om_agman') . '/js/om_agman.js',
+      'type' => 'file', 
     );
     $this->eventprops = $eventprops;
     $this->chemgrid = $chemgrid;
@@ -720,6 +730,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#required' => TRUE,
     );
     */
+    //dpm($rowform,'rowform');
     //dpm($row,'row');
     // set up rate limits now so we can make a default guess if this is a new record
     $rate_limits = array();
@@ -741,6 +752,7 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
     // $scale is used here NOT canopy_frac since scale is canopy_frac adjusted in case of concentration based
     // disabled to insure new work flow
     //$row->rate_propvalue = empty($row->rate_propvalue) ? $scale * round(array_sum($rate_limits) / count($rate_limits),1) : $row->rate_propvalue;
+    $total_span_id = 'batch-total-' . trim($row->form_element_index);
     $rowform['rate_propvalue'] = array(
       '#coltitle' => 'Chosen Rate',
       '#title' => 'Rate for ' . $row->name,
@@ -752,7 +764,10 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       '#element_validate' => array('element_validate_number'),
       '#size' => 8,
       //'#attributes' => array('disabled' => 'disabled'),
-      '#attributes' => array( 'size' => 8),
+      '#attributes' => array( 
+        'size' => 8,
+        'onchange' => "om_agman_rate_total('$total_span_id')",
+      ),
       '#default_value' => $row->rate_propvalue,
     );
     
@@ -801,22 +816,20 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       // calculate volume of h2o per acre for info purposes
       $scaled_galac = round($cf * $this->agchem_total_spray_rate_galac,2);
       $rate_select_key = $r/100.0;
+      // note: this uses the position of the canopy_frac field in the containing form to vary to recomended rate
+      //       since it is positional, it will break if we change the location of that field.
+      // Foir example, it changed from the 3rd to the 5th field and the scaler disappeared.
       $rowform['rate_range']["rate_$r"] = array(
         '#type' => 'item',
         '#markup' => '&nbsp;&nbsp; * ' . ($scale * 100) . '% of full canopy'
           . '<br>&nbsp;&nbsp; <i>Estimated Amount to Be Sprayed</i> &nbsp;= ' . $rs . ' in ' . $scaled_galac . ' gals of water/acre',
         '#states' => array(
           'visible' => array(
-            ':input[name="event_settings[3][propvalue]"]' => array('value' => "$rate_select_key"),
+            ':input[name="event_settings[5][propvalue]"]' => array('value' => "$rate_select_key"),
           ),
         ),
       );
     }
-    
-    // batch total
-    // this can be refreshed in the form via javascript?
-    // check if batch size is > total volume to spray, make match = total
-    $this->batch_amount = ($this->batch_amount > $this->total_amount) ? $this->total_amount : $this->batch_amount;
     // @todo: make this based on units, right now it just assumes rate is in oz/ac
     if ($this->event_area > 0) {
       $unitconv = 1.0 * $this->event_area;
@@ -824,6 +837,41 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
       $unitconv = 1.0;
     }
     $unitconv = $this->rateFactor($this->event_area, $this->total_amount, $rate_units);
+    // data for the auto-updating total columns 
+    $rowform['unitconv'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $unitconv,
+      '#attributes' => array(
+        'id' => 'unitconv-' . trim($row->form_element_index)
+      )
+    );
+    $amount_units = empty($row->rate_units) ? '' : $this->convertRateUnitsAmount($row->rate_units); 
+    $rowform['amount_units'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $amount_units,
+      '#attributes' => array(
+        'id' => 'amount-units-' . trim($row->form_element_index)
+      )
+    );
+    // batch total
+    // this can be refreshed in the form via javascript?
+    // check if batch size is > total volume to spray, make match = total
+    $this->batch_amount = ($this->batch_amount > $this->total_amount) ? $this->total_amount : $this->batch_amount;
+    $rowform['batch_vol'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $this->batch_amount,
+      '#attributes' => array(
+        'id' => 'batch-vol-' . trim($row->form_element_index)
+      )
+    );
+    $rowform['total_vol'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $this->total_amount,
+      '#attributes' => array(
+        'id' => 'total-vol-' . trim($row->form_element_index)
+      )
+    );
+    
     // total applied
     $total_val = $row->rate_propvalue * $unitconv;
     $total_val = ($total_val > 10) ? round($total_val,1) : round($total_val,2);
@@ -834,28 +882,33 @@ class ObjectModelAgmanSprayMaterialProps extends dhPropertiesGroup {
         $batch_val = ($batch_val > 10) ? round($batch_val,1) : round($batch_val,2);
       break;
     }
-    $amount_units = empty($row->rate_units) ? '' : $this->convertRateUnitsAmount($row->rate_units);
     $rowform['batch_total'] = array(
-      '#coltitle' => 'Per Tank / Total',
+      '#coltitle' => 'Total Applied',
       //'#markup' => $batch_val . " $amount_units",
-      '#markup' => $batch_val . " $amount_units" . " / " . $total_val . " $amount_units",
+      '#markup' => "",
     );
+    $total_str = $total_val . " $amount_units";
     // helper conversions for recs in qt and pint
     $con_small = array(
       'pt' => 16.0, 'qt' => 32.0
     );
     list($num, $denom) = explode('/',$row->rate_units);
-    //dpm($con_small," $num, $denom, $row->rate_units ");
-    if ( ($batch_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
-      // @todo add a conversion to floz 
-      $rac = $con_small[$num];
-      $rowform['batch_total']['#markup'] .= 
-        '<br>(' 
-        . round($batch_val * $rac, 1) 
-        . ' / ' . round($total_val * $rac, 1) 
-        . ' floz)'
-      ;
+    $rac = $con_small[$num];
+    $total_conv_str = '';
+    $batch_conv_str = '';
+    if ( ($total_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
+      $total_conv_str = " (" . round($total_val * $rac, 2) . ' floz)';
     }
+    $batch_str = '';
+    if ($batch_val < $total_val) {
+      $batch_str .= "<br>" . $batch_val . " $amount_units" . " per full tank";
+      if ( ($batch_val <= 10.0) and in_array($num, array_keys($con_small)) ) {
+        // @todo add a conversion to others? like weights?
+        $batch_conv_str = " (" . round($batch_val * $rac, 2) . ' floz)';
+      }
+    }
+    // in the end wrap it up so java script can change it
+    $rowform['batch_total']['#markup'] = "<span id='$total_span_id'>" . $total_str . $total_conv_str . $batch_str . $batch_conv_str . "</span>";
     /*
     $rowform['amount_propvalue'] = array(
       '#coltitle' => 'Total Spray',
